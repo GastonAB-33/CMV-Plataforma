@@ -1,0 +1,36 @@
+@import "tailwindcss";
+
+@theme {
+  --color-background: #ffffff;
+  --color-primary: #c5a059;
+  --color-secondary: #f3f4f6;
+}
+
+@layer base {
+  :root {
+    background-color: #ffffff;
+    color: #0f172a;
+    color-scheme: light;
+  }
+
+  html.dark {
+    background-color: #000000;
+    color: #ffffff;
+    color-scheme: dark;
+  }
+
+  body {
+    margin: 0;
+    min-width: 320px;
+    min-height: 100vh;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: inherit;
+    color: inherit;
+    transition: background-color 200ms ease, color 200ms ease;
+  }
+
+  #root {
+    width: 100%;
+    min-height: 100vh;
+  }
+}
