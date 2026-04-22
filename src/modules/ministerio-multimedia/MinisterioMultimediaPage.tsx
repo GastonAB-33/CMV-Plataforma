@@ -770,13 +770,13 @@ export const MinisterioMultimediaPage = () => {
       </section>
 
       <section>
-        <article className="bg-white dark:bg-[#1a1a1a] border border-slate-200 dark:border-white/5 rounded-3xl p-6">
-          <div className="flex items-center justify-between mb-4">
+        <article className="bg-white dark:bg-[#1a1a1a] border border-slate-200 dark:border-white/10 rounded-3xl p-4 sm:p-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
             <h2 className="font-black text-slate-900 dark:text-white flex items-center gap-2">
               <CalendarDays size={16} className="text-[#c5a059]" />
               Calendario
             </h2>
-            <div className="flex gap-2">
+            <div className="flex gap-2 overflow-x-auto no-scrollbar">
               <button
                 onClick={() => setCalendarMode('full')}
                 className={`px-3 py-1.5 text-[10px] uppercase rounded-full border ${
@@ -807,7 +807,7 @@ export const MinisterioMultimediaPage = () => {
             >
               <ChevronLeft size={16} />
             </button>
-            <p className="text-xs uppercase tracking-[0.2em] font-black text-slate-700 dark:text-gray-300">
+            <p className="text-xs uppercase tracking-[0.2em] font-black text-slate-700 dark:text-gray-200">
               {monthLabel(monthRef)}
             </p>
             <button
@@ -849,7 +849,7 @@ export const MinisterioMultimediaPage = () => {
                         }
                         openDayEventsModal(cell.date);
                       }}
-                      className={`min-h-[74px] rounded-xl p-2 border text-left ${
+                      className={`min-h-[58px] sm:min-h-[74px] rounded-xl p-1.5 sm:p-2 border text-left ${
                         !cell.date
                           ? 'border-transparent'
                           : isSelected
@@ -864,14 +864,14 @@ export const MinisterioMultimediaPage = () => {
                       {cell.day && (
                         <div className="flex flex-col gap-1">
                           <div className="flex items-center justify-between">
-                            <span className="text-xs font-black">{cell.day}</span>
+                            <span className="text-[11px] sm:text-xs font-black">{cell.day}</span>
                             {isToday && (
-                              <span className="text-[9px] uppercase px-2 py-0.5 rounded-full bg-blue-500/15 text-blue-300 border border-blue-400/30">
+                              <span className="hidden sm:inline-flex text-[9px] uppercase px-2 py-0.5 rounded-full bg-blue-500/15 text-blue-300 border border-blue-400/30">
                                 Hoy
                               </span>
                             )}
                           </div>
-                          {count > 0 && <span className="text-[10px] text-[#c5a059] font-black">{count} agendado</span>}
+                          {count > 0 && <span className="text-[9px] sm:text-[10px] text-[#c5a059] font-black">{count} evt</span>}
                         </div>
                       )}
                     </button>

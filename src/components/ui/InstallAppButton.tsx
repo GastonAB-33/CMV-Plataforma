@@ -1,4 +1,4 @@
-﻿import { Download, Share2, Smartphone } from 'lucide-react';
+import { Download, Share2, Smartphone } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 
 interface BeforeInstallPromptEvent extends Event {
@@ -14,8 +14,12 @@ export const InstallAppButton = () => {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [isInstalled, setIsInstalled] = useState(false);
   const [showIosGuide, setShowIosGuide] = useState(false);
+  const [showAndroidGuide, setShowAndroidGuide] = useState(false);
 
-  const isIos = useMemo(() => /iphone|ipad|ipod/i.test(window.navigator.userAgent), []);
+  const userAgent = useMemo(() => window.navigator.userAgent.toLowerCase(), []);
+  const isIos = useMemo(() => /iphone|ipad|ipod/i.test(userAgent), [userAgent]);
+  const isAndroid = useMemo(() => /android/i.test(userAgent), [userAgent]);
+  const isChromeLike = useMemo(() => /chrome|chromium|crios|edg|brave/i.test(userAgent), [userAgent]);
 
   useEffect(() => {
     setIsInstalled(isStandaloneMode());
@@ -29,6 +33,7 @@ export const InstallAppButton = () => {
       setIsInstalled(true);
       setDeferredPrompt(null);
       setShowIosGuide(false);
+      setShowAndroidGuide(false);
     };
 
     const mediaQuery = window.matchMedia('(display-mode: standalone)');
@@ -63,15 +68,19 @@ export const InstallAppButton = () => {
       if (choice.outcome === 'accepted') {
         setDeferredPrompt(null);
       }
+      setShowIosGuide(false);
+      setShowAndroidGuide(false);
       return;
     }
 
     if (isIos) {
       setShowIosGuide((prev) => !prev);
+      setShowAndroidGuide(false);
       return;
     }
 
     setShowIosGuide(false);
+    setShowAndroidGuide(true);
   };
 
   return (
@@ -88,8 +97,18 @@ export const InstallAppButton = () => {
       </button>
 
       {showIosGuide && (
-        <p className="text-xs text-slate-500 dark:text-gray-400 max-w-xl">
+        <p className="text-xs text-slate-500 dark:text-gray-300 max-w-xl">
           En iOS: abre el menu compartir <Share2 size={12} className="inline" /> y elige <span className="font-semibold">"Agregar a pantalla de inicio"</span>.
+        </p>
+      )}
+
+      {showAndroidGuide && (
+        <p className="text-xs text-slate-500 dark:text-gray-300 max-w-xl">
+          {isAndroid
+            ? isChromeLike
+              ? 'En Android: abre el menu del navegador (⋮) y toca "Instalar app" o "Agregar a pantalla de inicio".'
+              : 'Para instalar en Android, abre esta web en Chrome y usa el menu (⋮) > "Instalar app".'
+            : 'La instalacion PWA funciona en navegadores compatibles (Chrome/Edge). Si no aparece el popup, usa el menu del navegador y selecciona "Instalar app".'}
         </p>
       )}
     </div>

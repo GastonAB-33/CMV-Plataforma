@@ -25,7 +25,7 @@ export const MainLayout = ({ children, role }: MainLayoutProps) => {
   ];
 
   const activeClass = 'bg-[#c5a059]/10 text-[#c5a059] border border-[#c5a059]/30';
-  const inactiveClass = 'text-slate-600 dark:text-gray-400 hover:bg-[#c5a059]/5 hover:text-[#c5a059]';
+  const inactiveClass = 'text-slate-700 dark:text-gray-300 hover:bg-[#c5a059]/5 hover:text-[#c5a059]';
   const primaryMobileItems = navItems.filter((item) => item.primaryMobile);
   const secondaryMobileItems = navItems.filter((item) => !item.primaryMobile);
   const isSecondaryRouteActive = useMemo(
@@ -35,7 +35,7 @@ export const MainLayout = ({ children, role }: MainLayoutProps) => {
 
   return (
     <div className="flex min-h-screen md:h-screen bg-white dark:bg-black text-black dark:text-white overflow-hidden transition-colors">
-      <div className="fixed top-4 right-4 z-[60]">
+      <div className="hidden md:block fixed top-4 right-4 z-[60]">
         <ThemeToggle />
       </div>
 
@@ -87,7 +87,7 @@ export const MainLayout = ({ children, role }: MainLayoutProps) => {
             <button
               type="button"
               onClick={() => setIsMobileMenuOpen((prev) => !prev)}
-              className="inline-flex items-center justify-center w-11 h-11 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-white/5 text-slate-700 dark:text-gray-200"
+              className="inline-flex items-center justify-center w-11 h-11 rounded-xl border border-slate-200 dark:border-white/15 bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-gray-100"
               aria-label={isMobileMenuOpen ? 'Cerrar menu' : 'Abrir menu'}
             >
               {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
@@ -101,14 +101,14 @@ export const MainLayout = ({ children, role }: MainLayoutProps) => {
           </div>
         </main>
 
-        <nav className="md:hidden fixed bottom-3 left-1/2 -translate-x-1/2 w-[94%] bg-white/95 dark:bg-[#1a1a1a]/90 backdrop-blur-xl border border-slate-200 dark:border-white/5 rounded-3xl flex justify-between items-center px-2 pt-2 pb-[calc(env(safe-area-inset-bottom)+0.5rem)] z-50 shadow-[0_20px_50px_rgba(0,0,0,0.2)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.5)] transition-colors">
+        <nav className="md:hidden fixed bottom-3 left-1/2 -translate-x-1/2 w-[94%] bg-white/95 dark:bg-[#181818]/95 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-3xl flex justify-between items-center px-2 pt-2 pb-[calc(env(safe-area-inset-bottom)+0.5rem)] z-50 shadow-[0_20px_50px_rgba(0,0,0,0.2)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.6)] transition-colors">
           {primaryMobileItems.map((item) => (
             <NavLink
               key={item.id}
               to={item.path}
               onClick={() => setIsMobileMenuOpen(false)}
               className={({ isActive }) =>
-                `flex flex-col items-center gap-1 transition-all duration-300 px-1.5 py-1 ${isActive ? 'text-[#c5a059]' : 'text-slate-500 dark:text-gray-500'}`
+                `flex flex-col items-center gap-1 transition-all duration-300 px-1.5 py-1 ${isActive ? 'text-[#c5a059]' : 'text-slate-500 dark:text-gray-300'}`
               }
             >
               <div className="p-1 rounded-full transition-colors group">
@@ -120,7 +120,7 @@ export const MainLayout = ({ children, role }: MainLayoutProps) => {
           <button
             type="button"
             onClick={() => setIsMobileMenuOpen((prev) => !prev)}
-            className={`flex flex-col items-center gap-1 px-1.5 py-1 transition-all duration-300 ${isMobileMenuOpen || isSecondaryRouteActive ? 'text-[#c5a059]' : 'text-slate-500 dark:text-gray-500'}`}
+            className={`flex flex-col items-center gap-1 px-1.5 py-1 transition-all duration-300 ${isMobileMenuOpen || isSecondaryRouteActive ? 'text-[#c5a059]' : 'text-slate-500 dark:text-gray-300'}`}
             aria-label="Abrir menu completo"
           >
             <div className="p-1 rounded-full">
@@ -156,6 +156,10 @@ export const MainLayout = ({ children, role }: MainLayoutProps) => {
                 </NavLink>
               ))}
             </nav>
+            <div className="mt-4 pt-4 border-t border-slate-200 dark:border-white/10">
+              <p className="text-[10px] uppercase tracking-widest font-black text-slate-500 dark:text-gray-400 mb-2">Apariencia</p>
+              <ThemeToggle />
+            </div>
           </aside>
         </div>
       )}

@@ -18,6 +18,8 @@ const PROCESS_SCORE_BY_STAGE: Record<Proceso, number> = {
 
 type CellFilter = 'Todas' | Cell;
 type CellHealth = 'En crecimiento' | 'Estable' | 'En riesgo';
+type MobileDashboardLevel = 'resumen' | 'celulas' | 'analitica';
+type MobileAnalyticsView = 'impacto' | 'proyecciones' | 'grafica';
 
 interface CellGrowthRow {
   cellName: Cell;
@@ -146,6 +148,8 @@ const formatRate = (value: number) => `${value}%`;
 export const SeguimientoPage = () => {
   const navigate = useNavigate();
   const [selectedCell, setSelectedCell] = useState<CellFilter>('Todas');
+  const [mobileLevel, setMobileLevel] = useState<MobileDashboardLevel>('resumen');
+  const [mobileAnalyticsView, setMobileAnalyticsView] = useState<MobileAnalyticsView>('impacto');
 
   const rows = useMemo(() => seguimientoModuleService.listMatrixRows(), []);
   const brothers = useMemo(() => brothersService.list(), []);
@@ -372,7 +376,7 @@ export const SeguimientoPage = () => {
     .join(' ');
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-700">
+    <div className="space-y-6 md:space-y-8 animate-in fade-in duration-700">
       <header className="space-y-2">
         <h1 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white tracking-tight">Seguimiento Estrategico</h1>
         <p className="text-slate-500 dark:text-gray-400 max-w-4xl">
@@ -397,104 +401,252 @@ export const SeguimientoPage = () => {
         </div>
       </section>
 
-      <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-        <article className="rounded-2xl border border-slate-200 dark:border-white/5 bg-white dark:bg-[#1a1a1a] p-5">
+      <section className="md:hidden rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#1a1a1a] p-2">
+        <div className="grid grid-cols-3 gap-2">
+          {[
+            { id: 'resumen' as const, label: 'Nivel 1' },
+            { id: 'celulas' as const, label: 'Nivel 2' },
+            { id: 'analitica' as const, label: 'Nivel 3' },
+          ].map((item) => (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => setMobileLevel(item.id)}
+              className={`rounded-xl px-2 py-2 text-[10px] uppercase tracking-widest font-black transition-all ${
+                mobileLevel === item.id
+                  ? 'bg-[#c5a059] text-black'
+                  : 'bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-gray-300'
+              }`}
+            >
+              {item.label}
+            </button>
+          ))}
+        </div>
+      </section>
+
+      <section className={`${mobileLevel === 'resumen' ? 'grid' : 'hidden'} md:grid grid-cols-2 md:grid-cols-2 xl:grid-cols-4 gap-3 md:gap-4`}>
+        <article className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#1a1a1a] p-4 sm:p-5">
           <div className="flex items-center justify-between">
-            <p className="text-xs uppercase tracking-widest font-black text-slate-500 dark:text-gray-500">Miembros activos</p>
+            <p className="text-[10px] sm:text-xs uppercase tracking-widest font-black text-slate-500 dark:text-gray-300">Miembros activos</p>
             <Users size={16} className="text-[#c5a059]" />
           </div>
-          <p className="text-3xl font-black text-[#c5a059] mt-3">{totalMembers}</p>
-          <p className="text-xs text-slate-500 dark:text-gray-500 mt-1">Retencion: {formatRate(retentionRate)}</p>
+          <p className="text-2xl sm:text-3xl font-black text-[#c5a059] mt-3">{totalMembers}</p>
+          <p className="text-[11px] sm:text-xs text-slate-500 dark:text-gray-300 mt-1">Retencion: {formatRate(retentionRate)}</p>
         </article>
 
-        <article className="rounded-2xl border border-slate-200 dark:border-white/5 bg-white dark:bg-[#1a1a1a] p-5">
+        <article className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#1a1a1a] p-4 sm:p-5">
           <div className="flex items-center justify-between">
-            <p className="text-xs uppercase tracking-widest font-black text-slate-500 dark:text-gray-500">Crecimiento celular</p>
+            <p className="text-[10px] sm:text-xs uppercase tracking-widest font-black text-slate-500 dark:text-gray-300">Crecimiento celular</p>
             <TrendingUp size={16} className="text-[#c5a059]" />
           </div>
-          <p className="text-3xl font-black text-[#c5a059] mt-3">{averageCellGrowth}%</p>
-          <p className="text-xs text-slate-500 dark:text-gray-500 mt-1">Nuevos integrantes: {newMembers}</p>
+          <p className="text-2xl sm:text-3xl font-black text-[#c5a059] mt-3">{averageCellGrowth}%</p>
+          <p className="text-[11px] sm:text-xs text-slate-500 dark:text-gray-300 mt-1">Nuevos integrantes: {newMembers}</p>
         </article>
 
-        <article className="rounded-2xl border border-slate-200 dark:border-white/5 bg-white dark:bg-[#1a1a1a] p-5">
+        <article className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#1a1a1a] p-4 sm:p-5">
           <div className="flex items-center justify-between">
-            <p className="text-xs uppercase tracking-widest font-black text-slate-500 dark:text-gray-500">Multiplicacion</p>
+            <p className="text-[10px] sm:text-xs uppercase tracking-widest font-black text-slate-500 dark:text-gray-300">Multiplicacion</p>
             <Church size={16} className="text-[#c5a059]" />
           </div>
-          <p className="text-3xl font-black text-[#c5a059] mt-3">{newAltars}</p>
-          <p className="text-xs text-slate-500 dark:text-gray-500 mt-1">Altares nuevos (ventana 6 meses)</p>
+          <p className="text-2xl sm:text-3xl font-black text-[#c5a059] mt-3">{newAltars}</p>
+          <p className="text-[11px] sm:text-xs text-slate-500 dark:text-gray-300 mt-1">Altares nuevos (ventana 6 meses)</p>
         </article>
 
-        <article className="rounded-2xl border border-slate-200 dark:border-white/5 bg-white dark:bg-[#1a1a1a] p-5">
+        <article className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#1a1a1a] p-4 sm:p-5">
           <div className="flex items-center justify-between">
-            <p className="text-xs uppercase tracking-widest font-black text-slate-500 dark:text-gray-500">Salud pastoral</p>
+            <p className="text-[10px] sm:text-xs uppercase tracking-widest font-black text-slate-500 dark:text-gray-300">Salud pastoral</p>
             <Sparkles size={16} className="text-[#c5a059]" />
           </div>
-          <p className="text-3xl font-black text-[#c5a059] mt-3">{pastoralHealthIndex}%</p>
-          <p className="text-xs text-slate-500 dark:text-gray-500 mt-1">Indice combinado de acompanamiento y seguimiento</p>
+          <p className="text-2xl sm:text-3xl font-black text-[#c5a059] mt-3">{pastoralHealthIndex}%</p>
+          <p className="text-[11px] sm:text-xs text-slate-500 dark:text-gray-300 mt-1">Indice combinado de acompanamiento y seguimiento</p>
         </article>
       </section>
 
-      <section className="grid grid-cols-1 xl:grid-cols-12 gap-6">
+      <section className={`${mobileLevel === 'resumen' ? 'block' : 'hidden'} md:hidden`}>
+        <article className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#1a1a1a] p-4">
+          <div className="flex items-center gap-2 mb-3">
+            <AlertTriangle size={16} className="text-[#c5a059]" />
+            <p className="text-sm font-semibold text-slate-900 dark:text-white">Alertas de seguimiento</p>
+          </div>
+          {atRiskBrothers.length > 0 ? (
+            <div className="flex flex-wrap gap-2">
+              {atRiskBrothers.slice(0, 8).map((brother) => (
+                <button
+                  key={brother.id}
+                  className="inline-flex items-center gap-2 rounded-full border border-rose-300/40 bg-rose-400/10 px-3 py-1 text-xs text-rose-300"
+                  onClick={() => navigate(`/hermanos/${brother.id}`)}
+                >
+                  <span className="h-2 w-2 rounded-full bg-rose-300" />
+                  {brother.name}
+                </button>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-slate-500 dark:text-gray-300">No se detectan riesgos de desconexion con las reglas actuales.</p>
+          )}
+        </article>
+      </section>
+
+      <section className={`${mobileLevel === 'analitica' ? 'space-y-4' : 'hidden'} md:hidden`}>
+        <article className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#1a1a1a] p-2">
+          <div className="grid grid-cols-3 gap-2">
+            {[
+              { id: 'impacto' as const, label: 'Impacto' },
+              { id: 'proyecciones' as const, label: 'Proyecciones' },
+              { id: 'grafica' as const, label: 'Grafica' },
+            ].map((item) => (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => setMobileAnalyticsView(item.id)}
+                className={`rounded-xl px-2 py-2 text-[10px] uppercase tracking-widest font-black transition-all ${
+                  mobileAnalyticsView === item.id
+                    ? 'bg-[#c5a059] text-black'
+                    : 'bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-gray-300'
+                }`}
+              >
+                {item.label}
+              </button>
+            ))}
+          </div>
+        </article>
+
+        {mobileAnalyticsView === 'impacto' && (
+          <article className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#1a1a1a] p-4">
+            <h2 className="text-base font-semibold text-slate-900 dark:text-white mb-3">Impacto espiritual</h2>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0a0a0a]/50 p-3">
+                <p className="text-[10px] uppercase tracking-widest font-black text-slate-500 dark:text-gray-300">Integracion</p>
+                <p className="text-xl font-black text-[#c5a059] mt-1">{formatRate(integrationRate)}</p>
+              </div>
+              <div className="rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0a0a0a]/50 p-3">
+                <p className="text-[10px] uppercase tracking-widest font-black text-slate-500 dark:text-gray-300">Indice espiritual</p>
+                <p className="text-xl font-black text-[#c5a059] mt-1">{formatRate(spiritualIndex)}</p>
+              </div>
+              <div className="rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0a0a0a]/50 p-3">
+                <p className="text-[10px] uppercase tracking-widest font-black text-slate-500 dark:text-gray-300">Seguimiento activo</p>
+                <p className="text-xl font-black text-[#c5a059] mt-1">{formatRate(followUpCoverage)}</p>
+              </div>
+              <div className="rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0a0a0a]/50 p-3">
+                <p className="text-[10px] uppercase tracking-widest font-black text-slate-500 dark:text-gray-300">En riesgo</p>
+                <p className="text-xl font-black text-[#c5a059] mt-1">{atRiskBrothers.length}</p>
+              </div>
+            </div>
+          </article>
+        )}
+
+        {mobileAnalyticsView === 'proyecciones' && (
+          <article className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#1a1a1a] p-4 space-y-3">
+            <h2 className="text-base font-semibold text-slate-900 dark:text-white">Proyecciones</h2>
+            {projectionRows.map((row) => (
+              <div key={row.horizon} className="rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0a0a0a]/50 p-3">
+                <p className="text-xs font-bold text-slate-900 dark:text-white">{row.horizon}</p>
+                <div className="mt-2 grid grid-cols-3 gap-2 text-center">
+                  <div>
+                    <p className="text-[10px] uppercase tracking-wider font-black text-slate-500 dark:text-gray-300">Cons.</p>
+                    <p className="text-sm font-bold text-slate-700 dark:text-gray-200">{row.conservador}</p>
+                  </div>
+                  <div>
+                    <p className="text-[10px] uppercase tracking-wider font-black text-[#c5a059]">Base</p>
+                    <p className="text-sm font-bold text-[#c5a059]">{row.base}</p>
+                  </div>
+                  <div>
+                    <p className="text-[10px] uppercase tracking-wider font-black text-slate-500 dark:text-gray-300">Opt.</p>
+                    <p className="text-sm font-bold text-slate-700 dark:text-gray-200">{row.optimista}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </article>
+        )}
+
+        {mobileAnalyticsView === 'grafica' && (
+          <article className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#1a1a1a] p-4">
+            <h2 className="text-base font-semibold text-slate-900 dark:text-white mb-3">Distribucion por etapas</h2>
+            <div className="rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0a0a0a]/50 p-3 overflow-x-auto">
+              <svg viewBox={`0 0 ${chartWidth} ${chartHeight}`} className="min-w-[640px] w-full h-[250px]">
+                <polyline fill="none" stroke="currentColor" className="text-emerald-400" strokeWidth="3" points={completedPolylinePoints} />
+                <polyline fill="none" stroke="currentColor" className="text-[#c5a059]" strokeWidth="3" points={incompletePolylinePoints} />
+                {chartPoints.map((point) => (
+                  <g key={point.stage}>
+                    <circle cx={point.x} cy={point.completedY} r="4" fill="#34d399" />
+                    <circle cx={point.x} cy={point.incompleteY} r="4" fill="#c5a059" />
+                    <text
+                      x={point.x}
+                      y={plotBottom + 24}
+                      textAnchor="middle"
+                      className="fill-slate-600 dark:fill-gray-400 text-[10px] font-semibold"
+                    >
+                      {point.stage}
+                    </text>
+                  </g>
+                ))}
+              </svg>
+            </div>
+          </article>
+        )}
+      </section>
+
+      <section className="hidden md:grid grid-cols-1 xl:grid-cols-12 gap-6">
         <div className="xl:col-span-7 space-y-6">
-          <article className="rounded-2xl border border-slate-200 dark:border-white/5 bg-white dark:bg-[#1a1a1a] p-6">
+          <article className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#1a1a1a] p-4 sm:p-6">
             <div className="flex items-center justify-between mb-5">
               <h2 className="text-xl font-semibold text-slate-900 dark:text-white">Crecimiento Congregacional</h2>
               <span className="text-[10px] uppercase tracking-[0.2em] font-black text-[#c5a059]">Resumen</span>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-              <div className="p-4 rounded-xl bg-slate-50 dark:bg-[#0a0a0a]/50 border border-slate-200 dark:border-white/5">
-                <p className="text-[10px] uppercase tracking-widest font-black text-slate-500 dark:text-gray-500">Integracion</p>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 mb-6">
+              <div className="p-3 sm:p-4 rounded-xl bg-slate-50 dark:bg-[#0a0a0a]/50 border border-slate-200 dark:border-white/10">
+                <p className="text-[10px] uppercase tracking-widest font-black text-slate-500 dark:text-gray-300">Integracion</p>
                 <p className="text-2xl font-black text-[#c5a059] mt-2">{formatRate(integrationRate)}</p>
-                <p className="text-xs text-slate-500 dark:text-gray-500 mt-1">Miembros avanzando en ruta de discipulado</p>
+                <p className="text-xs text-slate-500 dark:text-gray-300 mt-1">Miembros avanzando en ruta de discipulado</p>
               </div>
-              <div className="p-4 rounded-xl bg-slate-50 dark:bg-[#0a0a0a]/50 border border-slate-200 dark:border-white/5">
-                <p className="text-[10px] uppercase tracking-widest font-black text-slate-500 dark:text-gray-500">Actividad congregacional</p>
+              <div className="p-3 sm:p-4 rounded-xl bg-slate-50 dark:bg-[#0a0a0a]/50 border border-slate-200 dark:border-white/10">
+                <p className="text-[10px] uppercase tracking-widest font-black text-slate-500 dark:text-gray-300">Actividad congregacional</p>
                 <p className="text-2xl font-black text-[#c5a059] mt-2">{congregationalActivities}</p>
-                <p className="text-xs text-slate-500 dark:text-gray-500 mt-1">Eventos de red e intercelulas</p>
+                <p className="text-xs text-slate-500 dark:text-gray-300 mt-1">Eventos de red e intercelulas</p>
               </div>
-              <div className="p-4 rounded-xl bg-slate-50 dark:bg-[#0a0a0a]/50 border border-slate-200 dark:border-white/5">
-                <p className="text-[10px] uppercase tracking-widest font-black text-slate-500 dark:text-gray-500">Discipulos en crecimiento</p>
+              <div className="p-3 sm:p-4 rounded-xl bg-slate-50 dark:bg-[#0a0a0a]/50 border border-slate-200 dark:border-white/10 col-span-2 md:col-span-1">
+                <p className="text-[10px] uppercase tracking-widest font-black text-slate-500 dark:text-gray-300">Discipulos en crecimiento</p>
                 <p className="text-2xl font-black text-[#c5a059] mt-2">{disciplesInGrowth}</p>
-                <p className="text-xs text-slate-500 dark:text-gray-500 mt-1">Lideres potenciales abriendo nuevos altares</p>
+                <p className="text-xs text-slate-500 dark:text-gray-300 mt-1">Lideres potenciales abriendo nuevos altares</p>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
               {STAGES.map((stage) => {
                 const stageCount = scopedRows.filter((row) => row.currentProcess === stage).length;
                 const stageRate = totalMembers > 0 ? clampPercentage((stageCount / totalMembers) * 100) : 0;
 
                 return (
-                  <div key={stage} className="p-4 rounded-xl bg-slate-50 dark:bg-[#0a0a0a]/50 border border-slate-200 dark:border-white/5">
-                    <p className="text-[10px] uppercase tracking-widest font-black text-slate-500 dark:text-gray-500">{stage}</p>
+                  <div key={stage} className="p-3 sm:p-4 rounded-xl bg-slate-50 dark:bg-[#0a0a0a]/50 border border-slate-200 dark:border-white/10">
+                    <p className="text-[10px] uppercase tracking-widest font-black text-slate-500 dark:text-gray-300">{stage}</p>
                     <p className="text-xl font-black text-[#c5a059] mt-2">{stageCount}</p>
-                    <p className="text-xs text-slate-500 dark:text-gray-500 mt-1">{stageRate}% del alcance</p>
+                    <p className="text-xs text-slate-500 dark:text-gray-300 mt-1">{stageRate}% del alcance</p>
                   </div>
                 );
               })}
             </div>
           </article>
 
-          <article className="rounded-2xl border border-slate-200 dark:border-white/5 bg-white dark:bg-[#1a1a1a] p-6">
+          <article className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#1a1a1a] p-4 sm:p-6">
             <h2 className="text-xl font-semibold text-slate-900 dark:text-white mb-5">Avance Espiritual y Cuidado Pastoral</h2>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-              <div className="p-4 rounded-xl bg-slate-50 dark:bg-[#0a0a0a]/50 border border-slate-200 dark:border-white/5">
-                <p className="text-[10px] uppercase tracking-widest font-black text-slate-500 dark:text-gray-500">Indice espiritual</p>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 mb-6">
+              <div className="p-3 sm:p-4 rounded-xl bg-slate-50 dark:bg-[#0a0a0a]/50 border border-slate-200 dark:border-white/10">
+                <p className="text-[10px] uppercase tracking-widest font-black text-slate-500 dark:text-gray-300">Indice espiritual</p>
                 <p className="text-2xl font-black text-[#c5a059] mt-2">{formatRate(spiritualIndex)}</p>
-                <p className="text-xs text-slate-500 dark:text-gray-500 mt-1">Ponderado por etapa actual de proceso</p>
+                <p className="text-xs text-slate-500 dark:text-gray-300 mt-1">Ponderado por etapa actual de proceso</p>
               </div>
-              <div className="p-4 rounded-xl bg-slate-50 dark:bg-[#0a0a0a]/50 border border-slate-200 dark:border-white/5">
-                <p className="text-[10px] uppercase tracking-widest font-black text-slate-500 dark:text-gray-500">Cobertura de acompanamiento</p>
+              <div className="p-3 sm:p-4 rounded-xl bg-slate-50 dark:bg-[#0a0a0a]/50 border border-slate-200 dark:border-white/10">
+                <p className="text-[10px] uppercase tracking-widest font-black text-slate-500 dark:text-gray-300">Cobertura de acompanamiento</p>
                 <p className="text-2xl font-black text-[#c5a059] mt-2">{formatRate(mentorCoverage)}</p>
-                <p className="text-xs text-slate-500 dark:text-gray-500 mt-1">Hermanos con acompanante, lider o pastor asignado</p>
+                <p className="text-xs text-slate-500 dark:text-gray-300 mt-1">Hermanos con acompanante, lider o pastor asignado</p>
               </div>
-              <div className="p-4 rounded-xl bg-slate-50 dark:bg-[#0a0a0a]/50 border border-slate-200 dark:border-white/5">
-                <p className="text-[10px] uppercase tracking-widest font-black text-slate-500 dark:text-gray-500">Seguimiento activo</p>
+              <div className="p-3 sm:p-4 rounded-xl bg-slate-50 dark:bg-[#0a0a0a]/50 border border-slate-200 dark:border-white/10 col-span-2 md:col-span-1">
+                <p className="text-[10px] uppercase tracking-widest font-black text-slate-500 dark:text-gray-300">Seguimiento activo</p>
                 <p className="text-2xl font-black text-[#c5a059] mt-2">{formatRate(followUpCoverage)}</p>
-                <p className="text-xs text-slate-500 dark:text-gray-500 mt-1">Registros de observaciones y acompanamiento</p>
+                <p className="text-xs text-slate-500 dark:text-gray-300 mt-1">Registros de observaciones y acompanamiento</p>
               </div>
             </div>
 
@@ -517,14 +669,14 @@ export const SeguimientoPage = () => {
                   ))}
                 </div>
               ) : (
-                <p className="text-sm text-slate-500 dark:text-gray-500">No se detectan riesgos de desconexion con las reglas actuales.</p>
+                <p className="text-sm text-slate-500 dark:text-gray-300">No se detectan riesgos de desconexion con las reglas actuales.</p>
               )}
             </div>
           </article>
         </div>
 
         <div className="xl:col-span-5 space-y-6">
-          <article className="rounded-2xl border border-slate-200 dark:border-white/5 bg-white dark:bg-[#1a1a1a] p-6">
+          <article className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#1a1a1a] p-4 sm:p-6">
             <div className="flex items-center justify-between mb-5">
               <h2 className="text-xl font-semibold text-slate-900 dark:text-white">Proyecciones</h2>
               <Workflow size={16} className="text-[#c5a059]" />
@@ -537,9 +689,9 @@ export const SeguimientoPage = () => {
                   className="rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0a0a0a]/50 p-3"
                 >
                   <p className="text-xs font-bold text-slate-900 dark:text-white">{row.horizon}</p>
-                  <p className="text-xs text-slate-500 dark:text-gray-400 mt-1">Conservador: {row.conservador}</p>
+                  <p className="text-xs text-slate-500 dark:text-gray-300 mt-1">Conservador: {row.conservador}</p>
                   <p className="text-xs text-[#c5a059] font-bold mt-1">Base: {row.base}</p>
-                  <p className="text-xs text-slate-500 dark:text-gray-400 mt-1">Optimista: {row.optimista}</p>
+                  <p className="text-xs text-slate-500 dark:text-gray-300 mt-1">Optimista: {row.optimista}</p>
                 </article>
               ))}
             </div>
@@ -567,13 +719,13 @@ export const SeguimientoPage = () => {
               </table>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-5">
-              <div className="rounded-xl border border-slate-200 dark:border-white/5 p-4 bg-slate-50 dark:bg-[#0a0a0a]/50">
-                <p className="text-[10px] uppercase tracking-widest font-black text-slate-500 dark:text-gray-500">Lideres requeridos (12m base)</p>
+            <div className="grid grid-cols-2 md:grid-cols-2 gap-3 mt-5">
+              <div className="rounded-xl border border-slate-200 dark:border-white/10 p-3 sm:p-4 bg-slate-50 dark:bg-[#0a0a0a]/50">
+                <p className="text-[10px] uppercase tracking-widest font-black text-slate-500 dark:text-gray-300">Lideres requeridos (12m base)</p>
                 <p className="text-2xl font-black text-[#c5a059] mt-2">{projectedLeadersNeeded}</p>
               </div>
-              <div className="rounded-xl border border-slate-200 dark:border-white/5 p-4 bg-slate-50 dark:bg-[#0a0a0a]/50">
-                <p className="text-[10px] uppercase tracking-widest font-black text-slate-500 dark:text-gray-500">Altares proyectados</p>
+              <div className="rounded-xl border border-slate-200 dark:border-white/10 p-3 sm:p-4 bg-slate-50 dark:bg-[#0a0a0a]/50">
+                <p className="text-[10px] uppercase tracking-widest font-black text-slate-500 dark:text-gray-300">Altares proyectados</p>
                 <p className="text-2xl font-black text-[#c5a059] mt-2">
                   {Math.max(newAltars, newAltars + Math.round((altarsOpenedByDisciples / 4) + (growthSignal / 5)))}
                 </p>
@@ -583,7 +735,7 @@ export const SeguimientoPage = () => {
         </div>
       </section>
 
-      <section className="rounded-2xl border border-slate-200 dark:border-white/5 bg-white dark:bg-[#1a1a1a] p-6">
+      <section className={`${mobileLevel === 'celulas' ? 'block' : 'hidden'} md:block rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#1a1a1a] p-4 sm:p-6`}>
         <h2 className="text-xl font-semibold text-slate-900 dark:text-white mb-5">Seguimiento de Celulas</h2>
         <div className="md:hidden space-y-3">
           {cellGrowthRows.map((cellRow) => (
@@ -598,7 +750,7 @@ export const SeguimientoPage = () => {
                   {cellRow.status}
                 </span>
               </div>
-              <div className="mt-3 grid grid-cols-2 gap-2 text-xs text-slate-600 dark:text-gray-400">
+              <div className="mt-3 grid grid-cols-2 gap-2 text-xs text-slate-600 dark:text-gray-300">
                 <p>Miembros: <span className="font-semibold">{cellRow.members}</span></p>
                 <p>Nuevos: <span className="font-semibold">{cellRow.newMembers}</span></p>
                 <p>Altares nuevos: <span className="font-semibold">{cellRow.newAltars}</span></p>
@@ -649,13 +801,13 @@ export const SeguimientoPage = () => {
         </div>
       </section>
 
-      <section className="bg-white dark:bg-[#1a1a1a] rounded-[2.5rem] border border-slate-200 dark:border-white/5 shadow-2xl relative overflow-hidden">
-        <div className="px-8 pt-8 pb-4">
+      <section className="hidden md:block bg-white dark:bg-[#1a1a1a] rounded-[2.5rem] border border-slate-200 dark:border-white/10 shadow-2xl relative overflow-hidden">
+        <div className="px-4 sm:px-8 pt-6 sm:pt-8 pb-4">
           <h2 className="text-xl font-semibold text-slate-900 dark:text-white">Distribucion General por Etapas</h2>
-          <p className="text-sm text-slate-500 dark:text-gray-500 mt-1">Grafica de lineas con hermanos completados y sin completar por etapa.</p>
+          <p className="text-sm text-slate-500 dark:text-gray-300 mt-1">Grafica de lineas con hermanos completados y sin completar por etapa.</p>
         </div>
 
-        <div className="px-6 pb-8">
+        <div className="px-3 sm:px-6 pb-6 sm:pb-8">
           <div className="rounded-2xl border border-slate-200 dark:border-white/5 bg-slate-50 dark:bg-[#0a0a0a]/50 p-4 overflow-x-auto">
             <div className="flex flex-wrap items-center gap-6 mb-3 px-2">
               <div className="flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-gray-300">
@@ -778,7 +930,7 @@ export const SeguimientoPage = () => {
         </div>
       </section>
 
-      <footer className="flex flex-wrap gap-8 justify-center py-4 bg-slate-100 dark:bg-white/5 rounded-3xl border border-slate-200 dark:border-white/5">
+      <footer className="hidden md:flex flex-wrap gap-8 justify-center py-4 bg-slate-100 dark:bg-white/5 rounded-3xl border border-slate-200 dark:border-white/5">
         <div className="flex items-center gap-2">
           <CheckCircle2 size={16} className="text-[#c5a059]" />
           <span className="text-[10px] uppercase font-bold text-slate-500 dark:text-gray-400">Completada</span>

@@ -1,5 +1,6 @@
 ﻿import React, { useMemo, useState } from 'react';
-import { Search, ChevronRight, UserPlus, Filter, CheckCircle, Info, Sparkles } from 'lucide-react';
+import { Search, ChevronRight, UserPlus, Filter, Sparkles, ChevronDown } from 'lucide-react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { brothersService } from '../../services/brothersService';
 import { Proceso } from '../../types';
@@ -16,7 +17,10 @@ export const BrotherList = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStage, setSelectedStage] = useState<StageFilter>('Todas');
-  const [quickFilter, setQuickFilter] = useState<string | null>(null);
+  const [expandedBrotherId, setExpandedBrotherId] = useState<string | null>(null);
+  const [visibleCount, setVisibleCount] = useState(6);
+  const [isSummaryModalOpen, setIsSummaryModalOpen] = useState(false);
+  const [isStageFilterModalOpen, setIsStageFilterModalOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const brothers = useMemo(() => brothersService.listForListing(), []);
@@ -30,20 +34,27 @@ export const BrotherList = () => {
   const filteredBrothers = brothers.filter((brother) => {
     const matchesSearch = brother.name.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStage = selectedStage === 'Todas' || brother.procesoActual === selectedStage;
-
-    let matchesQuickFilter = true;
-    if (quickFilter === 'nuevos') {
-      matchesQuickFilter = parseInt(brother.id, 10) % 2 !== 0;
-    } else if (quickFilter === 'procesando') {
-      matchesQuickFilter = [Proceso.ALTAR, Proceso.GRUPO].includes(brother.procesoActual);
-    } else if (quickFilter === 'eddi') {
-      matchesQuickFilter = brother.procesoActual === Proceso.EDDI;
-    } else if (quickFilter === 'discipulos') {
-      matchesQuickFilter = brother.procesoActual === Proceso.DISCIPULO;
-    }
-
-    return matchesSearch && matchesStage && matchesQuickFilter;
+    return matchesSearch && matchesStage;
   });
+
+  const mobileRows = filteredBrothers.slice(0, visibleCount);
+  const hasMoreMobileRows = filteredBrothers.length > visibleCount;
+  const summaryByStage = useMemo(
+    () => ({
+      total: brothers.length,
+      altar: brothers.filter((item) => item.procesoActual === Proceso.ALTAR).length,
+      grupo: brothers.filter((item) => item.procesoActual === Proceso.GRUPO).length,
+      experiencia: brothers.filter((item) => item.procesoActual === Proceso.EXPERIENCIA).length,
+      eddi: brothers.filter((item) => item.procesoActual === Proceso.EDDI).length,
+      discipulo: brothers.filter((item) => item.procesoActual === Proceso.DISCIPULO).length,
+    }),
+    [brothers],
+  );
+
+  useEffect(() => {
+    setExpandedBrotherId(null);
+    setVisibleCount(6);
+  }, [searchTerm, selectedStage]);
 
   return (
     <div className="space-y-6 md:space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
@@ -53,25 +64,66 @@ export const BrotherList = () => {
             Hermanos
             <Sparkles className="text-[#c5a059] opacity-50" size={24} />
           </h1>
-          <p className="text-sm md:text-base text-slate-500 dark:text-gray-500">Seguimiento y gestion espiritual de la congregacion.</p>
+          <p className="text-sm md:text-base text-slate-600 dark:text-gray-300">Seguimiento y gestion espiritual de la congregacion.</p>
         </div>
         <button
           onClick={() => setIsModalOpen(true)}
-          className="w-full md:w-auto justify-center bg-[#c5a059] text-black px-6 md:px-8 py-3 md:py-4 rounded-2xl font-black flex items-center gap-2 hover:scale-[1.02] transition-all shadow-[0_15px_30px_rgba(197,160,89,0.2)] active:scale-95"
+          className="hidden md:flex w-full md:w-auto justify-center bg-[#c5a059] text-black px-6 md:px-8 py-3 md:py-4 rounded-2xl font-black items-center gap-2 hover:scale-[1.02] transition-all shadow-[0_15px_30px_rgba(197,160,89,0.2)] active:scale-95"
         >
           <UserPlus size={20} />
           <span>NUEVO HERMANO</span>
         </button>
       </header>
 
-      <div className="space-y-4 md:space-y-6">
+      <div className="md:hidden space-y-3">
+        <div className="grid grid-cols-2 gap-2">
+          <button
+            type="button"
+            onClick={() => setIsModalOpen(true)}
+            className="justify-center bg-[#c5a059] text-black px-4 py-2.5 rounded-xl text-[11px] font-black flex items-center gap-2 uppercase tracking-widest"
+          >
+            <UserPlus size={16} />
+            Nuevo hermano
+          </button>
+          <button
+            type="button"
+            onClick={() => setIsSummaryModalOpen(true)}
+            className="justify-center bg-slate-100 dark:bg-[#1a1a1a] border border-slate-200 dark:border-white/10 text-slate-700 dark:text-gray-200 px-4 py-2.5 rounded-xl text-[11px] font-black flex items-center gap-2 uppercase tracking-widest"
+          >
+            Resumen
+          </button>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <div className="relative flex-1 group">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 dark:text-gray-500 group-focus-within:text-[#c5a059] transition-colors" size={16} />
+            <input
+              type="text"
+              placeholder="Buscar por nombre o ID..."
+              className="w-full bg-white dark:bg-[#1a1a1a] border border-slate-200 dark:border-white/10 focus:border-[#c5a059]/50 rounded-xl py-2.5 pl-10 pr-3 text-sm text-slate-900 dark:text-white focus:outline-none transition-all"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+          <button
+            type="button"
+            onClick={() => setIsStageFilterModalOpen(true)}
+            className="h-10 w-10 shrink-0 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-[#1a1a1a] text-slate-600 dark:text-gray-300 flex items-center justify-center"
+            aria-label="Abrir filtros"
+          >
+            <Filter size={16} />
+          </button>
+        </div>
+      </div>
+
+      <div className="hidden md:block space-y-4 md:space-y-6">
         <div className="flex flex-col md:flex-row gap-4">
           <div className="relative flex-1 group">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 dark:text-gray-500 group-focus-within:text-[#c5a059] transition-colors" size={20} />
             <input
               type="text"
               placeholder="Buscar por nombre o ID..."
-              className="w-full bg-white dark:bg-[#1a1a1a] border border-slate-200 dark:border-white/5 focus:border-[#c5a059]/50 rounded-[1.2rem] md:rounded-[1.5rem] py-4 md:py-5 pl-12 md:pl-14 pr-4 text-slate-900 dark:text-white focus:outline-none transition-all shadow-inner text-base md:text-lg"
+              className="w-full bg-white dark:bg-[#1a1a1a] border border-slate-200 dark:border-white/10 focus:border-[#c5a059]/50 rounded-[1.2rem] md:rounded-[1.5rem] py-4 md:py-5 pl-12 md:pl-14 pr-4 text-slate-900 dark:text-white focus:outline-none transition-all shadow-inner text-base md:text-lg"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -85,7 +137,7 @@ export const BrotherList = () => {
                 className={`px-5 md:px-8 py-3 md:py-4 rounded-[1.2rem] md:rounded-[1.5rem] text-[11px] md:text-sm font-black whitespace-nowrap transition-all border uppercase tracking-wider md:tracking-widest ${
                   selectedStage === stage
                     ? 'bg-[#c5a059] text-black border-[#c5a059]'
-                    : 'bg-white dark:bg-[#1a1a1a] text-slate-500 dark:text-gray-500 border-slate-200 dark:border-white/5 hover:border-[#c5a059]/30'
+                    : 'bg-white dark:bg-[#1a1a1a] text-slate-600 dark:text-gray-300 border-slate-200 dark:border-white/10 hover:border-[#c5a059]/40'
                 }`}
               >
                 {stage}
@@ -93,89 +145,85 @@ export const BrotherList = () => {
             ))}
           </div>
         </div>
-
-        <div className="flex flex-wrap items-center gap-3 p-1">
-          <span className="text-[10px] text-slate-600 dark:text-gray-600 font-bold uppercase tracking-[0.2em] mr-2">Filtros rapidos:</span>
-          {[
-            { id: 'nuevos', label: 'Recien llegados', icon: <Sparkles size={14} /> },
-            { id: 'procesando', label: 'En proceso', icon: <Filter size={14} /> },
-            { id: 'eddi', label: 'EDDI', icon: <Info size={14} /> },
-            { id: 'discipulos', label: 'Discipulos', icon: <CheckCircle size={14} /> },
-          ].map((f) => (
-            <button
-              key={f.id}
-              onClick={() => setQuickFilter(quickFilter === f.id ? null : f.id)}
-              className={`px-5 py-2 rounded-full text-[10px] font-black uppercase tracking-widest flex items-center gap-2 transition-all border ${
-                quickFilter === f.id
-                  ? 'bg-[#c5a059]/20 text-[#c5a059] border-[#c5a059]/50'
-                  : 'bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-gray-500 border-transparent hover:bg-white/10'
-              }`}
-            >
-              {f.icon}
-              {f.label}
-            </button>
-          ))}
-          {quickFilter && (
-            <button onClick={() => setQuickFilter(null)} className="text-[10px] text-[#c5a059] hover:underline flex items-center gap-1 font-black">
-              Limpiar
-            </button>
-          )}
-        </div>
       </div>
 
       {filteredBrothers.length > 0 && (
         <>
           <div className="md:hidden space-y-3">
-            {filteredBrothers.map((brother) => (
-              <article
-                key={brother.id}
-                className="rounded-3xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#1a1a1a] p-4 shadow-xl"
-              >
-                <button
-                  type="button"
-                  onClick={() => navigate(`/hermanos/${brother.id}`)}
-                  className="w-full text-left"
+            {mobileRows.map((brother) => {
+              const isExpanded = expandedBrotherId === brother.id;
+
+              return (
+                <article
+                  key={brother.id}
+                  className="rounded-3xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#1a1a1a] p-4 shadow-xl"
                 >
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#c5a059]/20 to-transparent flex items-center justify-center text-[#c5a059] font-black text-xl border border-slate-200 dark:border-white/10 shrink-0">
-                      {brother.name.charAt(0)}
-                    </div>
-                    <div className="min-w-0">
-                      <BrotherNameTrigger
-                        name={brother.name}
-                        className="font-bold text-slate-900 dark:text-white text-base leading-tight"
-                        fallbackClassName="font-bold text-slate-900 dark:text-white text-base leading-tight"
+                  <button type="button" onClick={() => setExpandedBrotherId(isExpanded ? null : brother.id)} className="w-full text-left">
+                    <div className="flex items-start gap-3">
+                      <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#c5a059]/20 to-transparent flex items-center justify-center text-[#c5a059] font-black text-xl border border-slate-200 dark:border-white/10 shrink-0">
+                        {brother.name.charAt(0)}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <BrotherNameTrigger
+                          name={brother.name}
+                          className="font-bold text-slate-900 dark:text-white text-base leading-tight"
+                          fallbackClassName="font-bold text-slate-900 dark:text-white text-base leading-tight"
+                        />
+                        <p className="text-[10px] text-slate-600 dark:text-gray-400 font-black tracking-widest mt-1 uppercase">Miembro activo</p>
+                        <div className="mt-2">
+                          <span className={`inline-flex px-3 py-1 rounded-2xl text-[10px] uppercase tracking-[0.16em] font-black border ${STAGE_COLORS[brother.procesoActual]}`}>
+                            {brother.procesoActual}
+                          </span>
+                        </div>
+                      </div>
+                      <ChevronDown
+                        size={18}
+                        className={`shrink-0 mt-1 text-slate-500 dark:text-gray-400 transition-transform ${isExpanded ? 'rotate-180 text-[#c5a059]' : ''}`}
                       />
-                      <p className="text-[10px] text-slate-500 dark:text-gray-500 font-black tracking-widest mt-1 uppercase">Miembro activo</p>
+                    </div>
+                  </button>
+
+                  <div
+                    className={`grid transition-all duration-300 ease-out ${
+                      isExpanded ? 'grid-rows-[1fr] opacity-100 mt-4' : 'grid-rows-[0fr] opacity-0 mt-0'
+                    }`}
+                  >
+                    <div className="overflow-hidden border-t border-slate-200 dark:border-white/10 pt-3 space-y-2">
+                      <p className="text-xs text-slate-600 dark:text-gray-300">
+                        Celula: <span className="font-semibold text-slate-700 dark:text-gray-200">{brother.cellName}</span>
+                      </p>
+                      <p className="text-xs text-slate-600 dark:text-gray-300">
+                        Responsable:{' '}
+                        <BrotherNameTrigger
+                          name={brother.acompananteName || 'No asig.'}
+                          className="font-semibold text-slate-700 dark:text-gray-200"
+                          fallbackClassName="font-semibold text-slate-700 dark:text-gray-200"
+                        />
+                      </p>
+
+                      <button
+                        type="button"
+                        onClick={() => navigate(`/hermanos/${brother.id}`)}
+                        className="mt-2 inline-flex items-center gap-2 text-[11px] uppercase tracking-widest font-black text-[#c5a059]"
+                      >
+                        Ver ficha
+                        <ChevronRight size={16} />
+                      </button>
                     </div>
                   </div>
+                </article>
+              );
+            })}
 
-                  <div className="mt-4 grid grid-cols-1 gap-2">
-                    <p className="text-xs text-slate-500 dark:text-gray-400">
-                      Celula: <span className="font-semibold text-slate-700 dark:text-gray-200">{brother.cellName}</span>
-                    </p>
-                    <p className="text-xs text-slate-500 dark:text-gray-400">
-                      Responsable:{' '}
-                      <BrotherNameTrigger
-                        name={brother.acompananteName || 'No asig.'}
-                        className="font-semibold text-slate-700 dark:text-gray-200"
-                        fallbackClassName="font-semibold text-slate-700 dark:text-gray-200"
-                      />
-                    </p>
-                    <div>
-                      <span className={`inline-flex px-4 py-1.5 rounded-2xl text-[10px] uppercase tracking-[0.2em] font-black border ${STAGE_COLORS[brother.procesoActual]}`}>
-                        {brother.procesoActual}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="mt-4 inline-flex items-center gap-2 text-[11px] uppercase tracking-widest font-black text-[#c5a059]">
-                    Ver ficha
-                    <ChevronRight size={16} />
-                  </div>
-                </button>
-              </article>
-            ))}
+            {hasMoreMobileRows && (
+              <button
+                type="button"
+                onClick={() => setVisibleCount((current) => current + 6)}
+                className="w-full rounded-2xl border border-[#c5a059]/40 bg-[#c5a059]/10 py-3 text-[11px] uppercase tracking-[0.18em] font-black text-[#c5a059]"
+              >
+                Cargar mas hermanos
+              </button>
+            )}
           </div>
 
           <div className="hidden md:block bg-white dark:bg-[#1a1a1a] rounded-[2.5rem] border border-slate-200 dark:border-white/5 overflow-hidden shadow-2xl relative">
@@ -204,14 +252,14 @@ export const BrotherList = () => {
                               className="font-bold text-slate-900 dark:text-white text-xl leading-tight group-hover:text-[#c5a059] transition-colors"
                               fallbackClassName="font-bold text-slate-900 dark:text-white text-xl leading-tight"
                             />
-                            <p className="text-[10px] text-slate-600 dark:text-gray-600 font-black tracking-widest mt-1 uppercase">Miembro activo</p>
+                    <p className="text-[10px] text-slate-600 dark:text-gray-400 font-black tracking-widest mt-1 uppercase">Miembro activo</p>
                           </div>
                         </div>
                       </td>
-                      <td className="px-10 py-8 text-slate-500 dark:text-gray-400">
+                      <td className="px-10 py-8 text-slate-600 dark:text-gray-300">
                         <div className="flex flex-col">
                           <span className="font-bold text-slate-700 dark:text-gray-300">{brother.cellName}</span>
-                          <span className="text-[10px] uppercase text-slate-600 dark:text-gray-600 tracking-tighter">Zona Norte - CMV</span>
+                          <span className="text-[10px] uppercase text-slate-600 dark:text-gray-400 tracking-tighter">Zona Norte - CMV</span>
                         </div>
                       </td>
                       <td className="px-10 py-8">
@@ -224,8 +272,8 @@ export const BrotherList = () => {
                           <div className="w-2 h-2 rounded-full bg-[#c5a059] shadow-[0_0_10px_#c5a059]" />
                           <BrotherNameTrigger
                             name={brother.acompananteName || 'No asig.'}
-                            className="text-slate-500 dark:text-gray-400 text-sm font-black uppercase tracking-widest hover:text-[#c5a059] transition-colors"
-                            fallbackClassName="text-slate-500 dark:text-gray-400 text-sm font-black uppercase tracking-widest"
+                            className="text-slate-600 dark:text-gray-300 text-sm font-black uppercase tracking-widest hover:text-[#c5a059] transition-colors"
+                            fallbackClassName="text-slate-600 dark:text-gray-300 text-sm font-black uppercase tracking-widest"
                           />
                         </div>
                       </td>
@@ -254,7 +302,6 @@ export const BrotherList = () => {
             onClick={() => {
               setSearchTerm('');
               setSelectedStage('Todas');
-              setQuickFilter(null);
             }}
             className="mt-8 text-[#c5a059] text-sm font-black uppercase tracking-widest hover:underline"
           >
@@ -262,6 +309,60 @@ export const BrotherList = () => {
           </button>
         </div>
       )}
+
+      <Modal isOpen={isSummaryModalOpen} onClose={() => setIsSummaryModalOpen(false)} title="Resumen">
+        <div className="grid grid-cols-2 gap-3">
+          <div className="rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0a0a0a]/50 p-3">
+            <p className="text-[10px] uppercase tracking-widest font-black text-slate-500 dark:text-gray-300">Total</p>
+            <p className="text-xl font-black text-[#c5a059] mt-1">{summaryByStage.total}</p>
+          </div>
+          <div className="rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0a0a0a]/50 p-3">
+            <p className="text-[10px] uppercase tracking-widest font-black text-slate-500 dark:text-gray-300">Altar</p>
+            <p className="text-xl font-black text-[#c5a059] mt-1">{summaryByStage.altar}</p>
+          </div>
+          <div className="rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0a0a0a]/50 p-3">
+            <p className="text-[10px] uppercase tracking-widest font-black text-slate-500 dark:text-gray-300">Grupo</p>
+            <p className="text-xl font-black text-[#c5a059] mt-1">{summaryByStage.grupo}</p>
+          </div>
+          <div className="rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0a0a0a]/50 p-3">
+            <p className="text-[10px] uppercase tracking-widest font-black text-slate-500 dark:text-gray-300">Experiencia</p>
+            <p className="text-xl font-black text-[#c5a059] mt-1">{summaryByStage.experiencia}</p>
+          </div>
+          <div className="rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0a0a0a]/50 p-3">
+            <p className="text-[10px] uppercase tracking-widest font-black text-slate-500 dark:text-gray-300">EDDI</p>
+            <p className="text-xl font-black text-[#c5a059] mt-1">{summaryByStage.eddi}</p>
+          </div>
+          <div className="rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0a0a0a]/50 p-3">
+            <p className="text-[10px] uppercase tracking-widest font-black text-slate-500 dark:text-gray-300">Discipulo</p>
+            <p className="text-xl font-black text-[#c5a059] mt-1">{summaryByStage.discipulo}</p>
+          </div>
+        </div>
+      </Modal>
+
+      <Modal isOpen={isStageFilterModalOpen} onClose={() => setIsStageFilterModalOpen(false)} title="Filtros">
+        <div className="space-y-3">
+          <p className="text-xs text-slate-500 dark:text-gray-300">Selecciona la etiqueta de filtrado.</p>
+          <div className="grid grid-cols-2 gap-2">
+            {STAGES.map((stage) => (
+              <button
+                key={stage}
+                type="button"
+                onClick={() => {
+                  setSelectedStage(stage);
+                  setIsStageFilterModalOpen(false);
+                }}
+                className={`px-3 py-2 rounded-xl text-[11px] font-black uppercase tracking-widest border transition-all ${
+                  selectedStage === stage
+                    ? 'bg-[#c5a059] text-black border-[#c5a059]'
+                    : 'bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-gray-300 border-slate-200 dark:border-white/10'
+                }`}
+              >
+                {stage}
+              </button>
+            ))}
+          </div>
+        </div>
+      </Modal>
 
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Incorporacion de Hermano">
         <form onSubmit={handleSaveBrother} className="space-y-8">

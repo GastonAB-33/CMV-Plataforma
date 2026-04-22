@@ -1,5 +1,5 @@
-import { Calendar, History, Newspaper, Plus, Tag, Users } from 'lucide-react';
-import { ChangeEvent, useMemo, useState } from 'react';
+import { Calendar, ChevronDown, History, Newspaper, Plus, Tag, Users } from 'lucide-react';
+import { ChangeEvent, useEffect, useMemo, useState } from 'react';
 import { BrotherNameTrigger } from '../../components/brothers/BrotherNameTrigger';
 import { Modal } from '../../components/ui/Modal';
 import { Toast } from '../../components/ui/Toast';
@@ -12,6 +12,7 @@ import { Cell, Role } from '../../types';
 type ToastType = 'success' | 'error';
 type ContentFilter = 'eventos' | 'noticias';
 type VisibilityFilter = 'publico' | 'privado';
+type MobileEventsLevel = 'resumen' | 'filtros' | 'feed';
 
 interface PublicationFormState {
   kind: 'evento' | 'noticia';
@@ -112,6 +113,8 @@ export const EventsPage = () => {
     'publico',
     'privado',
   ]);
+  const [mobileLevel, setMobileLevel] = useState<MobileEventsLevel>('feed');
+  const [expandedPublicationId, setExpandedPublicationId] = useState<string | null>(null);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [isChangeLogOpen, setIsChangeLogOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -138,6 +141,14 @@ export const EventsPage = () => {
   }, [publications, contentFilters, visibilityFilters]);
 
   const logs = useMemo(() => eventsChangeLogService.list(), [refreshKey]);
+  const eventsCount = useMemo(
+    () => publications.filter((item) => item.kind === 'evento').length,
+    [publications],
+  );
+  const newsCount = useMemo(
+    () => publications.filter((item) => item.kind === 'noticia').length,
+    [publications],
+  );
 
   const allCells = useMemo(() => brothersService.listCells(), []);
 
@@ -176,6 +187,10 @@ export const EventsPage = () => {
     setContentFilters(['eventos', 'noticias']);
     setVisibilityFilters(['publico', 'privado']);
   };
+
+  useEffect(() => {
+    setExpandedPublicationId(null);
+  }, [contentFilters, visibilityFilters]);
 
   const toggleContentFilter = (value: ContentFilter) => {
     setContentFilters((previous) => {
@@ -263,7 +278,7 @@ export const EventsPage = () => {
             <h1 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white tracking-tight leading-none bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-500 dark:from-white dark:to-gray-500">
               Eventos / Noticias
             </h1>
-            <p className="text-sm text-slate-500 dark:text-gray-500 mt-2">
+            <p className="text-sm text-slate-500 dark:text-gray-300 mt-2">
               Carga unificada de publicaciones internas y publicas.
             </p>
           </div>
@@ -292,13 +307,60 @@ export const EventsPage = () => {
           )}
         </div>
 
-        <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1 -mx-1 px-1">
+        <section className="md:hidden rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#1a1a1a] p-2">
+          <div className="grid grid-cols-3 gap-2">
+            {[
+              { id: 'resumen' as const, label: 'Nivel 1' },
+              { id: 'filtros' as const, label: 'Nivel 2' },
+              { id: 'feed' as const, label: 'Nivel 3' },
+            ].map((item) => (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => setMobileLevel(item.id)}
+                className={`rounded-xl px-2 py-2 text-[10px] uppercase tracking-widest font-black transition-all ${
+                  mobileLevel === item.id
+                    ? 'bg-[#c5a059] text-black'
+                    : 'bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-gray-300'
+                }`}
+              >
+                {item.label}
+              </button>
+            ))}
+          </div>
+        </section>
+
+        <section className={`${mobileLevel === 'resumen' ? 'block' : 'hidden'} md:hidden`}>
+          <article className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#1a1a1a] p-4">
+            <p className="text-[10px] uppercase tracking-[0.2em] font-black text-slate-500 dark:text-gray-300 mb-3">Resumen del modulo</p>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0a0a0a]/50 p-3">
+                <p className="text-[10px] uppercase tracking-widest font-black text-slate-500 dark:text-gray-300">Publicaciones</p>
+                <p className="text-xl font-black text-[#c5a059] mt-1">{publications.length}</p>
+              </div>
+              <div className="rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0a0a0a]/50 p-3">
+                <p className="text-[10px] uppercase tracking-widest font-black text-slate-500 dark:text-gray-300">Filtradas</p>
+                <p className="text-xl font-black text-[#c5a059] mt-1">{filteredFeed.length}</p>
+              </div>
+              <div className="rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0a0a0a]/50 p-3">
+                <p className="text-[10px] uppercase tracking-widest font-black text-slate-500 dark:text-gray-300">Eventos</p>
+                <p className="text-xl font-black text-[#c5a059] mt-1">{eventsCount}</p>
+              </div>
+              <div className="rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0a0a0a]/50 p-3">
+                <p className="text-[10px] uppercase tracking-widest font-black text-slate-500 dark:text-gray-300">Noticias</p>
+                <p className="text-xl font-black text-[#c5a059] mt-1">{newsCount}</p>
+              </div>
+            </div>
+          </article>
+        </section>
+
+        <div className={`${mobileLevel === 'filtros' ? 'flex' : 'hidden'} md:flex gap-2 overflow-x-auto no-scrollbar pb-1 -mx-1 px-1`}>
           <button
             onClick={enableAllFilters}
             className={`shrink-0 px-4 py-2 rounded-full text-xs font-black uppercase tracking-widest border transition-colors ${
               isAllFiltersSelected
                 ? 'bg-[#c5a059]/15 border-[#c5a059]/40 text-[#c5a059]'
-                : 'bg-white dark:bg-[#1a1a1a] border-slate-200 dark:border-white/10 text-slate-500 dark:text-gray-400'
+                : 'bg-white dark:bg-[#1a1a1a] border-slate-200 dark:border-white/10 text-slate-600 dark:text-gray-300'
             }`}
           >
             Todos
@@ -308,7 +370,7 @@ export const EventsPage = () => {
             className={`shrink-0 px-4 py-2 rounded-full text-xs font-black uppercase tracking-widest border transition-colors ${
               contentFilters.includes('eventos')
                 ? 'bg-[#c5a059]/15 border-[#c5a059]/40 text-[#c5a059]'
-                : 'bg-white dark:bg-[#1a1a1a] border-slate-200 dark:border-white/10 text-slate-500 dark:text-gray-400'
+                : 'bg-white dark:bg-[#1a1a1a] border-slate-200 dark:border-white/10 text-slate-600 dark:text-gray-300'
             }`}
           >
             Solo Eventos
@@ -318,7 +380,7 @@ export const EventsPage = () => {
             className={`shrink-0 px-4 py-2 rounded-full text-xs font-black uppercase tracking-widest border transition-colors ${
               contentFilters.includes('noticias')
                 ? 'bg-[#c5a059]/15 border-[#c5a059]/40 text-[#c5a059]'
-                : 'bg-white dark:bg-[#1a1a1a] border-slate-200 dark:border-white/10 text-slate-500 dark:text-gray-400'
+                : 'bg-white dark:bg-[#1a1a1a] border-slate-200 dark:border-white/10 text-slate-600 dark:text-gray-300'
             }`}
           >
             Solo Noticias
@@ -328,7 +390,7 @@ export const EventsPage = () => {
             className={`shrink-0 px-4 py-2 rounded-full text-xs font-black uppercase tracking-widest border transition-colors ${
               visibilityFilters.includes('publico')
                 ? 'bg-[#c5a059]/15 border-[#c5a059]/40 text-[#c5a059]'
-                : 'bg-white dark:bg-[#1a1a1a] border-slate-200 dark:border-white/10 text-slate-500 dark:text-gray-400'
+                : 'bg-white dark:bg-[#1a1a1a] border-slate-200 dark:border-white/10 text-slate-600 dark:text-gray-300'
             }`}
           >
             Publicos
@@ -338,7 +400,7 @@ export const EventsPage = () => {
             className={`shrink-0 px-4 py-2 rounded-full text-xs font-black uppercase tracking-widest border transition-colors ${
               visibilityFilters.includes('privado')
                 ? 'bg-[#c5a059]/15 border-[#c5a059]/40 text-[#c5a059]'
-                : 'bg-white dark:bg-[#1a1a1a] border-slate-200 dark:border-white/10 text-slate-500 dark:text-gray-400'
+                : 'bg-white dark:bg-[#1a1a1a] border-slate-200 dark:border-white/10 text-slate-600 dark:text-gray-300'
             }`}
           >
             Privados
@@ -347,105 +409,181 @@ export const EventsPage = () => {
       </header>
 
       {filteredFeed.length === 0 ? (
-        <div className="bg-white dark:bg-[#1a1a1a] rounded-[2rem] border border-slate-200 dark:border-white/5 p-8 text-center text-slate-500 dark:text-gray-400">
+        <div className={`${mobileLevel === 'feed' ? 'block' : 'hidden'} md:block bg-white dark:bg-[#1a1a1a] rounded-[2rem] border border-slate-200 dark:border-white/5 p-8 text-center text-slate-500 dark:text-gray-400`}>
           No hay contenido para este filtro.
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-          {filteredFeed.map((item) => {
-            const isEvent = item.kind === 'evento';
+        <>
+          <div className={`${mobileLevel === 'feed' ? 'space-y-3' : 'hidden'} md:hidden`}>
+            {filteredFeed.map((item) => {
+              const isEvent = item.kind === 'evento';
+              const isExpanded = expandedPublicationId === item.id;
 
-            return (
-              <article
-                key={item.id}
-                className="bg-white dark:bg-[#1a1a1a] rounded-[2rem] border border-slate-200 dark:border-white/5 p-5 sm:p-6 md:p-8 hover:border-[#c5a059]/30 transition-all group relative overflow-hidden shadow-2xl"
-              >
-                <div className="absolute top-0 right-0 p-4 flex gap-2">
-                  <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border border-slate-300 dark:border-white/10 bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-gray-400">
-                    {isEvent ? 'Evento' : 'Noticia'}
-                  </span>
-                  <span
-                    className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${
-                      item.visibility === 'publico'
-                        ? 'border-emerald-400/30 bg-emerald-400/10 text-emerald-300'
-                        : 'border-amber-400/40 bg-amber-500/10 text-amber-300'
-                    }`}
+              return (
+                <article
+                  key={item.id}
+                  className="bg-white dark:bg-[#1a1a1a] rounded-3xl border border-slate-200 dark:border-white/10 p-4 shadow-xl"
+                >
+                  <button
+                    type="button"
+                    onClick={() => setExpandedPublicationId(isExpanded ? null : item.id)}
+                    className="w-full text-left"
                   >
-                    {item.visibility}
-                  </span>
-                </div>
-
-                <div className="space-y-5">
-                  <div className="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-white/5 flex items-center justify-center text-[#c5a059] group-hover:scale-110 transition-transform">
-                    {isEvent ? <Calendar size={24} /> : <Newspaper size={24} />}
-                  </div>
-
-                  <div>
-                    <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2 group-hover:text-[#c5a059] transition-colors break-words">
-                      {item.title}
-                    </h3>
-                    <p className="text-xs text-slate-500 dark:text-gray-500 uppercase tracking-widest font-black">
-                      <Tag size={12} className="inline mr-1" />
-                      {item.badge}
-                    </p>
-                  </div>
-
-                  {item.image ? (
-                    <img
-                      src={item.image}
-                      alt={item.title}
-                      className="w-full h-40 object-cover rounded-2xl border border-slate-200 dark:border-white/10"
-                    />
-                  ) : null}
-
-                  <p className="text-sm text-slate-500 dark:text-gray-400 leading-relaxed">{item.text}</p>
-
-                  <div className="pt-3 border-t border-slate-200 dark:border-white/5 space-y-2">
-                    <p className="text-xs text-slate-500 dark:text-gray-500">
-                      Fecha: {formatDateLabel(item.date)}
-                    </p>
-                    <div className="text-xs text-slate-500 dark:text-gray-500">
-                      Autor:{' '}
-                      <BrotherNameTrigger
-                        name={item.author}
-                        className="text-xs text-slate-500 dark:text-gray-500 hover:text-[#c5a059] transition-colors"
-                        fallbackClassName="text-xs text-slate-500 dark:text-gray-500"
+                    <div className="flex items-start gap-3">
+                      <div className="w-11 h-11 rounded-2xl bg-slate-100 dark:bg-white/10 flex items-center justify-center text-[#c5a059] shrink-0">
+                        {isEvent ? <Calendar size={20} /> : <Newspaper size={20} />}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <h3 className="text-base font-bold text-slate-900 dark:text-white leading-tight break-words">{item.title}</h3>
+                        <p className="text-[10px] text-slate-500 dark:text-gray-300 uppercase tracking-widest font-black mt-1">
+                          {isEvent ? 'Evento' : 'Noticia'} · {formatDateLabel(item.date)}
+                        </p>
+                      </div>
+                      <ChevronDown
+                        size={18}
+                        className={`shrink-0 mt-1 text-slate-500 dark:text-gray-400 transition-transform ${isExpanded ? 'rotate-180 text-[#c5a059]' : ''}`}
                       />
                     </div>
+                  </button>
+
+                  <div
+                    className={`grid transition-all duration-300 ease-out ${
+                      isExpanded ? 'grid-rows-[1fr] opacity-100 mt-4' : 'grid-rows-[0fr] opacity-0 mt-0'
+                    }`}
+                  >
+                    <div className="overflow-hidden border-t border-slate-200 dark:border-white/10 pt-3 space-y-3">
+                      <p className="text-xs text-slate-600 dark:text-gray-300 leading-relaxed break-words">{item.text}</p>
+                      <p className="text-xs text-slate-500 dark:text-gray-300">
+                        <Tag size={12} className="inline mr-1" />
+                        {item.badge}
+                      </p>
+                      <p className="text-xs text-slate-500 dark:text-gray-300">
+                        Autor:{' '}
+                        <BrotherNameTrigger
+                          name={item.author}
+                          className="text-xs text-slate-600 dark:text-gray-200"
+                          fallbackClassName="text-xs text-slate-600 dark:text-gray-200"
+                        />
+                      </p>
+
+                      {item.visibility === 'privado' && isEvent ? (
+                        <p className="text-xs text-slate-500 dark:text-gray-300">
+                          Celulas: {item.involved.cells.join(', ') || 'Sin seleccion'}
+                        </p>
+                      ) : null}
+
+                      {canManageEvents ? (
+                        <button
+                          type="button"
+                          onClick={() => openEditModal(item)}
+                          className="w-full py-2.5 rounded-xl border border-[#c5a059]/40 bg-[#c5a059]/10 text-[#c5a059] text-[11px] uppercase tracking-widest font-black"
+                        >
+                          Editar
+                        </button>
+                      ) : null}
+                    </div>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+
+          <div className="hidden md:grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+            {filteredFeed.map((item) => {
+              const isEvent = item.kind === 'evento';
+
+              return (
+                <article
+                  key={item.id}
+                  className="bg-white dark:bg-[#1a1a1a] rounded-[2rem] border border-slate-200 dark:border-white/10 p-5 sm:p-6 md:p-8 hover:border-[#c5a059]/30 transition-all group relative overflow-hidden shadow-2xl"
+                >
+                  <div className="flex flex-wrap gap-2 mb-3 sm:mb-0 sm:absolute sm:top-0 sm:right-0 sm:p-4">
+                    <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border border-slate-300 dark:border-white/10 bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-gray-400">
+                      {isEvent ? 'Evento' : 'Noticia'}
+                    </span>
+                    <span
+                      className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${
+                        item.visibility === 'publico'
+                          ? 'border-emerald-400/30 bg-emerald-400/10 text-emerald-300'
+                          : 'border-amber-400/40 bg-amber-500/10 text-amber-300'
+                      }`}
+                    >
+                      {item.visibility}
+                    </span>
                   </div>
 
-                  {item.visibility === 'privado' && isEvent ? (
-                    <div className="pt-3 border-t border-slate-200 dark:border-white/5 space-y-2">
-                      <p className="text-[10px] uppercase tracking-widest font-black text-[#c5a059] flex items-center gap-1">
-                        <Users size={12} />
-                        Involucrados
-                      </p>
-                      <p className="text-xs text-slate-500 dark:text-gray-500">
-                        Celulas: {item.involved.cells.join(', ') || 'Sin seleccion'}
-                      </p>
-                      <p className="text-xs text-slate-500 dark:text-gray-500">
-                        Pastores: {item.involved.pastors.join(', ') || 'Sin seleccion'}
-                      </p>
-                      <p className="text-xs text-slate-500 dark:text-gray-500">
-                        Discipulos: {item.involved.disciples.join(', ') || 'Sin seleccion'}
+                  <div className="space-y-5">
+                    <div className="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-white/10 flex items-center justify-center text-[#c5a059] group-hover:scale-110 transition-transform">
+                      {isEvent ? <Calendar size={24} /> : <Newspaper size={24} />}
+                    </div>
+
+                    <div>
+                      <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2 group-hover:text-[#c5a059] transition-colors break-words">
+                        {item.title}
+                      </h3>
+                      <p className="text-xs text-slate-500 dark:text-gray-300 uppercase tracking-widest font-black">
+                        <Tag size={12} className="inline mr-1" />
+                        {item.badge}
                       </p>
                     </div>
-                  ) : null}
 
-                  {canManageEvents ? (
-                    <button
-                      type="button"
-                      onClick={() => openEditModal(item)}
-                      className="w-full py-3 rounded-2xl border border-[#c5a059]/40 bg-[#c5a059]/10 text-[#c5a059] text-[11px] uppercase tracking-widest font-black hover:bg-[#c5a059]/20 transition-colors"
-                    >
-                      Editar
-                    </button>
-                  ) : null}
-                </div>
-              </article>
-            );
-          })}
-        </div>
+                    {item.image ? (
+                      <img
+                        src={item.image}
+                        alt={item.title}
+                        className="w-full h-40 object-cover rounded-2xl border border-slate-200 dark:border-white/10"
+                      />
+                    ) : null}
+
+                    <p className="text-sm text-slate-600 dark:text-gray-300 leading-relaxed break-words">{item.text}</p>
+
+                    <div className="pt-3 border-t border-slate-200 dark:border-white/5 space-y-2">
+                      <p className="text-xs text-slate-500 dark:text-gray-300">
+                        Fecha: {formatDateLabel(item.date)}
+                      </p>
+                      <div className="text-xs text-slate-500 dark:text-gray-300">
+                        Autor:{' '}
+                        <BrotherNameTrigger
+                          name={item.author}
+                          className="text-xs text-slate-500 dark:text-gray-300 hover:text-[#c5a059] transition-colors"
+                          fallbackClassName="text-xs text-slate-500 dark:text-gray-300"
+                        />
+                      </div>
+                    </div>
+
+                    {item.visibility === 'privado' && isEvent ? (
+                      <div className="pt-3 border-t border-slate-200 dark:border-white/5 space-y-2">
+                        <p className="text-[10px] uppercase tracking-widest font-black text-[#c5a059] flex items-center gap-1">
+                          <Users size={12} />
+                          Involucrados
+                        </p>
+                        <p className="text-xs text-slate-500 dark:text-gray-300">
+                          Celulas: {item.involved.cells.join(', ') || 'Sin seleccion'}
+                        </p>
+                        <p className="text-xs text-slate-500 dark:text-gray-300">
+                          Pastores: {item.involved.pastors.join(', ') || 'Sin seleccion'}
+                        </p>
+                        <p className="text-xs text-slate-500 dark:text-gray-300">
+                          Discipulos: {item.involved.disciples.join(', ') || 'Sin seleccion'}
+                        </p>
+                      </div>
+                    ) : null}
+
+                    {canManageEvents ? (
+                      <button
+                        type="button"
+                        onClick={() => openEditModal(item)}
+                        className="w-full py-3 rounded-2xl border border-[#c5a059]/40 bg-[#c5a059]/10 text-[#c5a059] text-[11px] uppercase tracking-widest font-black hover:bg-[#c5a059]/20 transition-colors"
+                      >
+                        Editar
+                      </button>
+                    ) : null}
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        </>
       )}
 
       <Modal

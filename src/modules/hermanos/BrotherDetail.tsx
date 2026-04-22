@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+﻿import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   ArrowLeft,
@@ -31,9 +31,9 @@ const canEditProfile = [Role.APOSTOL, Role.PASTOR, Role.LIDER_CELULA, Role.DISCI
 
 const getCardStyle = (isCurrent: boolean) => {
   if (isCurrent) {
-    return 'bg-[#1a1a1a] border-2 border-[#c5a059] shadow-[0_0_30px_rgba(197,160,89,0.15)] relative overflow-hidden ring-1 ring-[#c5a059]/20';
+    return 'bg-white dark:bg-[#1a1a1a] border-2 border-[#c5a059]/70 dark:border-[#c5a059] shadow-[0_8px_24px_rgba(15,23,42,0.08)] dark:shadow-[0_0_30px_rgba(197,160,89,0.15)] relative overflow-hidden ring-1 ring-[#c5a059]/25';
   }
-  return 'bg-[#1a1a1a] border border-white/5 opacity-80';
+  return 'bg-[#f8fafc] dark:bg-[#1a1a1a] border border-slate-200 dark:border-white/5 opacity-100 dark:opacity-80';
 };
 
 const displayDate = (value?: string) => value || 'Pendiente';
@@ -47,9 +47,9 @@ const processBadgeLabelMap: Record<Proceso, string> = {
 };
 
 const statusStyle: Record<'APROBADO' | 'REPROBADO' | 'EN_CURSO', string> = {
-  APROBADO: 'text-green-400 border-green-500/30 bg-green-500/10',
-  REPROBADO: 'text-red-400 border-red-500/30 bg-red-500/10',
-  EN_CURSO: 'text-amber-300 border-amber-400/30 bg-amber-500/10'
+  APROBADO: 'text-emerald-700 dark:text-emerald-300 border-emerald-500/40 dark:border-emerald-400/30 bg-emerald-100 dark:bg-emerald-500/10',
+  REPROBADO: 'text-rose-700 dark:text-rose-300 border-rose-500/40 dark:border-rose-400/30 bg-rose-100 dark:bg-rose-500/10',
+  EN_CURSO: 'text-amber-700 dark:text-amber-300 border-amber-500/45 dark:border-amber-400/30 bg-amber-100 dark:bg-amber-500/10'
 };
 
 type ObservationDraftByProcess = Record<Proceso, string>;
@@ -125,9 +125,9 @@ const altarTrackingStatusLabel: Record<AltarTrackingStatus, string> = {
 };
 
 const altarTrackingStatusStyle: Record<AltarTrackingStatus, string> = {
-  ABIERTO: 'text-amber-300 border-amber-400/30 bg-amber-500/10',
-  FINALIZADO: 'text-emerald-300 border-emerald-400/30 bg-emerald-500/10',
-  INTERRUMPIDO: 'text-rose-300 border-rose-400/30 bg-rose-500/10',
+  ABIERTO: 'text-amber-700 dark:text-amber-300 border-amber-500/45 dark:border-amber-400/30 bg-amber-100 dark:bg-amber-500/10',
+  FINALIZADO: 'text-emerald-700 dark:text-emerald-300 border-emerald-500/45 dark:border-emerald-400/30 bg-emerald-100 dark:bg-emerald-500/10',
+  INTERRUMPIDO: 'text-rose-700 dark:text-rose-300 border-rose-500/45 dark:border-rose-400/30 bg-rose-100 dark:bg-rose-500/10',
 };
 
 
@@ -143,12 +143,12 @@ const ResponsablesPanel = ({ acompanamiento }: ResponsablesPanelProps) => {
   ];
 
   return (
-    <aside className="w-full md:w-[320px] bg-black/65 border border-[#c5a059]/30 rounded-3xl p-5 space-y-3 backdrop-blur-sm">
+    <aside className="w-full md:w-[320px] bg-white dark:bg-black/65 border border-slate-200 dark:border-[#c5a059]/30 rounded-3xl p-5 space-y-3 backdrop-blur-sm">
       <p className="text-[10px] uppercase tracking-[0.2em] font-black text-[#c5a059]">Responsables</p>
       {rows.map((row) => (
-        <div key={row.label} className="flex items-center justify-between gap-4 border border-white/5 rounded-xl px-3 py-2 bg-black/30">
-          <span className="text-[10px] uppercase tracking-widest text-gray-500 font-black">{row.label}</span>
-          <span className="text-xs text-gray-200 font-bold text-right">{row.value}</span>
+        <div key={row.label} className="flex items-center justify-between gap-4 border border-slate-200 dark:border-white/5 rounded-xl px-3 py-2 bg-slate-50 dark:bg-black/30">
+          <span className="text-[10px] uppercase tracking-widest text-slate-500 dark:text-gray-500 font-black">{row.label}</span>
+          <span className="text-xs text-slate-700 dark:text-gray-200 font-bold text-right">{row.value}</span>
         </div>
       ))}
     </aside>
@@ -192,11 +192,11 @@ const StageWrapperComponent = ({
   onSaveObservation,
 }: StageWrapperProps) => (
   <div className={`p-4 md:p-5 rounded-[2rem] md:rounded-[2.5rem] relative overflow-hidden ${getCardStyle(isCurrent)}`}>
-    <div className="w-full min-w-0 flex items-start sm:items-center gap-2 md:gap-3 mb-4 md:mb-5 pb-2 border-b border-white/5">
-      <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-[1rem] sm:rounded-[1.5rem] bg-gradient-to-br from-black/70 to-black/40 flex items-center justify-center text-[#c5a059] font-black text-2xl sm:text-3xl border border-[#c5a059]/25 shadow-[inset_0_0_16px_rgba(197,160,89,0.12)] shrink-0">
+    <div className="w-full min-w-0 flex items-start sm:items-center gap-2 md:gap-3 mb-4 md:mb-5 pb-2 border-b border-slate-200 dark:border-white/5">
+      <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-[1rem] sm:rounded-[1.5rem] bg-gradient-to-br from-slate-100 to-slate-200 dark:from-black/70 dark:to-black/40 flex items-center justify-center text-[#c5a059] font-black text-2xl sm:text-3xl border border-[#c5a059]/25 shadow-[inset_0_0_16px_rgba(197,160,89,0.12)] shrink-0">
         {number}
       </div>
-      <h3 className="flex-1 min-w-0 text-xl sm:text-2xl font-black uppercase tracking-[0.1em] sm:tracking-[0.14em] text-white leading-tight break-words">
+      <h3 className="flex-1 min-w-0 text-xl sm:text-2xl font-black uppercase tracking-[0.1em] sm:tracking-[0.14em] text-slate-900 dark:text-white leading-tight break-words">
         {title}
       </h3>
       <span
@@ -211,7 +211,7 @@ const StageWrapperComponent = ({
     <div className="grid grid-cols-1 md:grid-cols-[minmax(0,58fr)_minmax(0,42fr)] gap-6 md:gap-8 items-stretch">
       <div className={`w-full min-w-0 space-y-5 flex flex-col justify-center ${centerClassName ?? ''}`}>{children}</div>
 
-      <div className="w-full min-w-0 bg-black/60 p-4 sm:p-6 rounded-[1.5rem] sm:rounded-[2rem] border border-white/5 flex flex-col overflow-hidden md:min-h-[240px] shadow-inner">
+      <div className="w-full min-w-0 bg-[#f3f4f6] dark:bg-black/60 p-4 sm:p-6 rounded-[1.5rem] sm:rounded-[2rem] border border-slate-200 dark:border-white/5 flex flex-col overflow-hidden md:min-h-[240px] shadow-inner">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4 text-[#c5a059]">
           <div className="flex items-center gap-3">
             <MessageSquare size={16} />
@@ -220,24 +220,24 @@ const StageWrapperComponent = ({
           <button
             type="button"
             onClick={onComposerOpen}
-            className="w-full sm:w-auto text-center text-[10px] uppercase font-black tracking-[0.12em] px-3 py-1.5 rounded-full border border-[#c5a059]/35 bg-[#c5a059]/10 text-[#c5a059] hover:bg-[#c5a059] hover:text-black transition-colors"
+            className="w-full sm:w-auto text-center text-[10px] uppercase font-black tracking-[0.12em] px-3 py-1.5 rounded-full border border-[#c5a059]/35 bg-[#c5a059]/15 dark:bg-[#c5a059]/10 text-[#a58345] dark:text-[#c5a059] hover:bg-[#c5a059] hover:text-black transition-colors"
           >
             Agregar observación
           </button>
         </div>
         {isComposerOpen && (
-          <div className="mb-4 p-3 rounded-xl border border-white/10 bg-black/35 space-y-3">
+          <div className="mb-4 p-3 rounded-xl border border-slate-200 dark:border-white/10 bg-white/80 dark:bg-black/35 space-y-3">
             <textarea
               value={draftValue}
               onChange={(event) => onDraftChange(event.target.value)}
               placeholder="Escribí la observación..."
-              className="w-full bg-black/60 border border-white/10 rounded-xl p-3 text-sm text-white focus:border-[#c5a059] outline-none min-h-[88px] resize-none shadow-inner"
+              className="w-full bg-white dark:bg-black/60 border border-slate-200 dark:border-white/10 rounded-xl p-3 text-sm text-slate-800 dark:text-white focus:border-[#c5a059] outline-none min-h-[88px] resize-none shadow-inner"
             />
             <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2">
               <button
                 type="button"
                 onClick={onComposerClose}
-                className="w-full sm:w-auto text-center text-[10px] uppercase font-black tracking-[0.12em] px-3 py-1.5 rounded-full border border-white/15 text-gray-300 hover:text-white transition-colors"
+                className="w-full sm:w-auto text-center text-[10px] uppercase font-black tracking-[0.12em] px-3 py-1.5 rounded-full border border-slate-300 dark:border-white/15 text-slate-600 dark:text-gray-300 hover:text-slate-900 dark:hover:text-white transition-colors"
               >
                 Cancelar
               </button>
@@ -256,22 +256,22 @@ const StageWrapperComponent = ({
           <div className="max-h-[230px] overflow-y-auto pr-2 [scrollbar-width:thin] [scrollbar-color:#c5a05944_transparent] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-[#c5a059]/40 [&::-webkit-scrollbar-thumb]:rounded-full">
             <div className="space-y-3">
               {rightEntries.map((entry) => (
-                  <article key={entry.id} className="rounded-xl border border-white/10 bg-black/35 p-3.5">
+                  <article key={entry.id} className="rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-black/35 p-3.5">
                     <div className="flex flex-wrap items-start gap-2 mb-2">
                       <span className="text-[9px] uppercase tracking-[0.2em] font-black text-[#c5a059] border border-[#c5a059]/40 bg-[#c5a059]/10 px-2 py-1 rounded-full">
                         {observationRoleBadgeLabel[entry.role]}
                       </span>
-                      <span className="text-sm font-semibold text-gray-200 break-words">{entry.author}</span>
-                      <span className="w-full sm:w-auto sm:ml-auto text-[11px] text-gray-500 shrink-0">{formatObservationDate(entry.createdAt)}</span>
+                      <span className="text-sm font-semibold text-slate-700 dark:text-gray-200 break-words">{entry.author}</span>
+                      <span className="w-full sm:w-auto sm:ml-auto text-[11px] text-slate-500 dark:text-gray-500 shrink-0">{formatObservationDate(entry.createdAt)}</span>
                     </div>
-                    <p className="text-sm text-gray-300 leading-relaxed break-words">{entry.text}</p>
+                    <p className="text-sm text-slate-700 dark:text-gray-300 leading-relaxed break-words">{entry.text}</p>
                   </article>
                 ))}
             </div>
           </div>
         ) : (
           <div className="flex-1 flex items-center justify-center opacity-40 text-center min-h-[88px] max-h-[210px] overflow-y-auto pr-2 [scrollbar-width:thin] [scrollbar-color:#c5a05944_transparent] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-[#c5a059]/40 [&::-webkit-scrollbar-thumb]:rounded-full">
-            <p className="text-xs text-gray-500 font-bold uppercase tracking-widest mt-2">{rightEmpty}</p>
+            <p className="text-xs text-slate-500 dark:text-gray-500 font-bold uppercase tracking-widest mt-2">{rightEmpty}</p>
           </div>
         )}
       </div>
@@ -685,14 +685,14 @@ export const BrotherDetail = () => {
   return (
     <div className="min-h-screen bg-white dark:bg-black text-slate-900 dark:text-white pb-20 animate-in fade-in duration-700">
       <div className="max-w-5xl mx-auto px-4 pt-6 md:pt-8 space-y-10">
-        <header className="flex flex-col md:flex-row items-center md:items-start gap-8 md:gap-10 bg-[#1a1a1a] p-5 sm:p-8 md:p-12 rounded-[2rem] md:rounded-[3rem] border border-white/5 shadow-2xl relative overflow-hidden mt-4 md:mt-6">
+        <header className="flex flex-col md:flex-row items-center md:items-start gap-8 md:gap-10 bg-white dark:bg-[#1a1a1a] p-5 sm:p-8 md:p-12 rounded-[2rem] md:rounded-[3rem] border border-slate-200 dark:border-white/5 shadow-2xl relative overflow-hidden mt-4 md:mt-6">
           <div className="absolute top-0 right-0 p-10 opacity-5 pointer-events-none">
             <ShieldCheck size={200} className="text-[#c5a059]" />
           </div>
 
           <button
             onClick={() => navigate('/hermanos')}
-            className="absolute top-4 left-4 sm:top-6 sm:left-6 p-3 sm:p-4 bg-black/40 rounded-2xl text-gray-400 hover:text-[#c5a059] transition-all border border-white/5 active:scale-95 z-20"
+            className="absolute top-4 left-4 sm:top-6 sm:left-6 p-3 sm:p-4 bg-slate-100 dark:bg-black/40 rounded-2xl text-slate-500 dark:text-gray-400 hover:text-[#c5a059] transition-all border border-slate-200 dark:border-white/5 active:scale-95 z-20"
           >
             <ArrowLeft size={20} className="sm:w-6 sm:h-6" />
           </button>
@@ -765,23 +765,23 @@ export const BrotherDetail = () => {
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 w-full items-stretch">
-                <div className="flex items-stretch gap-3 sm:gap-4 bg-black/60 p-4 sm:p-5 rounded-2xl border border-white/5 min-h-[100px] sm:min-h-[110px] shadow-inner w-full min-w-0">
-                  <div className="p-3 bg-white/5 rounded-xl">
+                <div className="flex items-stretch gap-3 sm:gap-4 bg-[#f8fafc] dark:bg-black/60 p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-white/5 min-h-[100px] sm:min-h-[110px] shadow-inner w-full min-w-0">
+                  <div className="p-3 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl">
                     <Users className="text-[#c5a059]" size={20} />
                   </div>
                   <div className="text-left flex-1 min-w-0">
-                    <p className="text-[9px] uppercase tracking-[0.2em] font-black text-gray-500 mb-1">Discípulo o Hermano Mayor</p>
-                    <p className="font-bold text-sm text-gray-200 break-words">{acompanamiento.acompananteName || 'No asignado'}</p>
+                    <p className="text-[9px] uppercase tracking-[0.2em] font-black text-slate-500 dark:text-gray-500 mb-1">Discípulo o Hermano Mayor</p>
+                    <p className="font-bold text-sm text-slate-700 dark:text-gray-200 break-words">{acompanamiento.acompananteName || 'No asignado'}</p>
                   </div>
                 </div>
 
-                <div className="flex items-stretch gap-3 sm:gap-4 bg-black/60 p-4 sm:p-5 rounded-2xl border border-white/5 min-h-[100px] sm:min-h-[110px] shadow-inner w-full min-w-0">
-                  <div className="p-3 bg-white/5 rounded-xl">
+                <div className="flex items-stretch gap-3 sm:gap-4 bg-[#f8fafc] dark:bg-black/60 p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-white/5 min-h-[100px] sm:min-h-[110px] shadow-inner w-full min-w-0">
+                  <div className="p-3 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl">
                     <MapPin className="text-[#c5a059]" size={20} />
                   </div>
                   <div className="text-left flex-1 min-w-0">
-                    <p className="text-[9px] uppercase tracking-[0.2em] font-black text-gray-500 mb-1">Líder / Célula</p>
-                    <p className="font-bold text-sm text-gray-200 break-words">{acompanamiento.liderCelulaName || 'No asignada'}</p>
+                    <p className="text-[9px] uppercase tracking-[0.2em] font-black text-slate-500 dark:text-gray-500 mb-1">Líder / Célula</p>
+                    <p className="font-bold text-sm text-slate-700 dark:text-gray-200 break-words">{acompanamiento.liderCelulaName || 'No asignada'}</p>
                     <p className="text-[10px] font-black text-[#c5a059] mt-0.5">{acompanamiento.celulaName}</p>
                   </div>
                 </div>
@@ -818,10 +818,10 @@ export const BrotherDetail = () => {
         </header>
 
         <div className="space-y-8 pt-4">
-          <section className="bg-[#1a1a1a] border border-white/5 rounded-[1.5rem] md:rounded-[2rem] p-4 sm:p-5 md:p-6">
+          <section className="bg-white dark:bg-[#1a1a1a] border border-slate-200 dark:border-white/5 rounded-[1.5rem] md:rounded-[2rem] p-4 sm:p-5 md:p-6">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div>
-                <h2 className="text-lg font-black uppercase tracking-[0.12em] text-white flex items-center gap-2">
+                <h2 className="text-lg font-black uppercase tracking-[0.12em] text-slate-900 dark:text-white flex items-center gap-2">
                   <Music2 size={16} className="text-[#c5a059]" />
                   Talentos y dones de servicio
                 </h2>
@@ -878,13 +878,13 @@ export const BrotherDetail = () => {
               )}
 
               {!hasAnyServiceTags && (
-                <p className="text-xs text-gray-500">No tiene talentos o dones registrados.</p>
+                <p className="text-xs text-slate-500 dark:text-gray-500">No tiene talentos o dones registrados.</p>
               )}
             </div>
           </section>
 
           <div className="flex items-center gap-6 px-2">
-            <h2 className="text-3xl font-black text-white tracking-tight uppercase">Línea de Vida</h2>
+            <h2 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight uppercase">Línea de Vida</h2>
             <div className="h-[2px] flex-1 bg-gradient-to-r from-[#c5a059]/30 to-transparent" />
           </div>
 
@@ -907,16 +907,16 @@ export const BrotherDetail = () => {
             >
               <div className="flex flex-col sm:flex-row gap-4 md:gap-6">
                 <div className="space-y-1">
-                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500">Inicio</span>
-                  <p className="text-sm font-bold text-gray-200 bg-black/55 px-4 py-2.5 rounded-xl inline-flex border border-white/10 shadow-inner">{displayDate(brother.altar?.fechaInicio)}</p>
+                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 dark:text-gray-500">Inicio</span>
+                  <p className="text-sm font-bold text-slate-800 dark:text-gray-200 bg-white dark:bg-black/55 px-4 py-2.5 rounded-xl inline-flex border border-slate-200 dark:border-white/10 shadow-inner">{displayDate(brother.altar?.fechaInicio)}</p>
                 </div>
                 <div className="space-y-1">
-                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500">Fin</span>
-                  <p className="text-sm font-bold text-gray-200 bg-black/55 px-4 py-2.5 rounded-xl inline-flex border border-white/10 shadow-inner">{displayDate(brother.altar?.fechaFin)}</p>
+                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 dark:text-gray-500">Fin</span>
+                  <p className="text-sm font-bold text-slate-800 dark:text-gray-200 bg-white dark:bg-black/55 px-4 py-2.5 rounded-xl inline-flex border border-slate-200 dark:border-white/10 shadow-inner">{displayDate(brother.altar?.fechaFin)}</p>
                 </div>
               </div>
-              <div className="bg-gradient-to-r from-black/80 to-black/20 w-full md:w-max px-5 py-3 rounded-2xl border border-white/10 flex items-center gap-3 shadow-inner">
-                <span className="text-[9px] uppercase tracking-widest font-black text-gray-500">Realizado por:</span>
+              <div className="bg-gradient-to-r from-white to-slate-100 dark:from-black/80 dark:to-black/20 w-full md:w-max px-5 py-3 rounded-2xl border border-slate-200 dark:border-white/10 flex items-center gap-3 shadow-inner">
+                <span className="text-[9px] uppercase tracking-widest font-black text-slate-500 dark:text-gray-500">Realizado por:</span>
                 <span className="text-xs font-black text-[#c5a059] bg-[#c5a059]/10 px-3 py-1 rounded-lg">{brother.altar?.realizadoPor?.join(' · ') || 'No registrado'}</span>
               </div>
             </StageWrapper>
@@ -939,12 +939,12 @@ export const BrotherDetail = () => {
             >
               <div className="flex flex-col sm:flex-row gap-4 md:gap-6">
                 <div className="space-y-1">
-                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500">Inicio</span>
-                  <p className="text-sm font-bold text-gray-200 bg-black/55 px-4 py-2.5 rounded-xl inline-flex border border-white/10 shadow-inner">{displayDate(brother.grupo?.fechaInicio)}</p>
+                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 dark:text-gray-500">Inicio</span>
+                  <p className="text-sm font-bold text-slate-800 dark:text-gray-200 bg-white dark:bg-black/55 px-4 py-2.5 rounded-xl inline-flex border border-slate-200 dark:border-white/10 shadow-inner">{displayDate(brother.grupo?.fechaInicio)}</p>
                 </div>
                 <div className="space-y-1">
-                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500">Fin</span>
-                  <p className="text-sm font-bold text-gray-200 bg-black/55 px-4 py-2.5 rounded-xl inline-flex border border-white/10 shadow-inner">{displayDate(brother.grupo?.fechaFin)}</p>
+                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 dark:text-gray-500">Fin</span>
+                  <p className="text-sm font-bold text-slate-800 dark:text-gray-200 bg-white dark:bg-black/55 px-4 py-2.5 rounded-xl inline-flex border border-slate-200 dark:border-white/10 shadow-inner">{displayDate(brother.grupo?.fechaFin)}</p>
                 </div>
               </div>
             </StageWrapper>
@@ -969,7 +969,7 @@ export const BrotherDetail = () => {
                 <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#c5a059] flex items-center gap-2 mb-2">
                   <Calendar size={14} /> Fecha de realización
                 </span>
-                <p className="text-sm font-bold text-gray-200 bg-black/55 px-5 py-3 rounded-xl inline-flex border border-[#c5a059]/25 shadow-inner">
+                <p className="text-sm font-bold text-slate-800 dark:text-gray-200 bg-white dark:bg-black/55 px-5 py-3 rounded-xl inline-flex border border-slate-200 dark:border-[#c5a059]/25 shadow-inner">
                   {displayDate(brother.experiencia?.fechaRealizacion)}
                 </p>
               </div>
@@ -994,12 +994,12 @@ export const BrotherDetail = () => {
             >
               <div className="flex flex-col sm:flex-row gap-4 md:gap-6">
                 <div className="space-y-1">
-                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500">Fecha Inicio</span>
-                  <p className="text-sm font-bold text-gray-200 bg-black/55 px-4 py-2.5 rounded-xl inline-flex border border-white/10 shadow-inner">{displayDate(eddiTracking.stageDates.startDate)}</p>
+                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 dark:text-gray-500">Fecha Inicio</span>
+                  <p className="text-sm font-bold text-slate-800 dark:text-gray-200 bg-white dark:bg-black/55 px-4 py-2.5 rounded-xl inline-flex border border-slate-200 dark:border-white/10 shadow-inner">{displayDate(eddiTracking.stageDates.startDate)}</p>
                 </div>
                 <div className="space-y-1">
-                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500">Fecha Fin</span>
-                  <p className="text-sm font-bold text-gray-200 bg-black/55 px-4 py-2.5 rounded-xl inline-flex border border-white/10 shadow-inner">{displayDate(eddiTracking.stageDates.endDate)}</p>
+                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 dark:text-gray-500">Fecha Fin</span>
+                  <p className="text-sm font-bold text-slate-800 dark:text-gray-200 bg-white dark:bg-black/55 px-4 py-2.5 rounded-xl inline-flex border border-slate-200 dark:border-white/10 shadow-inner">{displayDate(eddiTracking.stageDates.endDate)}</p>
                 </div>
               </div>
 
@@ -1009,10 +1009,10 @@ export const BrotherDetail = () => {
                 </span>
 
                 {eddiTracking.grades.length > 0 ? (
-                  <div className="overflow-x-auto rounded-2xl border border-white/10 w-full max-h-[260px] [scrollbar-width:thin] [scrollbar-color:#c5a05944_transparent] [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-[#c5a059]/40 [&::-webkit-scrollbar-thumb]:rounded-full">
+                  <div className="overflow-x-auto rounded-2xl border border-slate-200 dark:border-white/10 w-full max-h-[260px] [scrollbar-width:thin] [scrollbar-color:#c5a05944_transparent] [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-[#c5a059]/40 [&::-webkit-scrollbar-thumb]:rounded-full">
                     <table className="min-w-[620px] text-xs sm:text-sm">
-                      <thead className="bg-black/70 sticky top-0 z-[1]">
-                        <tr className="text-[10px] uppercase tracking-[0.2em] text-gray-500">
+                      <thead className="bg-slate-100 dark:bg-black/70 sticky top-0 z-[1]">
+                        <tr className="text-[10px] uppercase tracking-[0.2em] text-slate-500 dark:text-gray-500">
                           <th className="text-left px-4 py-3">Materia</th>
                           <th className="text-left px-4 py-3">Módulo</th>
                           <th className="text-left px-4 py-3">Fecha</th>
@@ -1024,11 +1024,11 @@ export const BrotherDetail = () => {
                         {eddiTracking.grades.map((grade) => {
                           const status = grade.resolvedStatus;
                           return (
-                            <tr key={grade.id} className="border-t border-white/5 bg-black/20">
-                              <td className="px-4 py-3 text-gray-200 font-semibold">{grade.materia}</td>
-                              <td className="px-4 py-3 text-gray-400">{grade.modulo || '-'}</td>
-                              <td className="px-4 py-3 text-gray-400">{grade.fecha || '-'}</td>
-                              <td className="px-4 py-3 text-white font-black">{grade.nota}</td>
+                            <tr key={grade.id} className="border-t border-slate-200 dark:border-white/5 bg-white dark:bg-black/20">
+                              <td className="px-4 py-3 text-slate-700 dark:text-gray-200 font-semibold">{grade.materia}</td>
+                              <td className="px-4 py-3 text-slate-500 dark:text-gray-400">{grade.modulo || '-'}</td>
+                              <td className="px-4 py-3 text-slate-500 dark:text-gray-400">{grade.fecha || '-'}</td>
+                              <td className="px-4 py-3 text-slate-900 dark:text-white font-black">{grade.nota}</td>
                               <td className="px-4 py-3">
                                 <span className={`text-[10px] px-2 py-1 rounded-md border font-black tracking-wider ${statusStyle[status]}`}>{status}</span>
                               </td>
@@ -1039,7 +1039,7 @@ export const BrotherDetail = () => {
                     </table>
                   </div>
                 ) : (
-                  <p className="text-xs text-gray-600 font-bold uppercase tracking-widest bg-black/30 w-fit px-4 py-2 rounded-lg">
+                  <p className="text-xs text-slate-500 dark:text-gray-600 font-bold uppercase tracking-widest bg-slate-100 dark:bg-black/30 w-fit px-4 py-2 rounded-lg">
                     Aún no hay calificaciones cargadas
                   </p>
                 )}
@@ -1067,7 +1067,7 @@ export const BrotherDetail = () => {
                   <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#c5a059] flex items-center gap-2 mb-2">
                     <Award size={14} /> Fecha Inicio
                   </span>
-                  <p className="text-sm font-bold text-gray-200 bg-black/55 px-5 py-3 rounded-xl inline-flex border border-[#c5a059]/25 shadow-inner">
+                  <p className="text-sm font-bold text-slate-800 dark:text-gray-200 bg-white dark:bg-black/55 px-5 py-3 rounded-xl inline-flex border border-slate-200 dark:border-[#c5a059]/25 shadow-inner">
                     {displayDate(brother.discipulo?.fechaInicio)}
                   </p>
                 </div>
@@ -1090,20 +1090,20 @@ export const BrotherDetail = () => {
                     </button>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                    <div className="rounded-xl border border-white/10 bg-black/45 p-3">
-                      <p className="text-[10px] uppercase tracking-[0.18em] font-black text-gray-500">Altares abiertos</p>
-                      <p className="text-2xl font-black text-[#c5a059] mt-2">{altarTrackingSummary.opened}</p>
+                    <div className="grid grid-cols-3 gap-2 sm:gap-3">
+                      <div className="rounded-xl border border-slate-200 dark:border-white/10 bg-[#f8fafc] dark:bg-black/45 p-3">
+                        <p className="text-[9px] sm:text-[10px] uppercase tracking-[0.14em] sm:tracking-[0.18em] font-black text-slate-500 dark:text-gray-400">Altares abiertos</p>
+                        <p className="text-xl sm:text-2xl font-black text-[#a58345] dark:text-[#c5a059] mt-2">{altarTrackingSummary.opened}</p>
+                      </div>
+                      <div className="rounded-xl border border-slate-200 dark:border-white/10 bg-[#f8fafc] dark:bg-black/45 p-3">
+                        <p className="text-[9px] sm:text-[10px] uppercase tracking-[0.14em] sm:tracking-[0.18em] font-black text-slate-500 dark:text-gray-400">Altares finalizados</p>
+                        <p className="text-xl sm:text-2xl font-black text-emerald-700 dark:text-emerald-300 mt-2">{altarTrackingSummary.finalized}</p>
+                      </div>
+                      <div className="rounded-xl border border-slate-200 dark:border-white/10 bg-[#f8fafc] dark:bg-black/45 p-3">
+                        <p className="text-[9px] sm:text-[10px] uppercase tracking-[0.14em] sm:tracking-[0.18em] font-black text-slate-500 dark:text-gray-400">Altares interrumpidos</p>
+                        <p className="text-xl sm:text-2xl font-black text-rose-700 dark:text-rose-300 mt-2">{altarTrackingSummary.interrupted}</p>
+                      </div>
                     </div>
-                    <div className="rounded-xl border border-white/10 bg-black/45 p-3">
-                      <p className="text-[10px] uppercase tracking-[0.18em] font-black text-gray-500">Altares finalizados</p>
-                      <p className="text-2xl font-black text-emerald-300 mt-2">{altarTrackingSummary.finalized}</p>
-                    </div>
-                    <div className="rounded-xl border border-white/10 bg-black/45 p-3">
-                      <p className="text-[10px] uppercase tracking-[0.18em] font-black text-gray-500">Altares interrumpidos</p>
-                      <p className="text-2xl font-black text-rose-300 mt-2">{altarTrackingSummary.interrupted}</p>
-                    </div>
-                  </div>
                 </div>
               </div>
             </StageWrapper>
@@ -1129,14 +1129,14 @@ export const BrotherDetail = () => {
             <button
               type="button"
               onClick={() => setSelectedDiscipuloAltarBrotherId(null)}
-              className="inline-flex items-center gap-2 px-3 py-2 rounded-xl text-[10px] uppercase tracking-widest font-black border border-white/15 text-gray-300 hover:text-white hover:border-[#c5a059]/40 transition-colors"
+              className="inline-flex items-center gap-2 px-3 py-2 rounded-xl text-[10px] uppercase tracking-widest font-black border border-slate-300 dark:border-white/15 text-slate-600 dark:text-gray-300 hover:text-slate-900 dark:hover:text-white hover:border-[#c5a059]/40 transition-colors"
             >
               <ArrowLeft size={14} />
               Volver a lista
             </button>
 
-            <div className="rounded-2xl border border-white/10 bg-black/45 p-4 flex flex-col sm:flex-row sm:items-center gap-4">
-              <div className="w-16 h-16 rounded-2xl overflow-hidden border border-[#c5a059]/30 bg-black/50 flex items-center justify-center text-2xl font-black text-[#c5a059] shrink-0">
+            <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-[#f8fafc] dark:bg-black/45 p-4 flex flex-col sm:flex-row sm:items-center gap-4">
+              <div className="w-16 h-16 rounded-2xl overflow-hidden border border-[#c5a059]/30 bg-white dark:bg-black/50 flex items-center justify-center text-2xl font-black text-[#c5a059] shrink-0">
                 {selectedDiscipuloAltarBrother.fotoUrl ? (
                   <img
                     src={selectedDiscipuloAltarBrother.fotoUrl}
@@ -1148,15 +1148,15 @@ export const BrotherDetail = () => {
                 )}
               </div>
               <div className="min-w-0 flex-1">
-                <p className="text-lg font-black text-white break-words">{selectedDiscipuloAltarBrother.name}</p>
-                <p className="text-xs text-gray-400 mt-1">
+                <p className="text-lg font-black text-slate-900 dark:text-white break-words">{selectedDiscipuloAltarBrother.name}</p>
+                <p className="text-xs text-slate-500 dark:text-gray-400 mt-1">
                   Célula: {selectedDiscipuloAltarBrother.acompanamiento.celulaName} · Proceso actual:{' '}
                   {processBadgeLabelMap[selectedDiscipuloAltarBrother.procesoActual]}
                 </p>
-                <p className="text-xs text-gray-400 mt-1">
+                <p className="text-xs text-slate-500 dark:text-gray-400 mt-1">
                   Discípulo/Hermano mayor: {selectedDiscipuloAltarBrother.acompanamiento.acompananteName || 'No asignado'}
                 </p>
-                <p className="text-xs text-gray-400 mt-1">
+                <p className="text-xs text-slate-500 dark:text-gray-400 mt-1">
                   Líder: {selectedDiscipuloAltarBrother.acompanamiento.liderCelulaName || 'No asignado'}
                 </p>
               </div>
@@ -1181,22 +1181,22 @@ export const BrotherDetail = () => {
               </button>
             </div>
 
-            <div className="rounded-2xl border border-white/10 bg-black/35 p-4 space-y-3">
+            <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-black/35 p-4 space-y-3">
               <p className="text-[10px] uppercase tracking-[0.2em] font-black text-[#c5a059]">Procesos realizados</p>
               {selectedBrotherProcessSummary.length === 0 ? (
-                <p className="text-sm text-gray-400">Este hermano no tiene procesos registrados.</p>
+                <p className="text-sm text-slate-500 dark:text-gray-400">Este hermano no tiene procesos registrados.</p>
               ) : (
                 <div className="space-y-3">
                   {selectedBrotherProcessSummary.map((processEntry) => (
-                    <article key={processEntry.key} className="rounded-xl border border-white/10 bg-black/35 p-3">
+                    <article key={processEntry.key} className="rounded-xl border border-slate-200 dark:border-white/10 bg-[#f8fafc] dark:bg-black/35 p-3">
                       <div className="flex flex-wrap items-start justify-between gap-2">
-                        <p className="text-[10px] uppercase tracking-[0.16em] font-black text-gray-500">{processEntry.label}</p>
+                        <p className="text-[10px] uppercase tracking-[0.16em] font-black text-slate-500 dark:text-gray-500">{processEntry.label}</p>
                         <div className="flex flex-wrap items-center gap-2">
-                          <span className="text-[10px] font-black text-gray-300 border border-white/15 rounded-md px-2 py-1 bg-black/30">
+                          <span className="text-[10px] font-black text-slate-600 dark:text-gray-300 border border-slate-300 dark:border-white/15 rounded-md px-2 py-1 bg-white dark:bg-black/30">
                             Inicio: {displayDate(processEntry.startDate)}
                           </span>
                           {processEntry.endDate && (
-                            <span className="text-[10px] font-black text-gray-300 border border-white/15 rounded-md px-2 py-1 bg-black/30">
+                            <span className="text-[10px] font-black text-slate-600 dark:text-gray-300 border border-slate-300 dark:border-white/15 rounded-md px-2 py-1 bg-white dark:bg-black/30">
                               Fin: {displayDate(processEntry.endDate)}
                             </span>
                           )}
@@ -1204,29 +1204,29 @@ export const BrotherDetail = () => {
                       </div>
                       <div className="mt-3 h-[84px] overflow-y-auto pr-1 [scrollbar-width:thin] [scrollbar-color:#c5a05944_transparent] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-[#c5a059]/40 [&::-webkit-scrollbar-thumb]:rounded-full">
                         {processEntry.observations.length === 0 ? (
-                          <p className="text-xs text-gray-500">Sin observaciones en este proceso.</p>
+                          <p className="text-xs text-slate-500 dark:text-gray-500">Sin observaciones en este proceso.</p>
                         ) : (
                           processEntry.observations.map((observation, index) => (
                             <div
                               key={`${processEntry.key}-${index}`}
-                              className={`rounded-lg border border-white/10 bg-black/45 p-2.5 min-h-[72px] ${
+                              className={`rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-black/45 p-2.5 min-h-[72px] ${
                                 index === 0 ? '' : 'mt-2'
                               }`}
                             >
-                              <p className="text-xs text-gray-300">{observation.text}</p>
-                              <p className="text-[10px] text-gray-500 mt-2">{observation.author.name}</p>
+                              <p className="text-xs text-slate-700 dark:text-gray-300">{observation.text}</p>
+                              <p className="text-[10px] text-slate-500 dark:text-gray-500 mt-2">{observation.author.name}</p>
                             </div>
                           ))
                         )}
                       </div>
                       {processEntry.key === Proceso.EDDI && processEntry.grades.length > 0 && (
                         <div className="mt-3 space-y-2">
-                          <p className="text-[10px] uppercase tracking-[0.16em] font-black text-gray-500">Materias y notas</p>
+                          <p className="text-[10px] uppercase tracking-[0.16em] font-black text-slate-500 dark:text-gray-500">Materias y notas</p>
                           <div className="max-h-[120px] overflow-y-auto pr-1 [scrollbar-width:thin] [scrollbar-color:#c5a05944_transparent] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-[#c5a059]/40 [&::-webkit-scrollbar-thumb]:rounded-full">
                             {processEntry.grades.map((grade) => (
-                              <div key={grade.id} className="rounded-lg border border-white/10 bg-black/45 px-3 py-2 flex items-center justify-between gap-3">
-                                <span className="text-xs text-gray-300">{grade.materia}</span>
-                                <span className="text-xs font-black text-[#c5a059]">{grade.nota}</span>
+                              <div key={grade.id} className="rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-black/45 px-3 py-2 flex items-center justify-between gap-3">
+                                <span className="text-xs text-slate-700 dark:text-gray-300">{grade.materia}</span>
+                                <span className="text-xs font-black text-[#a58345] dark:text-[#c5a059]">{grade.nota}</span>
                               </div>
                             ))}
                           </div>
@@ -1240,35 +1240,35 @@ export const BrotherDetail = () => {
           </div>
         ) : (
           <div className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div className="grid grid-cols-3 gap-2 sm:gap-3">
               <button
                 type="button"
                 onClick={() => setDiscipuloAltarsFilter('TODOS')}
-                className="rounded-xl border border-white/10 bg-black/40 p-3 text-left"
+                className="rounded-xl border border-slate-200 dark:border-white/10 bg-[#f8fafc] dark:bg-black/40 p-3 text-left"
               >
-                <p className="text-[10px] uppercase tracking-[0.18em] font-black text-gray-500">Altares abiertos</p>
-                <p className="text-2xl font-black text-[#c5a059] mt-2">{altarTrackingSummary.opened}</p>
+                <p className="text-[9px] sm:text-[10px] uppercase tracking-[0.14em] sm:tracking-[0.18em] font-black text-slate-500 dark:text-gray-400">Altares abiertos</p>
+                <p className="text-xl sm:text-2xl font-black text-[#a58345] dark:text-[#c5a059] mt-2">{altarTrackingSummary.opened}</p>
               </button>
               <button
                 type="button"
                 onClick={() => setDiscipuloAltarsFilter('FINALIZADOS')}
-                className="rounded-xl border border-white/10 bg-black/40 p-3 text-left"
+                className="rounded-xl border border-slate-200 dark:border-white/10 bg-[#f8fafc] dark:bg-black/40 p-3 text-left"
               >
-                <p className="text-[10px] uppercase tracking-[0.18em] font-black text-gray-500">Finalizados</p>
-                <p className="text-2xl font-black text-emerald-300 mt-2">{altarTrackingSummary.finalized}</p>
+                <p className="text-[9px] sm:text-[10px] uppercase tracking-[0.14em] sm:tracking-[0.18em] font-black text-slate-500 dark:text-gray-400">Finalizados</p>
+                <p className="text-xl sm:text-2xl font-black text-emerald-700 dark:text-emerald-300 mt-2">{altarTrackingSummary.finalized}</p>
               </button>
               <button
                 type="button"
                 onClick={() => setDiscipuloAltarsFilter('INTERRUMPIDOS')}
-                className="rounded-xl border border-white/10 bg-black/40 p-3 text-left"
+                className="rounded-xl border border-slate-200 dark:border-white/10 bg-[#f8fafc] dark:bg-black/40 p-3 text-left"
               >
-                <p className="text-[10px] uppercase tracking-[0.18em] font-black text-gray-500">Interrumpidos</p>
-                <p className="text-2xl font-black text-rose-300 mt-2">{altarTrackingSummary.interrupted}</p>
+                <p className="text-[9px] sm:text-[10px] uppercase tracking-[0.14em] sm:tracking-[0.18em] font-black text-slate-500 dark:text-gray-400">Interrumpidos</p>
+                <p className="text-xl sm:text-2xl font-black text-rose-700 dark:text-rose-300 mt-2">{altarTrackingSummary.interrupted}</p>
               </button>
             </div>
 
             {filteredDisciplesAltarBrothers.length === 0 ? (
-              <p className="text-sm text-gray-400">
+              <p className="text-sm text-slate-500 dark:text-gray-400">
                 {discipuloAltarsFilter === 'TODOS'
                   ? 'No hay hermanos registrados en altares abiertos por este discípulo.'
                   : 'No hay hermanos para el filtro seleccionado.'}
@@ -1280,11 +1280,11 @@ export const BrotherDetail = () => {
                   return (
                     <article
                       key={entry.id}
-                      className="rounded-xl border border-white/10 bg-black/35 p-4 flex flex-col sm:flex-row sm:items-center gap-3"
+                      className="rounded-xl border border-slate-200 dark:border-white/10 bg-[#f8fafc] dark:bg-black/35 p-4 flex flex-col sm:flex-row sm:items-center gap-3"
                     >
                       <div className="min-w-0 flex-1">
-                        <p className="text-sm font-black text-white truncate">{entry.name}</p>
-                        <p className="text-xs text-gray-400 mt-1">
+                        <p className="text-sm font-black text-slate-900 dark:text-white truncate">{entry.name}</p>
+                        <p className="text-xs text-slate-500 dark:text-gray-400 mt-1">
                           Célula: {entry.acompanamiento.celulaName} · Inicio: {displayDate(entry.altar?.fechaInicio)} · Fin:{' '}
                           {displayDate(entry.altar?.fechaFin)}
                         </p>

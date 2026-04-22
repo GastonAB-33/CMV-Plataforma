@@ -664,13 +664,13 @@ export const MinisterioMisericordiaPage = () => {
       </section>
 
       <section>
-        <div className="p-6 rounded-3xl border border-white/10 bg-[#171717]">
+        <div className="p-4 sm:p-6 rounded-3xl border border-white/15 bg-[#171717]">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
             <div className="inline-flex items-center gap-2">
               <CalendarClock size={15} className="text-[#c5a059]" />
               <p className="text-xl font-black text-white">Calendario</p>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
               <button
                 type="button"
                 onClick={() => setCalendarMode('full')}
@@ -733,7 +733,7 @@ export const MinisterioMisericordiaPage = () => {
                           openNewScheduleForDate(cellDate);
                         }
                       }}
-                      className={`h-20 p-2 rounded-2xl border text-left transition-colors ${
+                      className={`min-h-[58px] sm:h-20 p-1.5 sm:p-2 rounded-2xl border text-left transition-colors ${
                         hasEvents
                           ? 'border-[#c5a059]/40 bg-[#c5a059]/12 text-white'
                           : isToday
@@ -744,16 +744,16 @@ export const MinisterioMisericordiaPage = () => {
                       }`}
                     >
                       <div className="flex items-center justify-between">
-                        <p className="font-black text-sm">{cell.day}</p>
+                        <p className="font-black text-[11px] sm:text-sm">{cell.day}</p>
                         {isToday && (
-                          <span className="text-[9px] uppercase px-2 py-0.5 rounded-full bg-blue-500/15 text-blue-300 border border-blue-400/30">
+                          <span className="hidden sm:inline-flex text-[9px] uppercase px-2 py-0.5 rounded-full bg-blue-500/15 text-blue-300 border border-blue-400/30">
                             Hoy
                           </span>
                         )}
                       </div>
                       {hasEvents && (
-                        <p className="text-[10px] uppercase tracking-widest font-black text-[#c5a059] mt-1">
-                          {scheduledCount} {scheduledCount === 1 ? 'agendado' : 'agendados'}
+                        <p className="text-[9px] sm:text-[10px] uppercase tracking-widest font-black text-[#c5a059] mt-1">
+                          {scheduledCount} evt
                         </p>
                       )}
                     </button>
