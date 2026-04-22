@@ -5,6 +5,7 @@ import type { SheetName } from '@/lib/sheets/types';
 export class GoogleSheetsClient {
   private readonly spreadsheetId: string;
   private readonly sheetsApi: sheets_v4.Sheets;
+  private readonly headersCache = new Map<string, string[]>();
 
   constructor() {
     const config = getGoogleSheetsConfig();
@@ -57,7 +58,8 @@ export class GoogleSheetsClient {
   }
 
   async appendRow(sheetName: SheetName, row: Record<string, string>): Promise<void> {
-    const values = [Object.values(row)];
+    const headers = await this.getCachedHeaders(sheetName);
+    const values = [this.mapRowByHeaders(headers, row)];
 
     await this.sheetsApi.spreadsheets.values.append({
       spreadsheetId: this.spreadsheetId,
@@ -73,13 +75,31 @@ export class GoogleSheetsClient {
     row: Record<string, string>,
   ): Promise<void> {
     const range = `${sheetName}!A${rowNumber}`;
+    const headers = await this.getCachedHeaders(sheetName);
 
     await this.sheetsApi.spreadsheets.values.update({
       spreadsheetId: this.spreadsheetId,
       range,
       valueInputOption: 'RAW',
-      requestBody: { values: [Object.values(row)] },
+      requestBody: { values: [this.mapRowByHeaders(headers, row)] },
     });
+  }
+
+  private async getCachedHeaders(sheetName: SheetName): Promise<string[]> {
+    const cacheKey = String(sheetName);
+    const cachedHeaders = this.headersCache.get(cacheKey);
+
+    if (cachedHeaders) {
+      return cachedHeaders;
+    }
+
+    const headers = await this.getSheetHeaders(sheetName);
+    this.headersCache.set(cacheKey, headers);
+    return headers;
+  }
+
+  private mapRowByHeaders(headers: string[], row: Record<string, string>): string[] {
+    return headers.map((header) => row[header] ?? '');
   }
 
   private toObject(headers: string[], row: string[]): Record<string, string> {

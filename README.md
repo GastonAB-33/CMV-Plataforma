@@ -57,3 +57,22 @@ Hoy el frontend Vite no requiere variables para arrancar. El archivo `.env.examp
 - El repo ya esta preparado para subirse a GitHub sin `node_modules`, `dist`, `.next` ni archivos `.zip`.
 - Los archivos de exportacion local quedaron excluidos del control de versiones.
 - La migracion a Next.js sigue presente como trabajo en progreso y no bloquea el build principal.
+
+## Publicaciones (Eventos y Noticias)
+
+En la capa Next.js en migracion (`src/app`) el modulo `/eventos` ahora gestiona:
+
+- `tipoContenido`: `evento` o `noticia`
+- `canalPublicacion`: `interna` o `publica`
+- campos de noticia para web publica: `titulo`, `fecha`, `texto`, `imagen`, `badge`, `link`
+
+Endpoint para consumir contenido publico desde la web externa:
+
+- `GET /api/publicaciones/publicas`
+
+Columnas requeridas en la hoja `Eventos` para este modulo:
+
+- `id`, `tipoContenido`, `titulo`, `tipoEvento`, `celulaId`, `fechaRealizacion`, `horaRealizacion`
+- `descripcion`, `canalPublicacion`, `estadoPublicacion`, `publicadoEnInterna`, `publicadoEnPublica`
+- `syncPublicaEstado`, `syncPublicaError`, `noticiaFecha`, `noticiaTexto`, `noticiaImagen`, `noticiaBadge`, `noticiaLink`
+- `creadorId`, `creadoEn`, `actualizadoEn`

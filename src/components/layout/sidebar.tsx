@@ -4,7 +4,7 @@ const links = [
   { href: '/dashboard', label: 'Dashboard' },
   { href: '/hermanos', label: 'Hermanos' },
   { href: '/seguimiento', label: 'Seguimiento' },
-  { href: '/eventos', label: 'Eventos' },
+  { href: '/eventos', label: 'Eventos y Noticias' },
 ];
 
 export function Sidebar() {

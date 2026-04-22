@@ -1,19 +1,31 @@
-{
-  "short_name": "CMV Seguimiento",
+﻿{
+  "short_name": "CMV",
   "name": "CMV Seguimiento Congregacional",
-  "description": "Gestión de hermanos, seguimiento espiritual y tareas pastorales.",
+  "description": "Gestion de hermanos, seguimiento espiritual y tareas pastorales.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
-  "theme_color": "#c5a059",
+  "theme_color": "#0a0a0a",
   "background_color": "#0a0a0a",
   "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
     {
       "src": "/icon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "purpose": "any"
     }
   ]
 }

@@ -1,4 +1,5 @@
-﻿import { Role } from '../../types';
+import { canManageNotifications } from '../../lib/permissionsMatrix';
+import { Role } from '../../types';
 
 export type NotificationChannel = 'internal' | 'email' | 'whatsapp';
 
@@ -43,7 +44,7 @@ export const notificationService = {
     if (channel === 'internal') {
       return true;
     }
-    return [Role.APOSTOL, Role.PASTOR, Role.LIDER_CELULA].includes(role);
+    return canManageNotifications(role);
   },
 
   buildDeliveryPreview(draft: NotificationDraft): string {

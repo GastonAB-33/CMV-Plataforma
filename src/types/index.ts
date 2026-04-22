@@ -1,6 +1,7 @@
-﻿export enum Role {
+export enum Role {
   APOSTOL = 'APOSTOL',
   PASTOR = 'PASTOR',
+  LIDER_RED_CELULAS = 'LIDER_RED_CELULAS',
   LIDER_CELULA = 'LIDER_CELULA',
   DISCIPULO = 'DISCIPULO',
   HERMANO_MAYOR = 'HERMANO_MAYOR',
@@ -118,11 +119,15 @@ export interface Event {
   date: string;
   time: string;
   cell: string;
+  organizerCell: Cell;
+  invitedCells?: Cell[];
 }
 
 export interface User {
   id: string;
   name: string;
   role: Role;
+  primaryCell?: Cell;
+  coveredCells?: Cell[];
 }
 

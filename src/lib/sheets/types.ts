@@ -64,11 +64,23 @@ export interface Discipulado {
 
 export interface Evento {
   id: string;
+  tipoContenido: 'evento' | 'noticia';
   titulo: string;
-  tipo: 'grupal' | 'individual';
+  tipoEvento?: 'grupal' | 'individual';
   celulaId?: string;
-  fecha: string;
-  hora?: string;
+  fechaRealizacion?: string;
+  horaRealizacion?: string;
+  canalPublicacion: 'interna' | 'publica';
+  estadoPublicacion: 'borrador' | 'publicado' | 'archivado';
+  publicadoEnInterna?: string;
+  publicadoEnPublica?: string;
+  syncPublicaEstado?: 'no_aplica' | 'pendiente' | 'sincronizado' | 'error';
+  syncPublicaError?: string;
+  noticiaFecha?: string;
+  noticiaTexto?: string;
+  noticiaImagen?: string;
+  noticiaBadge?: string;
+  noticiaLink?: string;
   creadorId?: string;
   descripcion?: string;
   creadoEn?: string;
