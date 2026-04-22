@@ -1,0 +1,19 @@
+{
+  "short_name": "CMV Seguimiento",
+  "name": "CMV Seguimiento Congregacional",
+  "description": "Gestión de hermanos, seguimiento espiritual y tareas pastorales.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#c5a059",
+  "background_color": "#0a0a0a",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
