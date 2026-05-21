@@ -94,6 +94,7 @@ export interface Brother {
   id: string;
   name: string;
   fotoUrl?: string;
+  edad?: number;
   role: Role;
   procesoActual: Proceso;
   acompanamiento: Acompanamiento;

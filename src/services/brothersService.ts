@@ -102,6 +102,7 @@ export const brothersService = {
       apellidos: string;
       telefono?: string;
       direccion?: string;
+      edad?: number;
       celulaId?: string;
       estado?: string;
       fechaIngreso?: string;

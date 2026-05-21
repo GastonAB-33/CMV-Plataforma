@@ -8,7 +8,7 @@ type TargetField =
   | 'nombres'
   | 'apellidos'
   | 'telefono'
-  | 'direccion'
+  | 'edad'
   | 'celula'
   | 'estado_proceso'
   | 'fecha_ingreso';
@@ -26,19 +26,20 @@ const TARGET_FIELDS: Array<{ key: TargetField; label: string; required?: boolean
   { key: 'nombres', label: 'Nombres', required: true },
   { key: 'apellidos', label: 'Apellidos', required: true },
   { key: 'telefono', label: 'Telefono' },
-  { key: 'direccion', label: 'Direccion' },
+  { key: 'edad', label: 'Edad' },
   { key: 'celula', label: 'Celula', required: true },
   { key: 'estado_proceso', label: 'Estado proceso', required: true },
   { key: 'fecha_ingreso', label: 'Fecha ingreso' },
 ];
 
 const PROCESS_VALUES = ['altar', 'grupo', 'experiencia', 'eddi', 'discipulo'];
+const PROCESS_LABELS = ['Altar', 'Grupo', 'Experiencia', 'EDDI', 'Discípulo'];
 
 const TEMPLATE_HEADERS = [
   'nombres',
   'apellidos',
   'telefono',
-  'direccion',
+  'edad',
   'celula',
   'estado_proceso',
   'fecha_ingreso',
@@ -61,7 +62,38 @@ const parseCsv = (content: string): { headers: string[]; rows: string[][] } => {
     return { headers: [], rows: [] };
   }
 
-  const split = (line: string) => line.split(',').map((item) => item.trim());
+  const split = (line: string) => {
+    const cells: string[] = [];
+    let current = '';
+    let insideQuotes = false;
+
+    for (let index = 0; index < line.length; index += 1) {
+      const char = line[index];
+      const nextChar = line[index + 1];
+
+      if (char === '"' && insideQuotes && nextChar === '"') {
+        current += '"';
+        index += 1;
+        continue;
+      }
+
+      if (char === '"') {
+        insideQuotes = !insideQuotes;
+        continue;
+      }
+
+      if (char === ',' && !insideQuotes) {
+        cells.push(current.trim());
+        current = '';
+        continue;
+      }
+
+      current += char;
+    }
+
+    cells.push(current.trim());
+    return cells;
+  };
   const headers = split(lines[0]);
   const rows = lines.slice(1).map(split);
   return { headers, rows };
@@ -76,7 +108,7 @@ export const ImportadorPage = () => {
     nombres: '',
     apellidos: '',
     telefono: '',
-    direccion: '',
+    edad: '',
     celula: '',
     estado_proceso: '',
     fecha_ingreso: '',
@@ -84,16 +116,25 @@ export const ImportadorPage = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [toast, setToast] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
 
-  const downloadTemplateXls = () => {
-    const headerRow = TEMPLATE_HEADERS.join('\t');
-    const sampleRow = ['Juan', 'Perez', '2664123456', 'Calle 123', 'Vida', 'Altar', '2026-05-20'].join('\t');
-    const content = `${headerRow}\n${sampleRow}\n`;
+  const downloadTemplateCsv = () => {
+    const templateRows = [
+      [...TEMPLATE_HEADERS, 'estados_disponibles'],
+      ['Juan', 'Perez', '2664123456', '32', 'Vida', 'Altar', '2026-05-20', PROCESS_LABELS[0]],
+      ...PROCESS_LABELS.slice(1).map((value) => [...Array(TEMPLATE_HEADERS.length).fill(''), value]),
+    ];
+    const content = templateRows
+      .map((row) =>
+        row
+          .map((cell) => `"${String(cell).replace(/"/g, '""')}"`)
+          .join(','),
+      )
+      .join('\n');
 
-    const blob = new Blob([content], { type: 'application/vnd.ms-excel;charset=utf-8;' });
+    const blob = new Blob([`\uFEFF${content}\n`], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.setAttribute('download', 'plantilla_importador_hermanos.xls');
+    link.setAttribute('download', 'plantilla_importador_hermanos.csv');
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -157,6 +198,10 @@ export const ImportadorPage = () => {
         if (!PROCESS_VALUES.includes(value)) {
           errors.push('estado_proceso inválido');
         }
+      }
+
+      if (mapped.edad && !/^\d{1,3}$/.test(mapped.edad)) {
+        errors.push('edad inválida');
       }
 
       return {
@@ -236,10 +281,10 @@ export const ImportadorPage = () => {
         </div>
         <button
           type="button"
-          onClick={downloadTemplateXls}
+          onClick={downloadTemplateCsv}
           className="rounded-xl border border-[#c5a059]/40 bg-[#c5a059]/10 text-[#c5a059] px-3 py-2 text-xs font-black uppercase tracking-wider"
         >
-          Descargar plantilla XLS
+          Descargar plantilla CSV
         </button>
         <div className="rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0a0a0a] p-3 text-xs text-slate-600 dark:text-gray-300">
           <p className="font-semibold mb-1">Datos obligatorios por fila:</p>
@@ -249,7 +294,10 @@ export const ImportadorPage = () => {
           </p>
           <p className="mt-1">
             Valores válidos en <span className="font-bold">estado_proceso</span>:{' '}
-            Altar, Grupo, Experiencia, EDDI, Discípulo.
+            {PROCESS_LABELS.join(', ')}.
+          </p>
+          <p className="mt-1">
+            La plantilla incluye esos estados al costado para usarlos como referencia.
           </p>
         </div>
         <input type="file" accept=".csv,text/csv" onChange={onFileChange} />
@@ -344,7 +392,7 @@ export const ImportadorPage = () => {
             <CheckCircle2 size={14} />
             <p className="text-xs uppercase tracking-widest font-black">Valores válidos de proceso</p>
           </div>
-          <p className="text-sm text-emerald-100/90">Altar | Grupo | Experiencia | EDDI | Discípulo</p>
+          <p className="text-sm text-emerald-100/90">{PROCESS_LABELS.join(' | ')}</p>
         </article>
       </section>
 

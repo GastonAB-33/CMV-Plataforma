@@ -16,6 +16,7 @@ interface SupabaseHermanoRow {
   apellidos: string;
   telefono: string | null;
   direccion: string | null;
+  edad: number | null;
   celula_id: string | null;
   estado: string | null;
   fecha_ingreso: string | null;
@@ -35,6 +36,7 @@ interface UpsertBrotherInput {
   apellidos: string;
   telefono?: string;
   direccion?: string;
+  edad?: number;
   celulaId?: string;
   estado?: string;
   fechaIngreso?: string;
@@ -103,6 +105,7 @@ const toBrotherProfile = (
     id: row.id,
     name: buildName(row),
     fotoUrl: row.foto_url ?? undefined,
+    edad: row.edad ?? undefined,
     role: Role.HERMANO_NUEVO,
     procesoActual: toProceso(process?.tipo ?? row.estado ?? undefined),
     acompanamiento: {
@@ -157,7 +160,7 @@ export const supabaseCongregationService = {
         client.from('celulas').select('id,nombre,activa,lider_id'),
         client
           .from('hermanos')
-          .select('id,nombres,apellidos,telefono,direccion,celula_id,estado,fecha_ingreso,foto_url')
+          .select('id,nombres,apellidos,telefono,direccion,edad,celula_id,estado,fecha_ingreso,foto_url')
           .order('nombres', { ascending: true }),
         client
           .from('procesos')
@@ -212,6 +215,9 @@ export const supabaseCongregationService = {
     }
     if (input.direccion !== undefined) {
       payload.direccion = input.direccion.trim() || null;
+    }
+    if (input.edad !== undefined) {
+      payload.edad = Number.isFinite(input.edad) ? input.edad : null;
     }
     if (input.celulaId !== undefined) {
       payload.celula_id = input.celulaId || null;

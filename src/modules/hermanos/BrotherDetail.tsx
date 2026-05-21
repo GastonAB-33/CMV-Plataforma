@@ -842,7 +842,7 @@ export const BrotherDetail = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 w-full items-stretch">
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-6 w-full items-stretch">
                 <div className="flex items-stretch gap-3 sm:gap-4 bg-[#f8fafc] dark:bg-black/60 p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-white/5 min-h-[100px] sm:min-h-[110px] shadow-inner w-full min-w-0">
                   <div className="p-3 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl">
                     <Users className="text-[#c5a059]" size={20} />
@@ -850,6 +850,18 @@ export const BrotherDetail = () => {
                   <div className="text-left flex-1 min-w-0">
                     <p className="text-[9px] uppercase tracking-[0.2em] font-black text-slate-500 dark:text-gray-500 mb-1">Discípulo o Hermano Mayor</p>
                     <p className="font-bold text-sm text-slate-700 dark:text-gray-200 break-words">{acompanamiento.acompananteName || 'No asignado'}</p>
+                  </div>
+                </div>
+
+                <div className="flex items-stretch gap-3 sm:gap-4 bg-[#f8fafc] dark:bg-black/60 p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-white/5 min-h-[100px] sm:min-h-[110px] shadow-inner w-full min-w-0">
+                  <div className="p-3 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl">
+                    <Calendar className="text-[#c5a059]" size={20} />
+                  </div>
+                  <div className="text-left flex-1 min-w-0">
+                    <p className="text-[9px] uppercase tracking-[0.2em] font-black text-slate-500 dark:text-gray-500 mb-1">Edad</p>
+                    <p className="font-bold text-sm text-slate-700 dark:text-gray-200 break-words">
+                      {brother.edad ? `${brother.edad} años` : 'No registrada'}
+                    </p>
                   </div>
                 </div>
 
