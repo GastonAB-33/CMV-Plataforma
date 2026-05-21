@@ -1,9 +1,10 @@
 import { ReactNode, useMemo, useState } from 'react';
 import { Home, Users, LineChart, Calendar, GraduationCap, Music, MonitorPlay, HandHelping, Menu, X, MoreHorizontal, Settings, FileSpreadsheet } from 'lucide-react';
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { Role, User } from '../types';
 import { ThemeToggle } from '../components/ui/ThemeToggle';
 import { AppFeatureKey, hasPermissionAtLeastForUser } from '../lib/permissionsMatrix';
+import { useAuth } from '../hooks/useAuth';
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -12,7 +13,10 @@ interface MainLayoutProps {
 
 export const MainLayout = ({ children, user }: MainLayoutProps) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { logout } = useAuth();
   const role = user.role;
   const roleLabel = role.replace(/_/g, ' ').toLowerCase();
   const canManageUsers = role === Role.APOSTOL || role === Role.SUPERADMIN;
@@ -42,6 +46,13 @@ export const MainLayout = ({ children, user }: MainLayoutProps) => {
     () => secondaryMobileItems.some((item) => location.pathname.startsWith(item.path)),
     [location.pathname, secondaryMobileItems],
   );
+
+  const handleLogout = async () => {
+    await logout();
+    setIsProfileMenuOpen(false);
+    setIsMobileMenuOpen(false);
+    navigate('/login', { replace: true });
+  };
 
   return (
     <div className="flex min-h-screen md:h-screen bg-white dark:bg-black text-black dark:text-white overflow-hidden transition-colors">
@@ -74,8 +85,12 @@ export const MainLayout = ({ children, user }: MainLayoutProps) => {
             </NavLink>
           ))}
         </nav>
-        <div className="p-4 border-t border-slate-200 dark:border-[#c5a059]/10 mt-auto transition-colors">
-          <div className="flex items-center gap-3 p-2">
+        <div className="p-4 border-t border-slate-200 dark:border-[#c5a059]/10 mt-auto transition-colors relative">
+          <button
+            type="button"
+            onClick={() => setIsProfileMenuOpen((previous) => !previous)}
+            className="w-full flex items-center gap-3 p-2 rounded-xl hover:bg-[#c5a059]/10 transition-colors text-left"
+          >
             <div className="w-8 h-8 rounded-full bg-[#c5a059] flex items-center justify-center text-black font-bold text-xs">
               {String(role).charAt(0)}
             </div>
@@ -83,7 +98,18 @@ export const MainLayout = ({ children, user }: MainLayoutProps) => {
               <span className="text-xs font-bold text-slate-900 dark:text-white leading-none capitalize">{roleLabel}</span>
               <span className="text-[10px] text-slate-500 dark:text-gray-500">Sesion activa</span>
             </div>
-          </div>
+          </button>
+          {isProfileMenuOpen && (
+            <div className="absolute left-4 right-4 bottom-[78px] rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#111111] p-2 shadow-xl">
+              <button
+                type="button"
+                onClick={() => void handleLogout()}
+                className="w-full rounded-lg px-3 py-2 text-xs uppercase tracking-wider font-black text-left text-rose-600 dark:text-rose-300 hover:bg-rose-500/10"
+              >
+                Cerrar sesion
+              </button>
+            </div>
+          )}
         </div>
       </aside>
 
@@ -167,6 +193,13 @@ export const MainLayout = ({ children, user }: MainLayoutProps) => {
               ))}
             </nav>
             <div className="mt-4 pt-4 border-t border-slate-200 dark:border-white/10">
+              <button
+                type="button"
+                onClick={() => void handleLogout()}
+                className="w-full rounded-xl border border-rose-400/30 bg-rose-500/10 px-3 py-2 text-xs uppercase tracking-wider font-black text-rose-600 dark:text-rose-300 mb-3"
+              >
+                Cerrar sesion
+              </button>
               <p className="text-[10px] uppercase tracking-widest font-black text-slate-500 dark:text-gray-400 mb-2">Apariencia</p>
               <ThemeToggle />
             </div>
