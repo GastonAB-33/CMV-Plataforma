@@ -1,5 +1,5 @@
 import { MOCK_BROTHERS, MOCK_EVENTS } from '../data/mocks';
-import { canManageEvents, hasPermissionAtLeast } from '../lib/permissionsMatrix';
+import { canManageEventsForUser, hasPermissionAtLeastForUser } from '../lib/permissionsMatrix';
 import { Cell, Event, EventType, Role, User } from '../types';
 
 export type PublicationKind = 'evento' | 'noticia';
@@ -234,7 +234,7 @@ const isPrivatePublicationVisibleForUser = (item: PublicationItem, user: User): 
 };
 
 const isPublicationVisibleForUser = (item: PublicationItem, user: User): boolean => {
-  if (!hasPermissionAtLeast(user.role, 'eventos', 'view')) {
+  if (!hasPermissionAtLeastForUser(user, 'eventos', 'view')) {
     return false;
   }
 
@@ -432,6 +432,6 @@ export const eventsService = {
   },
 
   canManageForUser(user: User): boolean {
-    return canManageEvents(user.role);
+    return canManageEventsForUser(user);
   },
 };

@@ -1,6 +1,15 @@
 export const AUTH_COOKIE_NAME = 'cmv_auth_session';
 
-export const ALLOWED_ROLES = ['apostol', 'lider', 'pastor'] as const;
+export const ALLOWED_ROLES = [
+  'superadmin',
+  'apostol',
+  'pastor',
+  'lider_red_celulas',
+  'lider_celula',
+  'discipulo',
+  'hermano_mayor',
+  'hermano_nuevo',
+] as const;
 
 export type AllowedRole = (typeof ALLOWED_ROLES)[number];
 

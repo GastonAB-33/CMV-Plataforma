@@ -1,28 +1,38 @@
 import { ReactNode, useMemo, useState } from 'react';
-import { Home, Users, LineChart, Calendar, GraduationCap, Music, MonitorPlay, HandHelping, Menu, X, MoreHorizontal } from 'lucide-react';
+import { Home, Users, LineChart, Calendar, GraduationCap, Music, MonitorPlay, HandHelping, Menu, X, MoreHorizontal, Settings, FileSpreadsheet } from 'lucide-react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { Role } from '../types';
+import { Role, User } from '../types';
 import { ThemeToggle } from '../components/ui/ThemeToggle';
+import { AppFeatureKey, hasPermissionAtLeastForUser } from '../lib/permissionsMatrix';
 
 interface MainLayoutProps {
   children: ReactNode;
-  role: Role;
+  user: User;
 }
 
-export const MainLayout = ({ children, role }: MainLayoutProps) => {
+export const MainLayout = ({ children, user }: MainLayoutProps) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const role = user.role;
   const roleLabel = role.replace(/_/g, ' ').toLowerCase();
+  const canManageUsers = role === Role.APOSTOL || role === Role.SUPERADMIN;
+  const canUseImporter = role === Role.SUPERADMIN;
   const navItems = [
-    { id: 'dashboard', path: '/', icon: <Home size={22} />, label: 'Inicio', shortLabel: 'Inicio', primaryMobile: true },
-    { id: 'brothers', path: '/hermanos', icon: <Users size={22} />, label: 'Hermanos', shortLabel: 'Hermanos', primaryMobile: true },
-    { id: 'tracking', path: '/tracking', icon: <LineChart size={22} />, label: 'Seguimiento', shortLabel: 'Seguimiento', primaryMobile: true },
-    { id: 'events', path: '/events', icon: <Calendar size={22} />, label: 'Eventos/Noticias', shortLabel: 'Eventos', primaryMobile: true },
-    { id: 'eddi-school', path: '/escuela-eddi', icon: <GraduationCap size={22} />, label: 'Escuela EDDI', shortLabel: 'EDDI' },
-    { id: 'worship', path: '/ministerio-adoracion', icon: <Music size={22} />, label: 'Adoracion', shortLabel: 'Adoracion' },
-    { id: 'multimedia', path: '/ministerio-multimedia', icon: <MonitorPlay size={22} />, label: 'Multimedia', shortLabel: 'Multimedia' },
-    { id: 'misericordia', path: '/ministerio-misericordia', icon: <HandHelping size={22} />, label: 'Misericordia', shortLabel: 'Misericordia' },
-  ];
+    { id: 'dashboard', feature: 'dashboard' as AppFeatureKey, path: '/', icon: <Home size={22} />, label: 'Inicio', shortLabel: 'Inicio', primaryMobile: true },
+    { id: 'brothers', feature: 'hermanos' as AppFeatureKey, path: '/hermanos', icon: <Users size={22} />, label: 'Hermanos', shortLabel: 'Hermanos', primaryMobile: true },
+    { id: 'tracking', feature: 'seguimiento' as AppFeatureKey, path: '/tracking', icon: <LineChart size={22} />, label: 'Seguimiento', shortLabel: 'Seguimiento', primaryMobile: true },
+    { id: 'events', feature: 'eventos' as AppFeatureKey, path: '/events', icon: <Calendar size={22} />, label: 'Eventos/Noticias', shortLabel: 'Eventos', primaryMobile: true },
+    { id: 'eddi-school', feature: 'escuela_eddi' as AppFeatureKey, path: '/escuela-eddi', icon: <GraduationCap size={22} />, label: 'Escuela EDDI', shortLabel: 'EDDI' },
+    { id: 'worship', feature: 'ministerio_adoracion' as AppFeatureKey, path: '/ministerio-adoracion', icon: <Music size={22} />, label: 'Adoracion', shortLabel: 'Adoracion' },
+    { id: 'multimedia', feature: 'ministerio_multimedia' as AppFeatureKey, path: '/ministerio-multimedia', icon: <MonitorPlay size={22} />, label: 'Multimedia', shortLabel: 'Multimedia' },
+    { id: 'misericordia', feature: 'ministerio_misericordia' as AppFeatureKey, path: '/ministerio-misericordia', icon: <HandHelping size={22} />, label: 'Misericordia', shortLabel: 'Misericordia' },
+    ...(canManageUsers
+      ? [{ id: 'config-users', feature: 'dashboard' as AppFeatureKey, path: '/configuracion/usuarios', icon: <Settings size={22} />, label: 'Configuracion', shortLabel: 'Config' }]
+      : []),
+    ...(canUseImporter
+      ? [{ id: 'importador', feature: 'hermanos' as AppFeatureKey, path: '/importador', icon: <FileSpreadsheet size={22} />, label: 'Importador', shortLabel: 'Importar' }]
+      : []),
+  ].filter((item) => hasPermissionAtLeastForUser(user, item.feature, 'view'));
 
   const activeClass = 'bg-[#c5a059]/10 text-[#c5a059] border border-[#c5a059]/30';
   const inactiveClass = 'text-slate-700 dark:text-gray-300 hover:bg-[#c5a059]/5 hover:text-[#c5a059]';

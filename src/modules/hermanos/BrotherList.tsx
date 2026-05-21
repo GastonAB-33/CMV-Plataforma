@@ -3,18 +3,44 @@ import { Search, ChevronRight, UserPlus, Filter, Sparkles, ChevronDown } from 'l
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { brothersService } from '../../services/brothersService';
+import { useAuth } from '../../hooks/useAuth';
 import { Proceso } from '../../types';
 import { STAGE_COLORS } from '../../theme/stages';
 import { Modal } from '../../components/ui/Modal';
 import { Toast } from '../../components/ui/Toast';
 import { BrotherNameTrigger } from '../../components/brothers/BrotherNameTrigger';
+import { BrotherListItem } from './types';
 
 const STAGES = ['Todas', Proceso.ALTAR, Proceso.GRUPO, Proceso.EXPERIENCIA, Proceso.EDDI, Proceso.DISCIPULO] as const;
 
 type StageFilter = (typeof STAGES)[number];
+type InitialStage = 'Altar' | 'Grupo' | 'Experiencia';
+type ToastType = 'success' | 'error' | 'info';
+
+const DEFAULT_CELL_OPTIONS = ['Vida', 'Nissi', 'Zaeta', 'Sion', 'Maranata', 'Alpha y Omega'];
+
+const splitFullName = (fullName: string): { nombres: string; apellidos: string } => {
+  const parts = fullName
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
+
+  if (parts.length <= 1) {
+    return { nombres: parts[0] ?? '', apellidos: '-' };
+  }
+
+  if (parts.length === 2) {
+    return { nombres: parts[0], apellidos: parts[1] };
+  }
+
+  const nombres = parts.slice(0, parts.length - 1).join(' ');
+  const apellidos = parts[parts.length - 1] ?? '-';
+  return { nombres, apellidos };
+};
 
 export const BrotherList = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStage, setSelectedStage] = useState<StageFilter>('Todas');
   const [expandedBrotherId, setExpandedBrotherId] = useState<string | null>(null);
@@ -23,12 +49,90 @@ export const BrotherList = () => {
   const [isStageFilterModalOpen, setIsStageFilterModalOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showToast, setShowToast] = useState(false);
-  const brothers = useMemo(() => brothersService.listForListing(), []);
+  const [toastMessage, setToastMessage] = useState('Alta de hermano procesada correctamente.');
+  const [toastType, setToastType] = useState<ToastType>('success');
+  const [brothers, setBrothers] = useState<BrotherListItem[]>(() => brothersService.listForListing());
+  const [isLoadingBrothers, setIsLoadingBrothers] = useState(true);
+  const [cellOptions, setCellOptions] = useState<string[]>(DEFAULT_CELL_OPTIONS);
+  const [isSavingBrother, setIsSavingBrother] = useState(false);
+  const [newBrotherName, setNewBrotherName] = useState('');
+  const [newBrotherDate, setNewBrotherDate] = useState('');
+  const [newBrotherCell, setNewBrotherCell] = useState(DEFAULT_CELL_OPTIONS[0]);
+  const [newBrotherStage, setNewBrotherStage] = useState<InitialStage>('Altar');
 
-  const handleSaveBrother = (e: React.FormEvent) => {
+  const handleSaveBrother = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsModalOpen(false);
-    setShowToast(true);
+
+    if (isSavingBrother) {
+      return;
+    }
+
+    const cleanName = newBrotherName.trim();
+    if (!cleanName) {
+      setToastType('error');
+      setToastMessage('Completá el nombre del hermano.');
+      setShowToast(true);
+      return;
+    }
+
+    setIsSavingBrother(true);
+
+    try {
+      const actor = {
+        id: user.id,
+        name: user.name,
+      };
+
+      const cellResult = await brothersService.upsertCellAsync(
+        {
+          nombre: newBrotherCell,
+          activa: true,
+        },
+        actor,
+      );
+
+      if (!cellResult.ok || !cellResult.id) {
+        setToastType('error');
+        setToastMessage(cellResult.error ?? 'No se pudo preparar la célula.');
+        setShowToast(true);
+        return;
+      }
+
+      const { nombres, apellidos } = splitFullName(cleanName);
+      const brotherResult = await brothersService.upsertBrotherAsync(
+        {
+          nombres,
+          apellidos,
+          celulaId: cellResult.id,
+          fechaIngreso: newBrotherDate || undefined,
+          estado: newBrotherStage,
+        },
+        actor,
+      );
+
+      if (!brotherResult.ok) {
+        setToastType('error');
+        setToastMessage(brotherResult.error ?? 'No se pudo guardar el hermano en Supabase.');
+        setShowToast(true);
+        return;
+      }
+
+      const loaded = await brothersService.listForListingAsync();
+      setBrothers(loaded);
+      setIsModalOpen(false);
+      setNewBrotherName('');
+      setNewBrotherDate('');
+      setNewBrotherStage('Altar');
+      setToastType('success');
+      setToastMessage('Hermano guardado correctamente en base de datos.');
+      setShowToast(true);
+    } catch {
+      setToastType('error');
+      setToastMessage('No se pudo guardar el hermano. Revisá conexión y configuración Supabase.');
+      setShowToast(true);
+    } finally {
+      setIsSavingBrother(false);
+    }
   };
 
   const filteredBrothers = brothers.filter((brother) => {
@@ -50,6 +154,38 @@ export const BrotherList = () => {
     }),
     [brothers],
   );
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadBrothers = async () => {
+      try {
+        const [loaded, loadedCells] = await Promise.all([
+          brothersService.listForListingAsync(),
+          brothersService.listCellsAsync(),
+        ]);
+        if (!isMounted) {
+          return;
+        }
+        setBrothers(loaded);
+        const nextCells = loadedCells.length > 0 ? loadedCells : DEFAULT_CELL_OPTIONS;
+        setCellOptions(nextCells);
+        setNewBrotherCell((previous) =>
+          nextCells.includes(previous) ? previous : nextCells[0] ?? DEFAULT_CELL_OPTIONS[0],
+        );
+      } finally {
+        if (isMounted) {
+          setIsLoadingBrothers(false);
+        }
+      }
+    };
+
+    void loadBrothers();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   useEffect(() => {
     setExpandedBrotherId(null);
@@ -158,7 +294,18 @@ export const BrotherList = () => {
                   key={brother.id}
                   className="rounded-3xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#1a1a1a] p-4 shadow-xl"
                 >
-                  <button type="button" onClick={() => setExpandedBrotherId(isExpanded ? null : brother.id)} className="w-full text-left">
+                  <div
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => setExpandedBrotherId(isExpanded ? null : brother.id)}
+                    onKeyDown={(event) => {
+                      if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault();
+                        setExpandedBrotherId(isExpanded ? null : brother.id);
+                      }
+                    }}
+                    className="w-full text-left"
+                  >
                     <div className="flex items-start gap-3">
                       <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#c5a059]/20 to-transparent flex items-center justify-center text-[#c5a059] font-black text-xl border border-slate-200 dark:border-white/10 shrink-0">
                         {brother.name.charAt(0)}
@@ -181,7 +328,7 @@ export const BrotherList = () => {
                         className={`shrink-0 mt-1 text-slate-500 dark:text-gray-400 transition-transform ${isExpanded ? 'rotate-180 text-[#c5a059]' : ''}`}
                       />
                     </div>
-                  </button>
+                  </div>
 
                   <div
                     className={`grid transition-all duration-300 ease-out ${
@@ -291,7 +438,13 @@ export const BrotherList = () => {
         </>
       )}
 
-      {filteredBrothers.length === 0 && (
+      {isLoadingBrothers && (
+        <div className="p-10 md:p-16 text-center animate-in fade-in zoom-in-95 duration-500 bg-white dark:bg-[#1a1a1a] rounded-[2.5rem] border border-slate-200 dark:border-white/5 shadow-2xl">
+          <p className="text-slate-500 dark:text-gray-400 text-sm font-medium">Cargando hermanos...</p>
+        </div>
+      )}
+
+      {!isLoadingBrothers && filteredBrothers.length === 0 && (
         <div className="p-10 md:p-32 text-center animate-in fade-in zoom-in-95 duration-500 bg-white dark:bg-[#1a1a1a] rounded-[2.5rem] border border-slate-200 dark:border-white/5 shadow-2xl">
           <div className="w-24 h-24 bg-slate-100 dark:bg-white/5 rounded-[2rem] flex items-center justify-center mx-auto mb-8 border border-slate-200 dark:border-white/5 shadow-inner">
             <Search className="text-[#c5a059]/50" size={40} />
@@ -373,30 +526,45 @@ export const BrotherList = () => {
                 type="text"
                 placeholder="Ej: David Livingstone"
                 required
+                value={newBrotherName}
+                onChange={(event) => setNewBrotherName(event.target.value)}
                 className="w-full bg-slate-100 dark:bg-white/5 border border-white/10 rounded-[1.2rem] p-5 text-slate-900 dark:text-white focus:outline-none focus:border-[#c5a059] transition-all"
               />
             </div>
             <div className="space-y-3">
               <label className="text-[10px] uppercase tracking-widest font-black text-[#c5a059]">Fecha de ingreso</label>
-              <input type="date" required className="w-full bg-slate-100 dark:bg-white/5 border border-white/10 rounded-[1.2rem] p-5 text-slate-900 dark:text-white focus:outline-none focus:border-[#c5a059] transition-all" />
+              <input
+                type="date"
+                required
+                value={newBrotherDate}
+                onChange={(event) => setNewBrotherDate(event.target.value)}
+                className="w-full bg-slate-100 dark:bg-white/5 border border-white/10 rounded-[1.2rem] p-5 text-slate-900 dark:text-white focus:outline-none focus:border-[#c5a059] transition-all"
+              />
             </div>
             <div className="space-y-3">
               <label className="text-[10px] uppercase tracking-widest font-black text-[#c5a059]">Celula asignada</label>
-              <select className="w-full bg-slate-100 dark:bg-white/5 border border-white/10 rounded-[1.2rem] p-5 text-slate-900 dark:text-white focus:outline-none focus:border-[#c5a059] transition-all appearance-none">
-                <option>Vida</option>
-                <option>Nissi</option>
-                <option>Zaeta</option>
-                <option>Sion</option>
-                <option>Maranata</option>
-                <option>Alpha y Omega</option>
+              <select
+                value={newBrotherCell}
+                onChange={(event) => setNewBrotherCell(event.target.value)}
+                className="w-full bg-slate-100 dark:bg-white/5 border border-white/10 rounded-[1.2rem] p-5 text-slate-900 dark:text-white focus:outline-none focus:border-[#c5a059] transition-all appearance-none"
+              >
+                {cellOptions.map((cell) => (
+                  <option key={cell} value={cell}>
+                    {cell}
+                  </option>
+                ))}
               </select>
             </div>
             <div className="space-y-3">
               <label className="text-[10px] uppercase tracking-widest font-black text-[#c5a059]">Etapa inicial</label>
-              <select className="w-full bg-slate-100 dark:bg-white/5 border border-white/10 rounded-[1.2rem] p-5 text-slate-900 dark:text-white focus:outline-none focus:border-[#c5a059] transition-all appearance-none">
-                <option>Altar</option>
-                <option>Grupo</option>
-                <option>Experiencia</option>
+              <select
+                value={newBrotherStage}
+                onChange={(event) => setNewBrotherStage(event.target.value as InitialStage)}
+                className="w-full bg-slate-100 dark:bg-white/5 border border-white/10 rounded-[1.2rem] p-5 text-slate-900 dark:text-white focus:outline-none focus:border-[#c5a059] transition-all appearance-none"
+              >
+                <option value="Altar">Altar</option>
+                <option value="Grupo">Grupo</option>
+                <option value="Experiencia">Experiencia</option>
               </select>
             </div>
           </div>
@@ -404,15 +572,16 @@ export const BrotherList = () => {
           <div className="pt-6 border-t border-slate-200 dark:border-white/5">
             <button
               type="submit"
+              disabled={isSavingBrother}
               className="w-full py-5 bg-[#c5a059] text-black font-black rounded-[1.5rem] hover:bg-[#d4b375] hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl uppercase tracking-widest"
             >
-              Confirmar alta en el sistema
+              {isSavingBrother ? 'Guardando...' : 'Confirmar alta en el sistema'}
             </button>
           </div>
         </form>
       </Modal>
 
-      <Toast isVisible={showToast} onClose={() => setShowToast(false)} message="Alta de hermano procesada correctamente." />
+      <Toast isVisible={showToast} onClose={() => setShowToast(false)} message={toastMessage} type={toastType} />
     </div>
   );
 };

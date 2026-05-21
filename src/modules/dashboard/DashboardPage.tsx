@@ -19,7 +19,7 @@ import { MetricCard } from '../../components/ui/MetricCard';
 import { InstallAppButton } from '../../components/ui/InstallAppButton';
 import { useAuth } from '../../hooks/useAuth';
 import { useData } from '../../hooks/useData';
-import { hasPermissionAtLeast } from '../../lib/permissionsMatrix';
+import { hasPermissionAtLeastForUser } from '../../lib/permissionsMatrix';
 import { canEditManagedModule } from '../../lib/moduleAccess';
 import { brothersService } from '../../services/brothersService';
 import { eventsChangeLogService } from '../../services/eventsChangeLogService';
@@ -176,7 +176,7 @@ const roleLabel = (role: Role) =>
 export const DashboardPage = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { brothers, events, news, notices } = useData();
+  const { brothers, isLoadingBrothers, events, news, notices } = useData();
 
   const visibleBrothers = useMemo(
     () => brothers.filter((brother) => isBrotherVisibleForUser(brother, user)),
@@ -416,9 +416,9 @@ export const DashboardPage = () => {
     .sort((left, right) => right.missingFields.length - left.missingFields.length)
     .slice(0, 5);
 
-  const canEditHermanos = hasPermissionAtLeast(user.role, 'hermanos', 'edit');
-  const canEditTracking = hasPermissionAtLeast(user.role, 'seguimiento', 'edit');
-  const canEditEvents = hasPermissionAtLeast(user.role, 'eventos', 'edit');
+  const canEditHermanos = hasPermissionAtLeastForUser(user, 'hermanos', 'edit');
+  const canEditTracking = hasPermissionAtLeastForUser(user, 'seguimiento', 'edit');
+  const canEditEvents = hasPermissionAtLeastForUser(user, 'eventos', 'edit');
   const canEditEddi = canEditManagedModule(user, 'escuela_eddi');
   const canEditWorship = canEditManagedModule(user, 'ministerio_adoracion');
   const canEditMultimedia = canEditManagedModule(user, 'ministerio_multimedia');
@@ -436,7 +436,18 @@ export const DashboardPage = () => {
     worshipAgenda.length +
     multimediaAgenda.length;
 
-  return (
+  return isLoadingBrothers ? (
+    <div className="space-y-6 animate-in fade-in duration-500">
+      <header className="space-y-3">
+        <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
+          Centro de control
+        </h1>
+        <p className="text-sm text-slate-600 dark:text-gray-400">
+          Cargando datos de hermanos desde Supabase...
+        </p>
+      </header>
+    </div>
+  ) : (
     <div className="space-y-8 animate-in fade-in duration-700">
       <header className="space-y-3">
         <div className="inline-flex items-center rounded-full border border-[#c5a059]/40 bg-[#c5a059]/10 px-3 py-1 text-[10px] uppercase tracking-[0.2em] font-black text-[#c5a059]">

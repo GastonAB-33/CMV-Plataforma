@@ -7,8 +7,12 @@ interface GuardProps {
 }
 
 export const RequireAuth = ({ children }: GuardProps) => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isAuthLoading } = useAuth();
   const location = useLocation();
+
+  if (isAuthLoading) {
+    return null;
+  }
 
   if (!isAuthenticated) {
     return <Navigate to="/login" replace state={{ from: location.pathname }} />;
@@ -18,7 +22,11 @@ export const RequireAuth = ({ children }: GuardProps) => {
 };
 
 export const RedirectIfAuthenticated = ({ children }: GuardProps) => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isAuthLoading } = useAuth();
+
+  if (isAuthLoading) {
+    return null;
+  }
 
   if (isAuthenticated) {
     return <Navigate to="/" replace />;

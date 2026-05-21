@@ -1,13 +1,14 @@
 import { useMemo, useState } from 'react';
-import { AlertTriangle, CheckCircle2, Church, Filter, Sparkles, TrendingUp, Users, Workflow } from 'lucide-react';
+import { AlertTriangle, CheckCircle2, Church, Filter, Sparkles, TrendingUp, Users, Workflow, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { brothersService } from '../../services/brothersService';
+import { Modal } from '../../components/ui/Modal';
 import { eventsService } from '../../services/eventsService';
+import { useData } from '../../hooks/useData';
 import { Cell, EventType, Proceso } from '../../types';
 import { BrotherProfile } from '../hermanos/types';
-import { seguimientoModuleService } from './services/seguimientoModuleService';
+import { getStageStatusByOrder, SEGUIMIENTO_STAGE_ORDER, SeguimientoMatrixRow } from './types';
 
-const STAGES = seguimientoModuleService.getStageOrder();
+const STAGES = SEGUIMIENTO_STAGE_ORDER;
 const PROCESS_SCORE_BY_STAGE: Record<Proceso, number> = {
   [Proceso.ALTAR]: 35,
   [Proceso.GRUPO]: 50,
@@ -147,14 +148,38 @@ const formatRate = (value: number) => `${value}%`;
 
 export const SeguimientoPage = () => {
   const navigate = useNavigate();
+  const { brothers, isLoadingBrothers } = useData();
   const [selectedCell, setSelectedCell] = useState<CellFilter>('Todas');
   const [mobileLevel, setMobileLevel] = useState<MobileDashboardLevel>('resumen');
   const [mobileAnalyticsView, setMobileAnalyticsView] = useState<MobileAnalyticsView>('impacto');
+  const [isMobileChartDetailOpen, setIsMobileChartDetailOpen] = useState(false);
+  const [selectedAlertBrotherId, setSelectedAlertBrotherId] = useState<string | null>(null);
 
-  const rows = useMemo(() => seguimientoModuleService.listMatrixRows(), []);
-  const brothers = useMemo(() => brothersService.list(), []);
+  const rows = useMemo<SeguimientoMatrixRow[]>(
+    () =>
+      brothers.map((brother) => ({
+        brotherId: brother.id,
+        brotherName: brother.name,
+        cellName: brother.acompanamiento.celulaName,
+        currentProcess: brother.procesoActual,
+        stageStatusByProcess: {
+          [Proceso.ALTAR]: getStageStatusByOrder(brother.procesoActual, Proceso.ALTAR),
+          [Proceso.GRUPO]: getStageStatusByOrder(brother.procesoActual, Proceso.GRUPO),
+          [Proceso.EXPERIENCIA]: getStageStatusByOrder(brother.procesoActual, Proceso.EXPERIENCIA),
+          [Proceso.EDDI]: getStageStatusByOrder(brother.procesoActual, Proceso.EDDI),
+          [Proceso.DISCIPULO]: getStageStatusByOrder(brother.procesoActual, Proceso.DISCIPULO),
+        },
+      })),
+    [brothers],
+  );
   const events = useMemo(() => eventsService.list(), []);
-  const cells = useMemo<CellFilter[]>(() => ['Todas', ...seguimientoModuleService.listCells()], []);
+  const cells = useMemo<CellFilter[]>(
+    () => [
+      'Todas',
+      ...Array.from(new Set(brothers.map((brother) => brother.acompanamiento.celulaName))),
+    ],
+    [brothers],
+  );
 
   const scopedRows = useMemo(
     () => rows.filter((row) => selectedCell === 'Todas' || row.cellName === selectedCell),
@@ -326,6 +351,9 @@ export const SeguimientoPage = () => {
 
   const projectedMembers12Base = projectionRows[2].base;
   const projectedLeadersNeeded = Math.ceil(projectedMembers12Base / 12);
+  const selectedAlertBrother = selectedAlertBrotherId
+    ? brothers.find((brother) => brother.id === selectedAlertBrotherId) ?? null
+    : null;
   const stageDistribution = useMemo(
     () =>
       STAGES.map((stage) => ({
@@ -375,7 +403,16 @@ export const SeguimientoPage = () => {
     .map((point) => `${point.x},${point.incompleteY}`)
     .join(' ');
 
-  return (
+  return isLoadingBrothers ? (
+    <div className="space-y-4 animate-in fade-in duration-500">
+      <h1 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white tracking-tight">
+        Seguimiento Estrategico
+      </h1>
+      <p className="text-slate-500 dark:text-gray-400">
+        Cargando datos de hermanos desde Supabase...
+      </p>
+    </div>
+  ) : (
     <div className="space-y-6 md:space-y-8 animate-in fade-in duration-700">
       <header className="space-y-2">
         <h1 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white tracking-tight">Seguimiento Estrategico</h1>
@@ -474,7 +511,7 @@ export const SeguimientoPage = () => {
                 <button
                   key={brother.id}
                   className="inline-flex items-center gap-2 rounded-full border border-rose-300/40 bg-rose-400/10 px-3 py-1 text-xs text-rose-300"
-                  onClick={() => navigate(`/hermanos/${brother.id}`)}
+                  onClick={() => setSelectedAlertBrotherId(brother.id)}
                 >
                   <span className="h-2 w-2 rounded-full bg-rose-300" />
                   {brother.name}
@@ -561,10 +598,19 @@ export const SeguimientoPage = () => {
         )}
 
         {mobileAnalyticsView === 'grafica' && (
-          <article className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#1a1a1a] p-4">
-            <h2 className="text-base font-semibold text-slate-900 dark:text-white mb-3">Distribucion por etapas</h2>
-            <div className="rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0a0a0a]/50 p-3 overflow-x-auto">
-              <svg viewBox={`0 0 ${chartWidth} ${chartHeight}`} className="min-w-[640px] w-full h-[250px]">
+          <article className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#1a1a1a] p-4 overflow-hidden">
+            <div className="flex items-center justify-between gap-3 mb-3">
+              <h2 className="text-base font-semibold text-slate-900 dark:text-white">Distribucion por etapas</h2>
+              <button
+                type="button"
+                onClick={() => setIsMobileChartDetailOpen(true)}
+                className="rounded-xl px-3 py-1.5 text-[10px] uppercase tracking-widest font-black border border-[#c5a059]/35 bg-[#c5a059]/15 text-[#c5a059] hover:bg-[#c5a059] hover:text-black transition-colors"
+              >
+                Ver detalle
+              </button>
+            </div>
+            <div className="w-full min-w-0 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0a0a0a]/50 p-3 overflow-hidden">
+              <svg viewBox={`0 0 ${chartWidth} ${chartHeight}`} className="block w-full h-[220px] sm:h-[250px]">
                 <polyline fill="none" stroke="currentColor" className="text-emerald-400" strokeWidth="3" points={completedPolylinePoints} />
                 <polyline fill="none" stroke="currentColor" className="text-[#c5a059]" strokeWidth="3" points={incompletePolylinePoints} />
                 {chartPoints.map((point) => (
@@ -583,9 +629,117 @@ export const SeguimientoPage = () => {
                 ))}
               </svg>
             </div>
+            <div className="mt-3 grid grid-cols-2 gap-2 text-[10px]">
+              <div className="rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0a0a0a]/50 px-3 py-2">
+                <p className="uppercase tracking-wider font-black text-emerald-500">Completados</p>
+                <p className="text-slate-500 dark:text-gray-300 mt-1">Linea verde</p>
+              </div>
+              <div className="rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0a0a0a]/50 px-3 py-2">
+                <p className="uppercase tracking-wider font-black text-[#c5a059]">Sin completar</p>
+                <p className="text-slate-500 dark:text-gray-300 mt-1">Linea dorada</p>
+              </div>
+            </div>
           </article>
         )}
       </section>
+
+      {isMobileChartDetailOpen && (
+        <div className="fixed inset-0 z-[120] bg-black/70 backdrop-blur-sm p-3 sm:p-6 md:hidden">
+          <div className="h-full w-full max-w-4xl mx-auto rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#1a1a1a] shadow-2xl overflow-hidden flex flex-col">
+            <div className="flex items-center justify-between gap-3 px-4 py-3 border-b border-slate-200 dark:border-white/10">
+              <div>
+                <h3 className="text-sm sm:text-base font-semibold text-slate-900 dark:text-white">Distribucion por etapas</h3>
+                <p className="text-[11px] text-slate-500 dark:text-gray-300 mt-1">Vista completa con ejes, valores y detalle por etapa</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsMobileChartDetailOpen(false)}
+                className="rounded-xl p-2 bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-gray-300"
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-4">
+              <div className="rounded-2xl border border-slate-200 dark:border-white/5 bg-slate-50 dark:bg-[#0a0a0a]/50 p-4 overflow-x-auto">
+                <div className="flex flex-wrap items-center gap-6 mb-3 px-2">
+                  <div className="flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-gray-300">
+                    <span className="inline-block h-0.5 w-7 bg-emerald-400" />
+                    Completados
+                  </div>
+                  <div className="flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-gray-300">
+                    <span className="inline-block h-0.5 w-7 bg-[#c5a059]" />
+                    Sin completar
+                  </div>
+                </div>
+
+                <svg viewBox={`0 0 ${chartWidth} ${chartHeight}`} className="min-w-[720px] w-full h-[320px]">
+                  {valueTicks.map((tick) => (
+                    <g key={`mobile-tick-${tick.value}`}>
+                      <line
+                        x1={plotLeft}
+                        y1={tick.y}
+                        x2={plotRight}
+                        y2={tick.y}
+                        stroke="currentColor"
+                        className="text-slate-300/70 dark:text-gray-700/70"
+                        strokeWidth="1"
+                        strokeDasharray="4 4"
+                      />
+                      <text
+                        x={plotLeft - 10}
+                        y={tick.y + 4}
+                        textAnchor="end"
+                        className="fill-slate-600 dark:fill-gray-400 text-[10px] font-semibold"
+                      >
+                        {tick.value}
+                      </text>
+                    </g>
+                  ))}
+
+                  <line
+                    x1={plotLeft}
+                    y1={plotBottom}
+                    x2={plotRight}
+                    y2={plotBottom}
+                    stroke="currentColor"
+                    className="text-slate-300 dark:text-gray-700"
+                    strokeWidth="1"
+                  />
+                  <line
+                    x1={plotLeft}
+                    y1={plotTop}
+                    x2={plotLeft}
+                    y2={plotBottom}
+                    stroke="currentColor"
+                    className="text-slate-300 dark:text-gray-700"
+                    strokeWidth="1"
+                  />
+
+                  <polyline fill="none" stroke="currentColor" className="text-emerald-400" strokeWidth="3" points={completedPolylinePoints} />
+                  <polyline fill="none" stroke="currentColor" className="text-[#c5a059]" strokeWidth="3" points={incompletePolylinePoints} />
+
+                  {chartPoints.map((point) => (
+                    <g key={`mobile-detail-${point.stage}`}>
+                      <circle cx={point.x} cy={point.completedY} r="5" fill="#34d399" />
+                      <circle cx={point.x} cy={point.incompleteY} r="5" fill="#c5a059" />
+                      <text x={point.x} y={point.completedY - 12} textAnchor="middle" className="fill-emerald-600 dark:fill-emerald-300 text-[11px] font-semibold">
+                        {point.completedCount}
+                      </text>
+                      <text x={point.x} y={point.incompleteY + 16} textAnchor="middle" className="fill-amber-700 dark:fill-amber-300 text-[11px] font-semibold">
+                        {point.incompleteCount}
+                      </text>
+                      <text x={point.x} y={plotBottom + 26} textAnchor="middle" className="fill-slate-600 dark:fill-gray-400 text-[10px] font-semibold">
+                        {point.stage}
+                      </text>
+                    </g>
+                  ))}
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       <section className="hidden md:grid grid-cols-1 xl:grid-cols-12 gap-6">
         <div className="xl:col-span-7 space-y-6">
@@ -661,7 +815,7 @@ export const SeguimientoPage = () => {
                     <button
                       key={brother.id}
                       className="inline-flex items-center gap-2 rounded-full border border-rose-300/40 bg-rose-400/10 px-3 py-1 text-xs text-rose-300"
-                      onClick={() => navigate(`/hermanos/${brother.id}`)}
+                      onClick={() => setSelectedAlertBrotherId(brother.id)}
                     >
                       <span className="h-2 w-2 rounded-full bg-rose-300" />
                       {brother.name}
@@ -929,6 +1083,157 @@ export const SeguimientoPage = () => {
           </div>
         </div>
       </section>
+
+      <Modal
+        isOpen={selectedAlertBrother !== null}
+        onClose={() => setSelectedAlertBrotherId(null)}
+        title={selectedAlertBrother ? `Ficha de ${selectedAlertBrother.name}` : 'Ficha'}
+      >
+        {selectedAlertBrother && (
+          <div className="space-y-5">
+            <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-[#f8fafc] dark:bg-black/45 p-4 flex flex-col sm:flex-row sm:items-center gap-4">
+              <div className="w-16 h-16 rounded-2xl overflow-hidden border border-[#c5a059]/30 bg-white dark:bg-black/50 flex items-center justify-center text-2xl font-black text-[#c5a059] shrink-0">
+                {selectedAlertBrother.fotoUrl ? (
+                  <img src={selectedAlertBrother.fotoUrl} alt={selectedAlertBrother.name} className="w-full h-full object-cover" />
+                ) : (
+                  selectedAlertBrother.name.charAt(0)
+                )}
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="text-lg font-black text-slate-900 dark:text-white break-words">{selectedAlertBrother.name}</p>
+                <p className="text-xs text-slate-500 dark:text-gray-400 mt-1">
+                  Célula: {selectedAlertBrother.acompanamiento.celulaName} · Proceso actual: {selectedAlertBrother.procesoActual}
+                </p>
+                <p className="text-xs text-slate-500 dark:text-gray-400 mt-1">
+                  Discípulo/Hermano mayor: {selectedAlertBrother.acompanamiento.acompananteName || 'No asignado'}
+                </p>
+                <p className="text-xs text-slate-500 dark:text-gray-400 mt-1">
+                  Líder: {selectedAlertBrother.acompanamiento.liderCelulaName || 'No asignado'}
+                </p>
+              </div>
+              <span
+                className={`self-start sm:self-auto text-[10px] px-3 py-1.5 rounded-full border font-black tracking-wider ${
+                  selectedAlertBrother.procesoActual === Proceso.DISCIPULO
+                    ? 'text-emerald-700 dark:text-emerald-300 border-emerald-500/45 dark:border-emerald-400/30 bg-emerald-100 dark:bg-emerald-500/10'
+                    : 'text-amber-700 dark:text-amber-300 border-amber-500/45 dark:border-amber-400/30 bg-amber-100 dark:bg-amber-500/10'
+                }`}
+              >
+                {selectedAlertBrother.procesoActual === Proceso.DISCIPULO ? 'Finalizado' : 'En proceso'}
+              </span>
+            </div>
+
+            <div className="flex justify-stretch sm:justify-end">
+              <button
+                type="button"
+                onClick={() => {
+                  navigate(`/hermanos/${selectedAlertBrother.id}`);
+                  requestAnimationFrame(() => {
+                    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+                  });
+                  setSelectedAlertBrotherId(null);
+                }}
+                className="w-full sm:w-auto px-3 py-1.5 rounded-lg text-[10px] uppercase tracking-widest font-black border border-[#c5a059]/35 text-[#c5a059] hover:bg-[#c5a059] hover:text-black transition-colors"
+              >
+                Ver ficha completa
+              </button>
+            </div>
+
+            <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-black/35 p-4 space-y-3">
+              <p className="text-[10px] uppercase tracking-[0.2em] font-black text-[#c5a059]">Procesos realizados</p>
+              <div className="space-y-3">
+                {[
+                  {
+                    key: Proceso.ALTAR,
+                    label: 'Altar',
+                    start: selectedAlertBrother.altar?.fechaInicio,
+                    end: selectedAlertBrother.altar?.fechaFin,
+                    observations: selectedAlertBrother.altar?.observaciones ?? [],
+                  },
+                  {
+                    key: Proceso.GRUPO,
+                    label: 'Grupo',
+                    start: selectedAlertBrother.grupo?.fechaInicio,
+                    end: selectedAlertBrother.grupo?.fechaFin,
+                    observations: selectedAlertBrother.grupo?.observaciones ?? [],
+                  },
+                  {
+                    key: Proceso.EXPERIENCIA,
+                    label: 'Experiencia',
+                    start: selectedAlertBrother.experiencia?.fechaRealizacion,
+                    end: selectedAlertBrother.experiencia?.fechaRealizacion,
+                    observations: selectedAlertBrother.experiencia?.observaciones ?? [],
+                  },
+                  {
+                    key: Proceso.EDDI,
+                    label: 'EDDI',
+                    start: selectedAlertBrother.eddi?.fechaInicio,
+                    end: selectedAlertBrother.eddi?.fechaFin,
+                    observations: selectedAlertBrother.eddi?.observaciones ?? [],
+                    grades: selectedAlertBrother.eddi?.notasExamenes ?? [],
+                  },
+                  {
+                    key: Proceso.DISCIPULO,
+                    label: 'Discípulo',
+                    start: selectedAlertBrother.discipulo?.fechaInicio,
+                    end: undefined,
+                    observations: selectedAlertBrother.discipulo?.observaciones ?? [],
+                  },
+                ]
+                  .filter((entry) => Boolean(entry.start || entry.end || entry.observations.length > 0 || (entry.grades?.length ?? 0) > 0))
+                  .map((entry) => (
+                    <article key={entry.key} className="rounded-xl border border-slate-200 dark:border-white/10 bg-[#f8fafc] dark:bg-black/35 p-3">
+                      <div className="flex flex-wrap items-start justify-between gap-2">
+                        <p className="text-[10px] uppercase tracking-[0.16em] font-black text-slate-500 dark:text-gray-500">{entry.label}</p>
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="text-[10px] font-black text-slate-600 dark:text-gray-300 border border-slate-300 dark:border-white/15 rounded-md px-2 py-1 bg-white dark:bg-black/30">
+                            Inicio: {entry.start || 'Pendiente'}
+                          </span>
+                          {entry.end && (
+                            <span className="text-[10px] font-black text-slate-600 dark:text-gray-300 border border-slate-300 dark:border-white/15 rounded-md px-2 py-1 bg-white dark:bg-black/30">
+                              Fin: {entry.end}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="mt-3 h-[84px] overflow-y-auto pr-1 [scrollbar-width:thin] [scrollbar-color:#c5a05944_transparent] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-[#c5a059]/40 [&::-webkit-scrollbar-thumb]:rounded-full">
+                        {entry.observations.length === 0 ? (
+                          <p className="text-xs text-slate-500 dark:text-gray-500">Sin observaciones en este proceso.</p>
+                        ) : (
+                          entry.observations.map((observation, index) => (
+                            <div
+                              key={`${entry.key}-${observation.createdAt}-${index}`}
+                              className={`rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-black/45 p-2.5 min-h-[72px] ${
+                                index === 0 ? '' : 'mt-2'
+                              }`}
+                            >
+                              <p className="text-xs text-slate-700 dark:text-gray-300">{observation.text}</p>
+                              <p className="text-[10px] text-slate-500 dark:text-gray-500 mt-2">{observation.author.name}</p>
+                            </div>
+                          ))
+                        )}
+                      </div>
+
+                      {entry.key === Proceso.EDDI && (entry.grades?.length ?? 0) > 0 && (
+                        <div className="mt-3 space-y-2">
+                          <p className="text-[10px] uppercase tracking-[0.16em] font-black text-slate-500 dark:text-gray-500">Materias y notas</p>
+                          <div className="max-h-[120px] overflow-y-auto pr-1 [scrollbar-width:thin] [scrollbar-color:#c5a05944_transparent] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-[#c5a059]/40 [&::-webkit-scrollbar-thumb]:rounded-full">
+                            {entry.grades?.map((grade) => (
+                              <div key={grade.id} className="rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-black/45 px-3 py-2 flex items-center justify-between gap-3">
+                                <span className="text-xs text-slate-700 dark:text-gray-300">{grade.materia}</span>
+                                <span className="text-xs font-black text-[#a58345] dark:text-[#c5a059]">{grade.nota}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </article>
+                  ))}
+              </div>
+            </div>
+          </div>
+        )}
+      </Modal>
 
       <footer className="hidden md:flex flex-wrap gap-8 justify-center py-4 bg-slate-100 dark:bg-white/5 rounded-3xl border border-slate-200 dark:border-white/5">
         <div className="flex items-center gap-2">

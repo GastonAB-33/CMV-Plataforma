@@ -574,20 +574,20 @@ export const MinisterioMisericordiaPage = () => {
 
   return (
     <div className="space-y-6">
-      <header className="rounded-[28px] border border-white/10 bg-gradient-to-r from-[#161616] to-[#1f1f1f] px-6 py-7">
+      <header className="rounded-[28px] border border-slate-200 dark:border-white/10 bg-gradient-to-r from-white to-slate-100 dark:from-[#161616] dark:to-[#1f1f1f] px-6 py-7">
         <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
           <div>
             <p className="inline-flex items-center gap-2 text-[13px] uppercase tracking-[0.2em] font-black text-[#c5a059]">
               <Soup size={14} />
               Ministerio Misericordia
             </p>
-            <h1 className="text-3xl md:text-[42px] leading-tight font-black text-white mt-3">
+            <h1 className="text-3xl md:text-[42px] leading-tight font-black text-slate-900 dark:text-white mt-3">
               Calendario y equipo de salida
             </h1>
-            <p className="text-sm text-slate-300 mt-2">
+            <p className="text-sm text-slate-600 dark:text-slate-300 mt-2">
               Gestion de cocina, reparto en calles y predicacion con agenda propia del ministerio.
             </p>
-            <p className="text-xs text-slate-400 mt-2">Responsables: {responsables.join(', ')}</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">Responsables: {responsables.join(', ')}</p>
           </div>
           <button
             type="button"
@@ -664,18 +664,20 @@ export const MinisterioMisericordiaPage = () => {
       </section>
 
       <section>
-        <div className="p-4 sm:p-6 rounded-3xl border border-white/15 bg-[#171717]">
+        <div className="p-4 sm:p-6 rounded-3xl border border-slate-200 dark:border-white/15 bg-white dark:bg-[#171717]">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
             <div className="inline-flex items-center gap-2">
               <CalendarClock size={15} className="text-[#c5a059]" />
-              <p className="text-xl font-black text-white">Calendario</p>
+              <p className="text-xl font-black text-slate-900 dark:text-white">Calendario</p>
             </div>
             <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
               <button
                 type="button"
                 onClick={() => setCalendarMode('full')}
                 className={`px-4 py-2 rounded-full border text-[10px] uppercase tracking-widest font-black transition-colors ${
-                  calendarMode === 'full' ? 'border-[#c5a059]/50 bg-[#c5a059]/15 text-[#c5a059]' : 'border-white/15 text-slate-300 hover:text-white'
+                  calendarMode === 'full'
+                    ? 'border-[#c5a059]/50 bg-[#c5a059]/15 text-[#c5a059]'
+                    : 'border-slate-300 dark:border-white/15 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
                 }`}
               >
                 Completo
@@ -684,7 +686,9 @@ export const MinisterioMisericordiaPage = () => {
                 type="button"
                 onClick={() => setCalendarMode('scheduled')}
                 className={`px-4 py-2 rounded-full border text-[10px] uppercase tracking-widest font-black transition-colors ${
-                  calendarMode === 'scheduled' ? 'border-[#c5a059]/50 bg-[#c5a059]/15 text-[#c5a059]' : 'border-white/15 text-slate-300 hover:text-white'
+                  calendarMode === 'scheduled'
+                    ? 'border-[#c5a059]/50 bg-[#c5a059]/15 text-[#c5a059]'
+                    : 'border-slate-300 dark:border-white/15 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
                 }`}
               >
                 Solo agendados
@@ -692,11 +696,19 @@ export const MinisterioMisericordiaPage = () => {
             </div>
           </div>
           <div className="flex items-center justify-between mb-4">
-            <button type="button" onClick={() => setMonthRef((prev) => addMonths(prev, -1))} className="p-2 rounded-xl border border-white/10 text-white">
+            <button
+              type="button"
+              onClick={() => setMonthRef((prev) => addMonths(prev, -1))}
+              className="p-2 rounded-xl border border-slate-300 dark:border-white/10 text-slate-700 dark:text-white"
+            >
               <ChevronLeft size={16} />
             </button>
-            <p className="font-black tracking-[0.22em] uppercase text-white text-sm">{capitalize(monthLabel(monthRef))}</p>
-            <button type="button" onClick={() => setMonthRef((prev) => addMonths(prev, 1))} className="p-2 rounded-xl border border-white/10 text-white">
+            <p className="font-black tracking-[0.22em] uppercase text-slate-900 dark:text-white text-sm">{capitalize(monthLabel(monthRef))}</p>
+            <button
+              type="button"
+              onClick={() => setMonthRef((prev) => addMonths(prev, 1))}
+              className="p-2 rounded-xl border border-slate-300 dark:border-white/10 text-slate-700 dark:text-white"
+            >
               <ChevronRight size={16} />
             </button>
           </div>
@@ -704,14 +716,14 @@ export const MinisterioMisericordiaPage = () => {
             <>
               <div className="grid grid-cols-7 gap-1 sm:gap-2 mb-2">
                 {dayLabels.map((label) => (
-                  <p key={label} className="text-center text-[10px] uppercase tracking-widest font-black text-slate-400">
+                  <p key={label} className="text-center text-[10px] uppercase tracking-widest font-black text-slate-500 dark:text-slate-400">
                     {label}
                   </p>
                 ))}
               </div>
               <div className="grid grid-cols-7 gap-1 sm:gap-2">
                 {cells.map((cell, index) => {
-                  if (!cell.date) return <div key={`empty-${index}`} className="h-20" />;
+                  if (!cell.date) return <div key={`empty-${index}`} className="min-h-[58px] sm:min-h-[74px]" />;
                   const cellDate = cell.date;
 
                   const scheduledCount = monthScheduleCountByDate[cellDate] ?? 0;
@@ -733,29 +745,33 @@ export const MinisterioMisericordiaPage = () => {
                           openNewScheduleForDate(cellDate);
                         }
                       }}
-                      className={`min-h-[58px] sm:h-20 p-1.5 sm:p-2 rounded-2xl border text-left transition-colors ${
+                      className={`min-h-[58px] sm:min-h-[74px] p-1.5 sm:p-2 rounded-2xl border text-left transition-colors ${
                         hasEvents
-                          ? 'border-[#c5a059]/40 bg-[#c5a059]/12 text-white'
+                          ? 'border-[#c5a059]/40 bg-[#c5a059]/12 text-slate-900 dark:text-white'
                           : isToday
-                            ? 'border-blue-400/35 bg-blue-500/10 text-white'
+                            ? 'border-blue-400/35 bg-blue-500/10 text-slate-900 dark:text-white'
                             : isPastNoEvents
-                              ? 'border-white/10 bg-[#1a1a1a] text-slate-400'
-                              : 'border-white/10 bg-[#0c0c0c] text-white hover:border-[#c5a059]/35'
+                              ? 'border-slate-300/70 dark:border-white/10 bg-slate-100 dark:bg-[#1a1a1a] text-slate-500 dark:text-slate-400'
+                              : 'border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0f0f] text-slate-900 dark:text-white hover:border-[#c5a059]/35'
                       }`}
                     >
-                      <div className="flex items-center justify-between">
+                      <div className="flex h-full flex-col justify-between">
+                        <div className="flex items-center justify-between">
                         <p className="font-black text-[11px] sm:text-sm">{cell.day}</p>
                         {isToday && (
                           <span className="hidden sm:inline-flex text-[9px] uppercase px-2 py-0.5 rounded-full bg-blue-500/15 text-blue-300 border border-blue-400/30">
                             Hoy
                           </span>
                         )}
-                      </div>
-                      {hasEvents && (
-                        <p className="text-[9px] sm:text-[10px] uppercase tracking-widest font-black text-[#c5a059] mt-1">
-                          {scheduledCount} evt
+                        </div>
+                        <p
+                          className={`text-[9px] sm:text-[10px] uppercase tracking-widest font-black text-[#c5a059] ${
+                            hasEvents ? '' : 'invisible'
+                          }`}
+                        >
+                          {hasEvents ? `${scheduledCount} evt` : '0 evt'}
                         </p>
-                      )}
+                      </div>
                     </button>
                   );
                 })}

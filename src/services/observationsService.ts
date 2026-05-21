@@ -1,4 +1,5 @@
 import { Proceso } from '../types';
+import { getSupabaseClient, isSupabaseConfigured } from './supabaseClient';
 
 export type ObservationRole = 'Pastor' | 'Líder' | 'Discípulo';
 
@@ -12,31 +13,15 @@ export interface Observation {
   process: Proceso;
 }
 
-interface BackendBaseResponse {
-  ok?: boolean;
-  error?: string;
-  message?: string;
+interface SupabaseObservationRow {
+  id: string;
+  hermano_id: string;
+  comentario: string | null;
+  detalle: string | null;
+  tipo: string | null;
+  proceso: string | null;
+  fecha: string | null;
 }
-
-interface BackendObservation {
-  id?: string;
-  brotherId?: string;
-  text?: string;
-  author?: string;
-  role?: string;
-  createdAt?: string;
-  process?: string;
-}
-
-interface BackendGetResponse extends BackendBaseResponse {
-  data?: BackendObservation[];
-}
-
-interface BackendCreateResponse extends BackendBaseResponse {
-  data?: BackendObservation;
-}
-
-const API_URL = 'http://localhost:3001/api/observaciones';
 
 const normalizeText = (value: string): string =>
   value
@@ -79,51 +64,49 @@ const normalizeProcess = (process?: string): Proceso => {
 const sortByCreatedAtDesc = (observations: Observation[]): Observation[] =>
   [...observations].sort((left, right) => new Date(right.createdAt).getTime() - new Date(left.createdAt).getTime());
 
-const parseJson = async <T>(response: Response): Promise<T | null> => {
-  try {
-    return (await response.json()) as T;
-  } catch {
-    return null;
-  }
-};
-
-const getResponseErrorMessage = (payload: BackendBaseResponse | null, fallback: string): string =>
-  payload?.error ?? payload?.message ?? fallback;
-
-const toObservation = (row: BackendObservation, fallbackBrotherId: string): Observation => ({
+const toObservationFromSupabase = (row: SupabaseObservationRow): Observation => ({
   id: row.id || `observation-${Date.now()}`,
-  brotherId: row.brotherId || fallbackBrotherId,
-  text: row.text || '',
-  author: row.author || 'Sin autor',
-  role: normalizeRole(row.role),
-  createdAt: row.createdAt || new Date().toISOString(),
-  process: normalizeProcess(row.process),
+  brotherId: row.hermano_id,
+  text: row.comentario || '',
+  author: row.detalle || 'Sin autor',
+  role: normalizeRole(row.tipo ?? undefined),
+  createdAt: row.fecha || new Date().toISOString(),
+  process: normalizeProcess(row.proceso ?? undefined),
 });
+
+const getRequiredSupabaseClient = () => {
+  if (!isSupabaseConfigured()) {
+    throw new Error('Supabase no configurado para observaciones.');
+  }
+
+  const client = getSupabaseClient();
+  if (!client) {
+    throw new Error('Cliente Supabase no disponible.');
+  }
+
+  return client;
+};
 
 export const getObservations = async (brotherId: string): Promise<Observation[]> => {
   if (!brotherId) {
     return [];
   }
 
-  const response = await fetch(`${API_URL}/${encodeURIComponent(brotherId)}`, {
-    method: 'GET',
-    headers: {
-      Accept: 'application/json',
-    },
-  });
+  const client = getRequiredSupabaseClient();
 
-  const payload = await parseJson<BackendGetResponse>(response);
+  const { data, error } = await client
+    .from('observaciones')
+    .select('id,hermano_id,comentario,detalle,tipo,proceso,fecha')
+    .eq('hermano_id', brotherId)
+    .order('fecha', { ascending: false });
 
-  if (!response.ok) {
-    throw new Error(getResponseErrorMessage(payload, 'No se pudieron obtener observaciones.'));
+  if (error) {
+    throw new Error(error.message || 'No se pudieron obtener observaciones desde Supabase.');
   }
 
-  if (payload?.ok === false) {
-    throw new Error(getResponseErrorMessage(payload, 'El backend devolvió un error al obtener observaciones.'));
-  }
-
-  const rows = Array.isArray(payload?.data) ? payload.data : [];
-  return sortByCreatedAtDesc(rows.map((row) => toObservation(row, brotherId)));
+  return sortByCreatedAtDesc(
+    (data ?? []).map((row) => toObservationFromSupabase(row as SupabaseObservationRow)),
+  );
 };
 
 export const addObservation = async (brotherId: string, observation: Observation): Promise<Observation> => {
@@ -136,42 +119,27 @@ export const addObservation = async (brotherId: string, observation: Observation
     throw new Error('text es obligatorio para agregar observaciones.');
   }
 
-  const response = await fetch(API_URL, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    },
-    body: JSON.stringify({
-      brotherId,
-      text,
-      author: observation.author,
-      role: observation.role,
-      process: observation.process,
-    }),
-  });
+  const client = getRequiredSupabaseClient();
 
-  const payload = await parseJson<BackendCreateResponse>(response);
-
-  if (!response.ok) {
-    throw new Error(getResponseErrorMessage(payload, 'No se pudo agregar la observación.'));
-  }
-
-  if (payload?.ok === false) {
-    throw new Error(getResponseErrorMessage(payload, 'El backend devolvió un error al agregar la observación.'));
-  }
-
-  if (payload?.data) {
-    return toObservation(payload.data, brotherId);
-  }
-
-  return {
-    id: `observation-${Date.now()}`,
-    brotherId,
-    text,
-    author: observation.author,
-    role: observation.role,
-    createdAt: new Date().toISOString(),
-    process: observation.process,
+  const payload = {
+    hermano_id: brotherId,
+    comentario: text,
+    detalle: observation.author?.trim() || null,
+    tipo: observation.role,
+    proceso: observation.process,
+    fecha: observation.createdAt || new Date().toISOString(),
   };
+
+  const { data, error } = await client
+    .from('observaciones')
+    .insert(payload)
+    .select('id,hermano_id,comentario,detalle,tipo,proceso,fecha')
+    .single();
+
+  if (error || !data) {
+    throw new Error(error?.message || 'No se pudo guardar la observación en Supabase.');
+  }
+
+  return toObservationFromSupabase(data as SupabaseObservationRow);
 };
+

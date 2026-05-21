@@ -1,4 +1,4 @@
-import { Calendar, ChevronDown, History, Newspaper, Plus, Tag, Users } from 'lucide-react';
+import { Calendar, ChevronDown, Filter, History, Newspaper, Plus, Tag, Users } from 'lucide-react';
 import { ChangeEvent, useEffect, useMemo, useState } from 'react';
 import { BrotherNameTrigger } from '../../components/brothers/BrotherNameTrigger';
 import { Modal } from '../../components/ui/Modal';
@@ -12,7 +12,6 @@ import { Cell, Role } from '../../types';
 type ToastType = 'success' | 'error';
 type ContentFilter = 'eventos' | 'noticias';
 type VisibilityFilter = 'publico' | 'privado';
-type MobileEventsLevel = 'resumen' | 'filtros' | 'feed';
 
 interface PublicationFormState {
   kind: 'evento' | 'noticia';
@@ -113,7 +112,8 @@ export const EventsPage = () => {
     'publico',
     'privado',
   ]);
-  const [mobileLevel, setMobileLevel] = useState<MobileEventsLevel>('feed');
+  const [isSummaryModalOpen, setIsSummaryModalOpen] = useState(false);
+  const [isMobileFiltersModalOpen, setIsMobileFiltersModalOpen] = useState(false);
   const [expandedPublicationId, setExpandedPublicationId] = useState<string | null>(null);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [isChangeLogOpen, setIsChangeLogOpen] = useState(false);
@@ -182,6 +182,7 @@ export const EventsPage = () => {
       visibilityFilters.length === 2,
     [contentFilters, visibilityFilters],
   );
+  const activeFilterCount = contentFilters.length + visibilityFilters.length;
 
   const enableAllFilters = () => {
     setContentFilters(['eventos', 'noticias']);
@@ -284,7 +285,7 @@ export const EventsPage = () => {
           </div>
 
           {canManageEvents ? (
-            <div className="flex w-full sm:w-auto flex-wrap items-center gap-3">
+            <div className="hidden md:flex w-full sm:w-auto flex-wrap items-center gap-3">
               <button
                 onClick={openCreateModal}
                 className="w-full sm:w-auto justify-center flex items-center gap-2 px-5 py-3 bg-[#c5a059] hover:bg-[#d4b375] text-black font-black rounded-2xl transition-all shadow-[0_10px_20px_rgba(197,160,89,0.2)] active:scale-95"
@@ -301,60 +302,51 @@ export const EventsPage = () => {
               </button>
             </div>
           ) : (
-            <span className="inline-flex items-center justify-center px-4 py-2 rounded-full text-[10px] uppercase tracking-[0.2em] font-black border border-blue-400/30 bg-blue-500/10 text-blue-300">
+            <span className="hidden md:inline-flex items-center justify-center px-4 py-2 rounded-full text-[10px] uppercase tracking-[0.2em] font-black border border-blue-400/30 bg-blue-500/10 text-blue-300">
               Solo lectura
             </span>
           )}
         </div>
 
-        <section className="md:hidden rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#1a1a1a] p-2">
-          <div className="grid grid-cols-3 gap-2">
-            {[
-              { id: 'resumen' as const, label: 'Nivel 1' },
-              { id: 'filtros' as const, label: 'Nivel 2' },
-              { id: 'feed' as const, label: 'Nivel 3' },
-            ].map((item) => (
+        <section className="md:hidden space-y-3">
+          <div className="grid grid-cols-2 gap-2">
+            {canManageEvents ? (
               <button
-                key={item.id}
-                type="button"
-                onClick={() => setMobileLevel(item.id)}
-                className={`rounded-xl px-2 py-2 text-[10px] uppercase tracking-widest font-black transition-all ${
-                  mobileLevel === item.id
-                    ? 'bg-[#c5a059] text-black'
-                    : 'bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-gray-300'
-                }`}
+                onClick={openCreateModal}
+                className="rounded-xl px-4 py-2.5 text-[11px] uppercase tracking-widest font-black transition-all bg-[#c5a059] text-black"
               >
-                {item.label}
+                Crear nuevo
               </button>
-            ))}
+            ) : (
+              <span className="inline-flex items-center justify-center rounded-xl px-4 py-2.5 text-[10px] uppercase tracking-[0.18em] font-black border border-blue-400/30 bg-blue-500/10 text-blue-300">
+                Solo lectura
+              </span>
+            )}
+            <button
+              type="button"
+              onClick={() => setIsSummaryModalOpen(true)}
+              className="rounded-xl px-4 py-2.5 text-[11px] uppercase tracking-widest font-black transition-all bg-slate-100 dark:bg-white/5 text-slate-700 dark:text-gray-300 border border-slate-200 dark:border-white/10"
+            >
+              Resumen
+            </button>
+          </div>
+
+          <div className="flex items-center justify-between gap-2">
+            <p className="text-[10px] uppercase tracking-[0.2em] font-black text-slate-500 dark:text-gray-300">
+              Filtros activos: {activeFilterCount}/4
+            </p>
+            <button
+              type="button"
+              onClick={() => setIsMobileFiltersModalOpen(true)}
+              className="h-10 w-10 shrink-0 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-[#1a1a1a] text-slate-600 dark:text-gray-300 flex items-center justify-center"
+              aria-label="Abrir filtros"
+            >
+              <Filter size={16} />
+            </button>
           </div>
         </section>
 
-        <section className={`${mobileLevel === 'resumen' ? 'block' : 'hidden'} md:hidden`}>
-          <article className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#1a1a1a] p-4">
-            <p className="text-[10px] uppercase tracking-[0.2em] font-black text-slate-500 dark:text-gray-300 mb-3">Resumen del modulo</p>
-            <div className="grid grid-cols-2 gap-3">
-              <div className="rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0a0a0a]/50 p-3">
-                <p className="text-[10px] uppercase tracking-widest font-black text-slate-500 dark:text-gray-300">Publicaciones</p>
-                <p className="text-xl font-black text-[#c5a059] mt-1">{publications.length}</p>
-              </div>
-              <div className="rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0a0a0a]/50 p-3">
-                <p className="text-[10px] uppercase tracking-widest font-black text-slate-500 dark:text-gray-300">Filtradas</p>
-                <p className="text-xl font-black text-[#c5a059] mt-1">{filteredFeed.length}</p>
-              </div>
-              <div className="rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0a0a0a]/50 p-3">
-                <p className="text-[10px] uppercase tracking-widest font-black text-slate-500 dark:text-gray-300">Eventos</p>
-                <p className="text-xl font-black text-[#c5a059] mt-1">{eventsCount}</p>
-              </div>
-              <div className="rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0a0a0a]/50 p-3">
-                <p className="text-[10px] uppercase tracking-widest font-black text-slate-500 dark:text-gray-300">Noticias</p>
-                <p className="text-xl font-black text-[#c5a059] mt-1">{newsCount}</p>
-              </div>
-            </div>
-          </article>
-        </section>
-
-        <div className={`${mobileLevel === 'filtros' ? 'flex' : 'hidden'} md:flex gap-2 overflow-x-auto no-scrollbar pb-1 -mx-1 px-1`}>
+        <div className="hidden md:flex gap-2 overflow-x-auto no-scrollbar pb-1 -mx-1 px-1">
           <button
             onClick={enableAllFilters}
             className={`shrink-0 px-4 py-2 rounded-full text-xs font-black uppercase tracking-widest border transition-colors ${
@@ -409,12 +401,12 @@ export const EventsPage = () => {
       </header>
 
       {filteredFeed.length === 0 ? (
-        <div className={`${mobileLevel === 'feed' ? 'block' : 'hidden'} md:block bg-white dark:bg-[#1a1a1a] rounded-[2rem] border border-slate-200 dark:border-white/5 p-8 text-center text-slate-500 dark:text-gray-400`}>
+        <div className="bg-white dark:bg-[#1a1a1a] rounded-[2rem] border border-slate-200 dark:border-white/5 p-8 text-center text-slate-500 dark:text-gray-400">
           No hay contenido para este filtro.
         </div>
       ) : (
         <>
-          <div className={`${mobileLevel === 'feed' ? 'space-y-3' : 'hidden'} md:hidden`}>
+          <div className="space-y-3 md:hidden">
             {filteredFeed.map((item) => {
               const isEvent = item.kind === 'evento';
               const isExpanded = expandedPublicationId === item.id;
@@ -585,6 +577,97 @@ export const EventsPage = () => {
           </div>
         </>
       )}
+
+      <Modal isOpen={isSummaryModalOpen} onClose={() => setIsSummaryModalOpen(false)} title="Resumen">
+        <div className="grid grid-cols-2 gap-3">
+          <div className="rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0a0a0a]/50 p-3">
+            <p className="text-[10px] uppercase tracking-widest font-black text-slate-500 dark:text-gray-300">Publicaciones</p>
+            <p className="text-xl font-black text-[#c5a059] mt-1">{publications.length}</p>
+          </div>
+          <div className="rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0a0a0a]/50 p-3">
+            <p className="text-[10px] uppercase tracking-widest font-black text-slate-500 dark:text-gray-300">Filtradas</p>
+            <p className="text-xl font-black text-[#c5a059] mt-1">{filteredFeed.length}</p>
+          </div>
+          <div className="rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0a0a0a]/50 p-3">
+            <p className="text-[10px] uppercase tracking-widest font-black text-slate-500 dark:text-gray-300">Eventos</p>
+            <p className="text-xl font-black text-[#c5a059] mt-1">{eventsCount}</p>
+          </div>
+          <div className="rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0a0a0a]/50 p-3">
+            <p className="text-[10px] uppercase tracking-widest font-black text-slate-500 dark:text-gray-300">Noticias</p>
+            <p className="text-xl font-black text-[#c5a059] mt-1">{newsCount}</p>
+          </div>
+        </div>
+      </Modal>
+
+      <Modal isOpen={isMobileFiltersModalOpen} onClose={() => setIsMobileFiltersModalOpen(false)} title="Filtros">
+        <div className="space-y-3">
+          <p className="text-xs text-slate-500 dark:text-gray-300">Ajusta contenido y visibilidad del feed.</p>
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              type="button"
+              onClick={enableAllFilters}
+              className={`px-3 py-2 rounded-xl text-[11px] font-black uppercase tracking-widest border transition-all ${
+                isAllFiltersSelected
+                  ? 'bg-[#c5a059] text-black border-[#c5a059]'
+                  : 'bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-gray-300 border-slate-200 dark:border-white/10'
+              }`}
+            >
+              Todos
+            </button>
+            <button
+              type="button"
+              onClick={() => toggleContentFilter('eventos')}
+              className={`px-3 py-2 rounded-xl text-[11px] font-black uppercase tracking-widest border transition-all ${
+                contentFilters.includes('eventos')
+                  ? 'bg-[#c5a059]/15 border-[#c5a059]/40 text-[#c5a059]'
+                  : 'bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-gray-300 border-slate-200 dark:border-white/10'
+              }`}
+            >
+              Eventos
+            </button>
+            <button
+              type="button"
+              onClick={() => toggleContentFilter('noticias')}
+              className={`px-3 py-2 rounded-xl text-[11px] font-black uppercase tracking-widest border transition-all ${
+                contentFilters.includes('noticias')
+                  ? 'bg-[#c5a059]/15 border-[#c5a059]/40 text-[#c5a059]'
+                  : 'bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-gray-300 border-slate-200 dark:border-white/10'
+              }`}
+            >
+              Noticias
+            </button>
+            <button
+              type="button"
+              onClick={() => toggleVisibilityFilter('publico')}
+              className={`px-3 py-2 rounded-xl text-[11px] font-black uppercase tracking-widest border transition-all ${
+                visibilityFilters.includes('publico')
+                  ? 'bg-[#c5a059]/15 border-[#c5a059]/40 text-[#c5a059]'
+                  : 'bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-gray-300 border-slate-200 dark:border-white/10'
+              }`}
+            >
+              Publicos
+            </button>
+            <button
+              type="button"
+              onClick={() => toggleVisibilityFilter('privado')}
+              className={`px-3 py-2 rounded-xl text-[11px] font-black uppercase tracking-widest border transition-all ${
+                visibilityFilters.includes('privado')
+                  ? 'bg-[#c5a059]/15 border-[#c5a059]/40 text-[#c5a059]'
+                  : 'bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-gray-300 border-slate-200 dark:border-white/10'
+              }`}
+            >
+              Privados
+            </button>
+          </div>
+          <button
+            type="button"
+            onClick={() => setIsMobileFiltersModalOpen(false)}
+            className="w-full py-3 rounded-xl bg-[#c5a059] text-black text-[11px] uppercase tracking-widest font-black"
+          >
+            Aplicar
+          </button>
+        </div>
+      </Modal>
 
       <Modal
         isOpen={isEditorOpen}

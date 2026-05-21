@@ -13,10 +13,12 @@ import { MinisterioAdoracionPage } from './modules/ministerio-adoracion/Minister
 import { MinisterioMisericordiaPage } from './modules/ministerio-misericordia/MinisterioMisericordiaPage';
 import { MinisterioMultimediaPage } from './modules/ministerio-multimedia/MinisterioMultimediaPage';
 import { SeguimientoPage } from './modules/seguimiento/SeguimientoPage';
-import { Role } from './types';
+import { UsersConfigPage } from './modules/configuracion/UsersConfigPage';
+import { ImportadorPage } from './modules/importador/ImportadorPage';
+import { User } from './types';
 
-const ProtectedAppRoutes = ({ role }: { role: Role }) => (
-  <MainLayout role={role}>
+const ProtectedAppRoutes = ({ user }: { user: User }) => (
+  <MainLayout user={user}>
     <Routes>
       <Route path="/" element={<DashboardPage />} />
       <Route path="/hermanos" element={<BrotherList />} />
@@ -28,6 +30,8 @@ const ProtectedAppRoutes = ({ role }: { role: Role }) => (
       <Route path="/ministerio-multimedia" element={<MinisterioMultimediaPage />} />
       <Route path="/ministerio-misericordia" element={<MinisterioMisericordiaPage />} />
       <Route path="/ministerio-misreicordia" element={<MinisterioMisericordiaPage />} />
+      <Route path="/configuracion/usuarios" element={<UsersConfigPage />} />
+      <Route path="/importador" element={<ImportadorPage />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   </MainLayout>
@@ -51,7 +55,7 @@ const App = () => {
           path="/*"
           element={
             <RequireAuth>
-              <ProtectedAppRoutes role={user.role} />
+              <ProtectedAppRoutes user={user} />
             </RequireAuth>
           }
         />

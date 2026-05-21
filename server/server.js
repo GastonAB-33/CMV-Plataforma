@@ -20,7 +20,7 @@ const mapObservationFromAppsScript = (row = {}) => ({
 // Permitir requests desde tu frontend
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: "http://localhost:5174",
   })
 );
 

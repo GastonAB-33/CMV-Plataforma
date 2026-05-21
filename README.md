@@ -22,7 +22,7 @@ npm run dev
 
 App local:
 
-- `http://localhost:5173`
+- `http://localhost:5174`
 
 Build de produccion:
 

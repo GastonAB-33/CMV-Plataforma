@@ -681,25 +681,30 @@ export const MinisterioMultimediaPage = () => {
 
   return (
     <div className="space-y-8 animate-in fade-in duration-700">
-      <header className="bg-white dark:bg-[#1a1a1a] border border-slate-200 dark:border-white/5 rounded-3xl p-6">
-        <div className="flex items-start justify-between gap-3">
-          <div className="inline-flex items-center gap-2 text-[#c5a059] text-xs uppercase tracking-[0.2em] font-black">
-            <MonitorPlay size={14} />
-            Ministerio multimedia
+      <header className="rounded-[28px] border border-slate-200 dark:border-white/10 bg-gradient-to-r from-white to-slate-100 dark:from-[#161616] dark:to-[#1f1f1f] px-6 py-7">
+        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+          <div>
+            <p className="inline-flex items-center gap-2 text-[13px] uppercase tracking-[0.2em] font-black text-[#c5a059]">
+              <MonitorPlay size={14} />
+              Ministerio multimedia
+            </p>
+            <h1 className="text-3xl md:text-[42px] leading-tight font-black text-slate-900 dark:text-white mt-3">
+              Calendario y equipo tecnico de culto
+            </h1>
+            <p className="text-sm text-slate-600 dark:text-slate-300 mt-2">
+              Coordinacion de proyeccion, luces, sonido y transmision en cada servicio.
+            </p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">Responsables: {responsables.join(', ')}</p>
           </div>
           <button
             type="button"
             onClick={() => setIsChangeLogModalOpen(true)}
-            className="inline-flex items-center gap-2 px-3 py-1.5 text-[10px] uppercase tracking-widest font-black rounded-full border border-[#c5a059]/35 bg-[#c5a059]/10 text-[#c5a059]"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-[#c5a059]/40 text-[#c5a059] text-xs uppercase tracking-widest font-black self-start md:self-center"
           >
             <History size={14} />
             Log de cambios
           </button>
         </div>
-        <h1 className="text-3xl font-black text-slate-900 dark:text-white mt-2">Calendario y equipo tecnico de culto</h1>
-        <p className="text-xs text-slate-500 dark:text-gray-500 mt-2">
-          Responsables: <span className="font-bold">{responsables.join(', ')}</span>
-        </p>
       </header>
 
       <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
@@ -862,7 +867,7 @@ export const MinisterioMultimediaPage = () => {
                       }`}
                     >
                       {cell.day && (
-                        <div className="flex flex-col gap-1">
+                        <div className="flex h-full flex-col justify-between">
                           <div className="flex items-center justify-between">
                             <span className="text-[11px] sm:text-xs font-black">{cell.day}</span>
                             {isToday && (
@@ -871,7 +876,9 @@ export const MinisterioMultimediaPage = () => {
                               </span>
                             )}
                           </div>
-                          {count > 0 && <span className="text-[9px] sm:text-[10px] text-[#c5a059] font-black">{count} evt</span>}
+                          <span className={`text-[9px] sm:text-[10px] text-[#c5a059] font-black ${count > 0 ? '' : 'invisible'}`}>
+                            {count > 0 ? `${count} evt` : '0 evt'}
+                          </span>
                         </div>
                       )}
                     </button>

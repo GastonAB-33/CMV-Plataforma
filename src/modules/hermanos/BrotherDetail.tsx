@@ -15,6 +15,7 @@ import {
   Music2
 } from 'lucide-react';
 import { brothersService } from '../../services/brothersService';
+import { useAuth } from '../../hooks/useAuth';
 import { photoService } from '../../services/photos/photoService';
 import { addObservation, getObservations, Observation, ObservationRole } from '../../services/observationsService';
 import { Acompanamiento, Proceso, Role } from '../../types';
@@ -117,6 +118,26 @@ const normalizeName = (value: string) =>
     .toLowerCase()
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '');
+
+const splitFullName = (fullName: string): { nombres: string; apellidos: string } => {
+  const parts = fullName
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
+
+  if (parts.length <= 1) {
+    return { nombres: parts[0] ?? '', apellidos: '-' };
+  }
+
+  if (parts.length === 2) {
+    return { nombres: parts[0], apellidos: parts[1] };
+  }
+
+  return {
+    nombres: parts.slice(0, parts.length - 1).join(' '),
+    apellidos: parts[parts.length - 1] ?? '-',
+  };
+};
 
 const altarTrackingStatusLabel: Record<AltarTrackingStatus, string> = {
   ABIERTO: 'Abierto',
@@ -300,6 +321,7 @@ StageWrapper.displayName = 'StageWrapper';
 export const BrotherDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const photoInputRef = useRef<HTMLInputElement | null>(null);
   const canManageServiceTags = [Role.APOSTOL, Role.PASTOR, Role.LIDER_RED_CELULAS, Role.LIDER_CELULA].includes(CURRENT_USER_ROLE);
 
@@ -308,6 +330,9 @@ export const BrotherDetail = () => {
   const [discipuloAltarsFilter, setDiscipuloAltarsFilter] = useState<DiscipuloAltarsFilter>('TODOS');
   const [selectedDiscipuloAltarBrotherId, setSelectedDiscipuloAltarBrotherId] = useState<string | null>(null);
   const [showToast, setShowToast] = useState(false);
+  const [profileToastMessage, setProfileToastMessage] = useState('Información del hermano actualizada.');
+  const [profileToastType, setProfileToastType] = useState<'success' | 'error' | 'info'>('success');
+  const [isSavingProfile, setIsSavingProfile] = useState(false);
   const [showPhotoToast, setShowPhotoToast] = useState(false);
   const [showServiceTagsToast, setShowServiceTagsToast] = useState(false);
   const [selectedPhotoUrl, setSelectedPhotoUrl] = useState<string | null>(null);
@@ -315,7 +340,7 @@ export const BrotherDetail = () => {
   const [multimediaTagsDraft, setMultimediaTagsDraft] = useState<MultimediaSkillTag[]>([]);
   const [misericordiaTagsDraft, setMisericordiaTagsDraft] = useState<MisericordiaSkillTag[]>([]);
 
-  const brother = useMemo(() => brothersService.findById(id ?? ''), [id]);
+  const [brother, setBrother] = useState(() => brothersService.findById(id ?? ''));
   const [observations, setObservations] = useState<Observation[]>([]);
   const [observationsOwnerId, setObservationsOwnerId] = useState<string | null>(null);
   const [observationDraftByProcess, setObservationDraftByProcess] = useState<ObservationDraftByProcess>(() => createProcessRecord(() => ''));
@@ -366,12 +391,23 @@ export const BrotherDetail = () => {
     observationSavingLockRef.current = createProcessRecord(() => false);
 
     if (!id) {
+      setBrother(undefined);
       setObservations([]);
       setObservationsOwnerId(null);
       return () => {
         isMounted = false;
       };
     }
+
+    setBrother(brothersService.findById(id));
+
+    const loadBrother = async () => {
+      const remoteBrother = await brothersService.findByIdAsync(id);
+      if (!isMounted || !remoteBrother) {
+        return;
+      }
+      setBrother(remoteBrother);
+    };
 
     const loadObservations = async () => {
       try {
@@ -386,6 +422,7 @@ export const BrotherDetail = () => {
       }
     };
 
+    void loadBrother();
     void loadObservations();
 
     return () => {
@@ -408,10 +445,11 @@ export const BrotherDetail = () => {
 
   const { acompanamiento } = brother;
   const procesoActual = seguimientoModuleService.getCurrentProcess(brother.id) ?? brother.procesoActual;
-  const eddiTracking = useMemo(() => eddiModuleService.getBrotherEddiTracking(brother.id), [brother.id]);
+  const eddiTracking = eddiModuleService.getBrotherEddiTracking(brother.id);
   const captureAttributes = photoService.getInputCaptureAttributes();
   const profilePhotoUrl = selectedPhotoUrl ?? brother.fotoUrl;
   const observationRoleByUserRole: Record<Role, ObservationRole> = {
+    [Role.SUPERADMIN]: 'Pastor',
     [Role.APOSTOL]: 'Pastor',
     [Role.PASTOR]: 'Pastor',
     [Role.LIDER_RED_CELULAS]: 'Pastor',
@@ -467,12 +505,65 @@ export const BrotherDetail = () => {
     setShowServiceTagsToast(true);
   };
 
-  const disciplesAltarBrothers = useMemo(() => {
-    const discipleName = normalizeName(brother.name);
-    return brothersService.list().filter((entry) =>
-      (entry.altar?.realizadoPor ?? []).some((responsable) => normalizeName(responsable) === discipleName)
-    );
-  }, [brother.name]);
+  const handleProfileSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!brother || isSavingProfile) {
+      return;
+    }
+
+    setIsSavingProfile(true);
+
+    try {
+      const formData = new FormData(event.currentTarget);
+      const altarStartDate = String(formData.get('altar_start_date') ?? '').trim();
+      const { nombres, apellidos } = splitFullName(brother.name);
+
+      const result = await brothersService.upsertBrotherAsync(
+        {
+          id: brother.id,
+          nombres,
+          apellidos,
+          estado: brother.procesoActual,
+          fechaIngreso: altarStartDate || undefined,
+          fotoUrl: profilePhotoUrl,
+        },
+        {
+          id: user.id,
+          name: user.name,
+        },
+      );
+
+      if (!result.ok) {
+        setProfileToastType('error');
+        setProfileToastMessage(result.error ?? 'No se pudo guardar la ficha del hermano.');
+        setShowToast(true);
+        return;
+      }
+
+      saveServiceTags();
+
+      const refreshedBrother = await brothersService.findByIdAsync(brother.id);
+      if (refreshedBrother) {
+        setBrother(refreshedBrother);
+      }
+
+      setIsEditModalOpen(false);
+      setProfileToastType('success');
+      setProfileToastMessage('Ficha actualizada correctamente en Supabase.');
+      setShowToast(true);
+    } catch {
+      setProfileToastType('error');
+      setProfileToastMessage('No se pudo guardar la ficha. Revisá permisos de Supabase.');
+      setShowToast(true);
+    } finally {
+      setIsSavingProfile(false);
+    }
+  };
+
+  const discipleName = normalizeName(brother.name);
+  const disciplesAltarBrothers = brothersService.list().filter((entry) =>
+    (entry.altar?.realizadoPor ?? []).some((responsable) => normalizeName(responsable) === discipleName)
+  );
 
   const getAltarTrackingStatus = (entry: (typeof disciplesAltarBrothers)[number]): AltarTrackingStatus => {
     if (entry.altar?.fechaFin) {
@@ -484,33 +575,26 @@ export const BrotherDetail = () => {
     return 'INTERRUMPIDO';
   };
 
-  const altarTrackingSummary = useMemo(() => {
-    const finalized = disciplesAltarBrothers.filter((entry) => getAltarTrackingStatus(entry) === 'FINALIZADO').length;
-    const interrupted = disciplesAltarBrothers.filter((entry) => getAltarTrackingStatus(entry) === 'INTERRUMPIDO').length;
+  const finalized = disciplesAltarBrothers.filter((entry) => getAltarTrackingStatus(entry) === 'FINALIZADO').length;
+  const interrupted = disciplesAltarBrothers.filter((entry) => getAltarTrackingStatus(entry) === 'INTERRUMPIDO').length;
+  const altarTrackingSummary = {
+    opened: disciplesAltarBrothers.length,
+    finalized,
+    interrupted,
+  };
 
-    return {
-      opened: disciplesAltarBrothers.length,
-      finalized,
-      interrupted,
-    };
-  }, [disciplesAltarBrothers]);
+  const filteredDisciplesAltarBrothers =
+    discipuloAltarsFilter === 'FINALIZADOS'
+      ? disciplesAltarBrothers.filter((entry) => getAltarTrackingStatus(entry) === 'FINALIZADO')
+      : discipuloAltarsFilter === 'INTERRUMPIDOS'
+        ? disciplesAltarBrothers.filter((entry) => getAltarTrackingStatus(entry) === 'INTERRUMPIDO')
+        : disciplesAltarBrothers;
 
-  const filteredDisciplesAltarBrothers = useMemo(() => {
-    if (discipuloAltarsFilter === 'FINALIZADOS') {
-      return disciplesAltarBrothers.filter((entry) => getAltarTrackingStatus(entry) === 'FINALIZADO');
-    }
-    if (discipuloAltarsFilter === 'INTERRUMPIDOS') {
-      return disciplesAltarBrothers.filter((entry) => getAltarTrackingStatus(entry) === 'INTERRUMPIDO');
-    }
-    return disciplesAltarBrothers;
-  }, [disciplesAltarBrothers, discipuloAltarsFilter]);
-
-  const selectedDiscipuloAltarBrother = useMemo(
-    () => disciplesAltarBrothers.find((entry) => entry.id === selectedDiscipuloAltarBrotherId),
-    [disciplesAltarBrothers, selectedDiscipuloAltarBrotherId]
+  const selectedDiscipuloAltarBrother = disciplesAltarBrothers.find(
+    (entry) => entry.id === selectedDiscipuloAltarBrotherId
   );
 
-  const selectedBrotherProcessSummary = useMemo(() => {
+  const selectedBrotherProcessSummary = (() => {
     if (!selectedDiscipuloAltarBrother) {
       return [];
     }
@@ -559,7 +643,7 @@ export const BrotherDetail = () => {
     ];
 
     return processEntries.filter((entry) => Boolean(entry.startDate || entry.endDate));
-  }, [selectedDiscipuloAltarBrother]);
+  })();
 
   const openObservationComposer = (process: Proceso) => {
     setObservationComposerByProcess(() => ({
@@ -585,31 +669,25 @@ export const BrotherDetail = () => {
     }));
   };
 
-  const visibleObservations = useMemo(
-    () => (observationsOwnerId === id ? observations : EMPTY_OBSERVATIONS),
-    [id, observations, observationsOwnerId]
-  );
+  const visibleObservations = observationsOwnerId === id ? observations : EMPTY_OBSERVATIONS;
 
-  const observationsByProcess = useMemo<Record<Proceso, Observation[]>>(
-    () => ({
-      [Proceso.ALTAR]: visibleObservations
-        .filter((obs) => obs.process === Proceso.ALTAR)
-        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
-      [Proceso.GRUPO]: visibleObservations
-        .filter((obs) => obs.process === Proceso.GRUPO)
-        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
-      [Proceso.EXPERIENCIA]: visibleObservations
-        .filter((obs) => obs.process === Proceso.EXPERIENCIA)
-        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
-      [Proceso.EDDI]: visibleObservations
-        .filter((obs) => obs.process === Proceso.EDDI)
-        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
-      [Proceso.DISCIPULO]: visibleObservations
-        .filter((obs) => obs.process === Proceso.DISCIPULO)
-        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
-    }),
-    [visibleObservations]
-  );
+  const observationsByProcess: Record<Proceso, Observation[]> = {
+    [Proceso.ALTAR]: visibleObservations
+      .filter((obs) => obs.process === Proceso.ALTAR)
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
+    [Proceso.GRUPO]: visibleObservations
+      .filter((obs) => obs.process === Proceso.GRUPO)
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
+    [Proceso.EXPERIENCIA]: visibleObservations
+      .filter((obs) => obs.process === Proceso.EXPERIENCIA)
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
+    [Proceso.EDDI]: visibleObservations
+      .filter((obs) => obs.process === Proceso.EDDI)
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
+    [Proceso.DISCIPULO]: visibleObservations
+      .filter((obs) => obs.process === Proceso.DISCIPULO)
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
+  };
 
   const saveObservation = async (process: Proceso) => {
     if (observationSavingLockRef.current[process]) {
@@ -1092,15 +1170,15 @@ export const BrotherDetail = () => {
 
                     <div className="grid grid-cols-3 gap-2 sm:gap-3">
                       <div className="rounded-xl border border-slate-200 dark:border-white/10 bg-[#f8fafc] dark:bg-black/45 p-3">
-                        <p className="text-[9px] sm:text-[10px] uppercase tracking-[0.14em] sm:tracking-[0.18em] font-black text-slate-500 dark:text-gray-400">Altares abiertos</p>
+                        <p className="text-[9px] sm:text-[10px] uppercase tracking-[0.06em] sm:tracking-[0.18em] leading-tight text-balance font-black text-slate-500 dark:text-gray-400 break-words">Altares abiertos</p>
                         <p className="text-xl sm:text-2xl font-black text-[#a58345] dark:text-[#c5a059] mt-2">{altarTrackingSummary.opened}</p>
                       </div>
                       <div className="rounded-xl border border-slate-200 dark:border-white/10 bg-[#f8fafc] dark:bg-black/45 p-3">
-                        <p className="text-[9px] sm:text-[10px] uppercase tracking-[0.14em] sm:tracking-[0.18em] font-black text-slate-500 dark:text-gray-400">Altares finalizados</p>
+                        <p className="text-[9px] sm:text-[10px] uppercase tracking-[0.06em] sm:tracking-[0.18em] leading-tight text-balance font-black text-slate-500 dark:text-gray-400 break-words">Altares finalizados</p>
                         <p className="text-xl sm:text-2xl font-black text-emerald-700 dark:text-emerald-300 mt-2">{altarTrackingSummary.finalized}</p>
                       </div>
                       <div className="rounded-xl border border-slate-200 dark:border-white/10 bg-[#f8fafc] dark:bg-black/45 p-3">
-                        <p className="text-[9px] sm:text-[10px] uppercase tracking-[0.14em] sm:tracking-[0.18em] font-black text-slate-500 dark:text-gray-400">Altares interrumpidos</p>
+                        <p className="text-[9px] sm:text-[10px] uppercase tracking-[0.06em] sm:tracking-[0.18em] leading-tight text-balance font-black text-slate-500 dark:text-gray-400 break-words">Altares interrumpidos</p>
                         <p className="text-xl sm:text-2xl font-black text-rose-700 dark:text-rose-300 mt-2">{altarTrackingSummary.interrupted}</p>
                       </div>
                     </div>
@@ -1174,6 +1252,9 @@ export const BrotherDetail = () => {
                   setIsDiscipuloAltarsModalOpen(false);
                   setSelectedDiscipuloAltarBrotherId(null);
                   navigate(`/hermanos/${selectedDiscipuloAltarBrother.id}`);
+                  requestAnimationFrame(() => {
+                    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+                  });
                 }}
                 className="w-full sm:w-auto px-3 py-1.5 rounded-lg text-[10px] uppercase tracking-widest font-black border border-[#c5a059]/35 text-[#c5a059] hover:bg-[#c5a059] hover:text-black transition-colors"
               >
@@ -1246,7 +1327,7 @@ export const BrotherDetail = () => {
                 onClick={() => setDiscipuloAltarsFilter('TODOS')}
                 className="rounded-xl border border-slate-200 dark:border-white/10 bg-[#f8fafc] dark:bg-black/40 p-3 text-left"
               >
-                <p className="text-[9px] sm:text-[10px] uppercase tracking-[0.14em] sm:tracking-[0.18em] font-black text-slate-500 dark:text-gray-400">Altares abiertos</p>
+                <p className="text-[9px] sm:text-[10px] uppercase tracking-[0.06em] sm:tracking-[0.18em] leading-tight text-balance font-black text-slate-500 dark:text-gray-400 break-words">Altares abiertos</p>
                 <p className="text-xl sm:text-2xl font-black text-[#a58345] dark:text-[#c5a059] mt-2">{altarTrackingSummary.opened}</p>
               </button>
               <button
@@ -1254,7 +1335,7 @@ export const BrotherDetail = () => {
                 onClick={() => setDiscipuloAltarsFilter('FINALIZADOS')}
                 className="rounded-xl border border-slate-200 dark:border-white/10 bg-[#f8fafc] dark:bg-black/40 p-3 text-left"
               >
-                <p className="text-[9px] sm:text-[10px] uppercase tracking-[0.14em] sm:tracking-[0.18em] font-black text-slate-500 dark:text-gray-400">Finalizados</p>
+                <p className="text-[9px] sm:text-[10px] uppercase tracking-[0.06em] sm:tracking-[0.18em] leading-tight text-balance font-black text-slate-500 dark:text-gray-400 break-words">Finalizados</p>
                 <p className="text-xl sm:text-2xl font-black text-emerald-700 dark:text-emerald-300 mt-2">{altarTrackingSummary.finalized}</p>
               </button>
               <button
@@ -1262,7 +1343,7 @@ export const BrotherDetail = () => {
                 onClick={() => setDiscipuloAltarsFilter('INTERRUMPIDOS')}
                 className="rounded-xl border border-slate-200 dark:border-white/10 bg-[#f8fafc] dark:bg-black/40 p-3 text-left"
               >
-                <p className="text-[9px] sm:text-[10px] uppercase tracking-[0.14em] sm:tracking-[0.18em] font-black text-slate-500 dark:text-gray-400">Interrumpidos</p>
+                <p className="text-[9px] sm:text-[10px] uppercase tracking-[0.06em] sm:tracking-[0.18em] leading-tight text-balance font-black text-slate-500 dark:text-gray-400 break-words">Interrumpidos</p>
                 <p className="text-xl sm:text-2xl font-black text-rose-700 dark:text-rose-300 mt-2">{altarTrackingSummary.interrupted}</p>
               </button>
             </div>
@@ -1315,12 +1396,7 @@ export const BrotherDetail = () => {
       {canEditProfile && (
         <Modal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} title={`Actualizando Ficha de ${brother.name}`}>
           <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              saveServiceTags();
-              setIsEditModalOpen(false);
-              setShowToast(true);
-            }}
+            onSubmit={handleProfileSubmit}
             className="space-y-8"
           >
             <div className="space-y-5 bg-white/[0.02] p-6 rounded-[2rem] border border-white/5">
@@ -1346,7 +1422,12 @@ export const BrotherDetail = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div className="space-y-2">
                   <label className="text-[10px] uppercase tracking-widest text-gray-500 font-bold ml-2">Fecha Inicio</label>
-                  <input type="date" defaultValue={brother.altar?.fechaInicio} className="w-full bg-black/60 border border-white/10 rounded-[1.2rem] p-4 text-sm text-white focus:border-[#c5a059] outline-none [color-scheme:dark]" />
+                  <input
+                    type="date"
+                    name="altar_start_date"
+                    defaultValue={brother.altar?.fechaInicio}
+                    className="w-full bg-black/60 border border-white/10 rounded-[1.2rem] p-4 text-sm text-white focus:border-[#c5a059] outline-none [color-scheme:dark]"
+                  />
                 </div>
                 <div className="space-y-2">
                   <label className="text-[10px] uppercase tracking-widest text-gray-500 font-bold ml-2">Altar Realizado Por</label>
@@ -1447,19 +1528,21 @@ export const BrotherDetail = () => {
             <div className="pt-2 flex justify-end">
               <button
                 type="submit"
+                disabled={isSavingProfile}
                 className="bg-gradient-to-r from-[#c5a059] to-[#d4b375] text-black font-black uppercase tracking-[0.15em] px-6 py-3 text-sm rounded-[1.1rem] hover:scale-[1.02] active:scale-95 transition-all shadow-xl"
               >
-                Guardar
+                {isSavingProfile ? 'Guardando...' : 'Guardar'}
               </button>
             </div>
           </form>
         </Modal>
       )}
 
-      <Toast isVisible={showToast} onClose={() => setShowToast(false)} message="Información del hermano actualizada." />
+      <Toast isVisible={showToast} onClose={() => setShowToast(false)} message={profileToastMessage} type={profileToastType} />
       <Toast isVisible={showPhotoToast} onClose={() => setShowPhotoToast(false)} message="Foto actualizada en vista previa web." />
       <Toast isVisible={showServiceTagsToast} onClose={() => setShowServiceTagsToast(false)} message="Etiquetas de servicio guardadas." />
     </div>
   );
 };
+
 
