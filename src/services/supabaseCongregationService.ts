@@ -16,7 +16,6 @@ interface SupabaseHermanoRow {
   apellidos: string;
   telefono: string | null;
   direccion: string | null;
-  edad: number | null;
   fecha_nacimiento: string | null;
   celula_id: string | null;
   estado: string | null;
@@ -129,7 +128,7 @@ const toBrotherProfile = (
     id: row.id,
     name: buildName(row),
     fotoUrl: row.foto_url ?? undefined,
-    edad: calculateAge(row.fecha_nacimiento) ?? row.edad ?? undefined,
+    edad: calculateAge(row.fecha_nacimiento),
     fechaNacimiento: row.fecha_nacimiento ?? undefined,
     telefono: row.telefono ?? undefined,
     role: Role.HERMANO_NUEVO,
@@ -186,7 +185,7 @@ export const supabaseCongregationService = {
         client.from('celulas').select('id,nombre,activa,lider_id'),
         client
           .from('hermanos')
-          .select('id,nombres,apellidos,telefono,direccion,edad,fecha_nacimiento,celula_id,estado,fecha_ingreso,foto_url')
+          .select('id,nombres,apellidos,telefono,direccion,fecha_nacimiento,celula_id,estado,fecha_ingreso,foto_url')
           .order('nombres', { ascending: true }),
         client
           .from('procesos')
@@ -305,9 +304,24 @@ export const supabaseCongregationService = {
       return { ok: false, error: 'Supabase no configurado.' };
     }
 
+    const cellName = input.nombre.trim();
+
+    const { data: existingCell, error: existingCellError } = await client
+      .from('celulas')
+      .select('id')
+      .eq('nombre', cellName)
+      .maybeSingle();
+
+    if (existingCellError) {
+      return { ok: false, error: existingCellError.message ?? 'No se pudo buscar la célula.' };
+    }
+
+    if (existingCell?.id) {
+      return { ok: true, id: existingCell.id };
+    }
+
     const payload = {
-      id: input.id ?? undefined,
-      nombre: input.nombre.trim(),
+      nombre: cellName,
       lider_id: input.liderId ?? null,
       descripcion: input.descripcion?.trim() || null,
       activa: input.activa ?? true,
@@ -315,7 +329,7 @@ export const supabaseCongregationService = {
 
     const { data, error } = await client
       .from('celulas')
-      .upsert(payload)
+      .insert(payload)
       .select('id')
       .single();
 
@@ -328,7 +342,7 @@ export const supabaseCongregationService = {
       modulo: 'celulas',
       entityType: 'celula',
       entityId: data.id,
-      action: input.id ? 'update' : 'create',
+      action: 'create',
       afterData: payload,
     });
 

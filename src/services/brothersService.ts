@@ -62,14 +62,8 @@ export const brothersService = {
     }
 
     const remote = await supabaseCongregationService.listBrothers();
-    if (remote.length > 0) {
-      refreshCachesFromBrothers(remote);
-      return remote;
-    }
-
-    const local = await hermanosModuleService.listAsync();
-    refreshCachesFromBrothers(local);
-    return local;
+    refreshCachesFromBrothers(remote);
+    return remote;
   },
 
   async findByIdAsync(id: BrotherId): Promise<BrotherProfile | undefined> {
@@ -85,14 +79,8 @@ export const brothersService = {
     }
 
     const remote = await supabaseCongregationService.listCells();
-    if (remote.length > 0) {
-      cellsCache = remote;
-      return remote;
-    }
-
-    const localCells = hermanosModuleService.listCells();
-    cellsCache = localCells;
-    return localCells;
+    cellsCache = remote;
+    return remote;
   },
 
   async upsertBrotherAsync(
