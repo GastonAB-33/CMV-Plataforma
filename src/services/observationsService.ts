@@ -143,3 +143,53 @@ export const addObservation = async (brotherId: string, observation: Observation
   return toObservationFromSupabase(data as SupabaseObservationRow);
 };
 
+export const updateObservation = async (
+  observationId: string,
+  updates: Pick<Observation, 'text' | 'author' | 'role' | 'process'>,
+): Promise<Observation> => {
+  if (!observationId) {
+    throw new Error('observationId es obligatorio para actualizar observaciones.');
+  }
+
+  const text = updates.text.trim();
+  if (!text) {
+    throw new Error('text es obligatorio para actualizar observaciones.');
+  }
+
+  const client = getRequiredSupabaseClient();
+  const payload = {
+    comentario: text,
+    detalle: updates.author?.trim() || null,
+    tipo: updates.role,
+    proceso: updates.process,
+  };
+
+  const { data, error } = await client
+    .from('observaciones')
+    .update(payload)
+    .eq('id', observationId)
+    .select('id,hermano_id,comentario,detalle,tipo,proceso,fecha')
+    .single();
+
+  if (error || !data) {
+    throw new Error(error?.message || 'No se pudo actualizar la observación en Supabase.');
+  }
+
+  return toObservationFromSupabase(data as SupabaseObservationRow);
+};
+
+export const deleteObservation = async (observationId: string): Promise<void> => {
+  if (!observationId) {
+    throw new Error('observationId es obligatorio para eliminar observaciones.');
+  }
+
+  const client = getRequiredSupabaseClient();
+  const { error } = await client
+    .from('observaciones')
+    .delete()
+    .eq('id', observationId);
+
+  if (error) {
+    throw new Error(error.message || 'No se pudo eliminar la observación en Supabase.');
+  }
+};

@@ -56,6 +56,7 @@ export const BrotherList = () => {
   const [cellOptions, setCellOptions] = useState<string[]>(DEFAULT_CELL_OPTIONS);
   const [isSavingBrother, setIsSavingBrother] = useState(false);
   const [newBrotherName, setNewBrotherName] = useState('');
+  const [newBrotherBirthDate, setNewBrotherBirthDate] = useState('');
   const [newBrotherDate, setNewBrotherDate] = useState('');
   const [newBrotherCell, setNewBrotherCell] = useState(DEFAULT_CELL_OPTIONS[0]);
   const [newBrotherStage, setNewBrotherStage] = useState<InitialStage>('Altar');
@@ -104,6 +105,7 @@ export const BrotherList = () => {
           nombres,
           apellidos,
           celulaId: cellResult.id,
+          fechaNacimiento: newBrotherBirthDate || undefined,
           fechaIngreso: newBrotherDate || undefined,
           estado: newBrotherStage,
         },
@@ -121,6 +123,7 @@ export const BrotherList = () => {
       setBrothers(loaded);
       setIsModalOpen(false);
       setNewBrotherName('');
+      setNewBrotherBirthDate('');
       setNewBrotherDate('');
       setNewBrotherStage('Altar');
       setToastType('success');
@@ -528,6 +531,15 @@ export const BrotherList = () => {
                 required
                 value={newBrotherName}
                 onChange={(event) => setNewBrotherName(event.target.value)}
+                className="w-full bg-slate-100 dark:bg-white/5 border border-white/10 rounded-[1.2rem] p-5 text-slate-900 dark:text-white focus:outline-none focus:border-[#c5a059] transition-all"
+              />
+            </div>
+            <div className="space-y-3">
+              <label className="text-[10px] uppercase tracking-widest font-black text-[#c5a059]">Fecha de nacimiento</label>
+              <input
+                type="date"
+                value={newBrotherBirthDate}
+                onChange={(event) => setNewBrotherBirthDate(event.target.value)}
                 className="w-full bg-slate-100 dark:bg-white/5 border border-white/10 rounded-[1.2rem] p-5 text-slate-900 dark:text-white focus:outline-none focus:border-[#c5a059] transition-all"
               />
             </div>

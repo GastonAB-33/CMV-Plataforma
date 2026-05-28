@@ -12,6 +12,8 @@ server/.env
 server/.env.*
 
 coverage/
+test-results/
+playwright-report/
 *.log
 tsconfig.tsbuildinfo
 

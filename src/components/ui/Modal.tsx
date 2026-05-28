@@ -15,9 +15,9 @@ export const Modal = ({ isOpen, onClose, title, children, size = 'default' }: Mo
   const isSmall = size === 'sm';
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-2 sm:p-4 bg-black/50 dark:bg-black/80 backdrop-blur-sm animate-in fade-in duration-300">
+    <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-2 sm:p-4 bg-black/50 dark:bg-black/80 animate-in fade-in duration-300">
       <div
-        className={`bg-white dark:bg-[#0a0a0a] w-full rounded-t-[2rem] sm:rounded-[2.5rem] border border-[#c5a059]/20 p-4 sm:p-6 md:p-8 relative shadow-[0_30px_60px_rgba(0,0,0,0.2)] dark:shadow-[0_30px_60px_rgba(0,0,0,0.8)] animate-in zoom-in-95 duration-300 flex flex-col ${
+        className={`bg-white dark:bg-[#0a0a0a] w-full overflow-hidden rounded-t-[2rem] sm:rounded-[2.5rem] border border-[#c5a059]/20 p-4 sm:p-6 md:p-8 relative isolate shadow-[0_30px_60px_rgba(0,0,0,0.2)] dark:shadow-[0_30px_60px_rgba(0,0,0,0.8)] animate-in zoom-in-95 duration-300 flex flex-col [transform:translateZ(0)] [backface-visibility:hidden] ${
           isSmall ? 'max-w-xl max-h-[82dvh] sm:max-h-[70vh]' : 'max-w-3xl h-[90dvh] sm:h-[82vh]'
         }`}
         onClick={(e) => e.stopPropagation()}
@@ -32,7 +32,7 @@ export const Modal = ({ isOpen, onClose, title, children, size = 'default' }: Mo
           </button>
         </header>
 
-        <div className={`min-h-0 pr-1 ${isSmall ? 'overflow-y-visible' : 'flex-1 overflow-y-auto'}`}>
+        <div className={`min-h-0 pr-1 [transform:translateZ(0)] [backface-visibility:hidden] ${isSmall ? 'overflow-y-visible' : 'flex-1 overflow-y-auto overscroll-contain [contain:paint]'}`}>
           {children}
         </div>
       </div>

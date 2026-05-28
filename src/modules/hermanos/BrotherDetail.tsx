@@ -12,12 +12,23 @@ import {
   Star,
   Camera,
   Edit2,
-  Music2
+  Music2,
+  Phone,
+  Save,
+  Trash2,
+  X
 } from 'lucide-react';
 import { brothersService } from '../../services/brothersService';
 import { useAuth } from '../../hooks/useAuth';
 import { photoService } from '../../services/photos/photoService';
-import { addObservation, getObservations, Observation, ObservationRole } from '../../services/observationsService';
+import {
+  addObservation,
+  deleteObservation,
+  getObservations,
+  Observation,
+  ObservationRole,
+  updateObservation,
+} from '../../services/observationsService';
 import { Acompanamiento, Proceso, Role } from '../../types';
 import { eddiModuleService } from '../eddi/services/eddiModuleService';
 import { seguimientoModuleService } from '../seguimiento/services/seguimientoModuleService';
@@ -56,6 +67,7 @@ const statusStyle: Record<'APROBADO' | 'REPROBADO' | 'EN_CURSO', string> = {
 type ObservationDraftByProcess = Record<Proceso, string>;
 type ObservationComposerByProcess = Record<Proceso, boolean>;
 type ObservationSavingByProcess = Record<Proceso, boolean>;
+type ObservationEditDraftById = Record<string, string>;
 const EMPTY_OBSERVATIONS: Observation[] = [];
 
 const createProcessRecord = <T,>(factory: () => T): Record<Proceso, T> => ({
@@ -189,10 +201,18 @@ interface StageWrapperProps {
   isComposerOpen: boolean;
   isSavingObservation: boolean;
   draftValue: string;
+  editingObservationId: string | null;
+  editDraftValue: string;
+  mutatingObservationId: string | null;
   onComposerOpen: () => void;
   onComposerClose: () => void;
   onDraftChange: (value: string) => void;
   onSaveObservation: () => void;
+  onEditObservationStart: (entry: Observation) => void;
+  onEditObservationCancel: () => void;
+  onEditDraftChange: (entryId: string, value: string) => void;
+  onUpdateObservation: (entry: Observation) => void;
+  onDeleteObservation: (entry: Observation) => void;
 }
 
 const StageWrapperComponent = ({
@@ -207,10 +227,18 @@ const StageWrapperComponent = ({
   isComposerOpen,
   isSavingObservation,
   draftValue,
+  editingObservationId,
+  editDraftValue,
+  mutatingObservationId,
   onComposerOpen,
   onComposerClose,
   onDraftChange,
   onSaveObservation,
+  onEditObservationStart,
+  onEditObservationCancel,
+  onEditDraftChange,
+  onUpdateObservation,
+  onDeleteObservation,
 }: StageWrapperProps) => (
   <div className={`p-4 md:p-5 rounded-[2rem] md:rounded-[2.5rem] relative overflow-hidden ${getCardStyle(isCurrent)}`}>
     <div className="w-full min-w-0 flex items-start sm:items-center gap-2 md:gap-3 mb-4 md:mb-5 pb-2 border-b border-slate-200 dark:border-white/5">
@@ -285,7 +313,58 @@ const StageWrapperComponent = ({
                       <span className="text-sm font-semibold text-slate-700 dark:text-gray-200 break-words">{entry.author}</span>
                       <span className="w-full sm:w-auto sm:ml-auto text-[11px] text-slate-500 dark:text-gray-500 shrink-0">{formatObservationDate(entry.createdAt)}</span>
                     </div>
-                    <p className="text-sm text-slate-700 dark:text-gray-300 leading-relaxed break-words">{entry.text}</p>
+                    {editingObservationId === entry.id ? (
+                      <div className="space-y-2">
+                        <textarea
+                          value={editDraftValue}
+                          onChange={(event) => onEditDraftChange(entry.id, event.target.value)}
+                          className="w-full bg-white dark:bg-black/60 border border-slate-200 dark:border-white/10 rounded-xl p-3 text-sm text-slate-800 dark:text-white focus:border-[#c5a059] outline-none min-h-[86px] resize-none shadow-inner"
+                        />
+                        <div className="flex flex-wrap justify-end gap-2">
+                          <button
+                            type="button"
+                            onClick={onEditObservationCancel}
+                            className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-slate-300 dark:border-white/15 text-[10px] uppercase tracking-widest font-black text-slate-600 dark:text-gray-300 hover:text-slate-900 dark:hover:text-white transition-colors"
+                          >
+                            <X size={13} />
+                            Cancelar
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => onUpdateObservation(entry)}
+                            disabled={!editDraftValue.trim() || mutatingObservationId === entry.id}
+                            className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-[#c5a059]/40 bg-[#c5a059] text-[10px] uppercase tracking-widest font-black text-black disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                            <Save size={13} />
+                            Guardar
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <>
+                        <p className="text-sm text-slate-700 dark:text-gray-300 leading-relaxed break-words">{entry.text}</p>
+                        <div className="mt-3 flex flex-wrap justify-end gap-2">
+                          <button
+                            type="button"
+                            onClick={() => onEditObservationStart(entry)}
+                            disabled={mutatingObservationId === entry.id}
+                            className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-slate-300 dark:border-white/15 text-[10px] uppercase tracking-widest font-black text-slate-600 dark:text-gray-300 hover:text-slate-900 dark:hover:text-white transition-colors disabled:opacity-50"
+                          >
+                            <Edit2 size={13} />
+                            Editar
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => onDeleteObservation(entry)}
+                            disabled={mutatingObservationId === entry.id}
+                            className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-rose-300/70 dark:border-rose-400/20 text-[10px] uppercase tracking-widest font-black text-rose-600 dark:text-rose-300 hover:bg-rose-500 hover:text-white transition-colors disabled:opacity-50"
+                          >
+                            <Trash2 size={13} />
+                            Eliminar
+                          </button>
+                        </div>
+                      </>
+                    )}
                   </article>
                 ))}
             </div>
@@ -313,6 +392,9 @@ const StageWrapper = React.memo(
     previous.isComposerOpen === next.isComposerOpen &&
     previous.isSavingObservation === next.isSavingObservation &&
     previous.draftValue === next.draftValue &&
+    previous.editingObservationId === next.editingObservationId &&
+    previous.editDraftValue === next.editDraftValue &&
+    previous.mutatingObservationId === next.mutatingObservationId &&
     areObservationListsEqual(previous.rightEntries, next.rightEntries)
 );
 
@@ -346,6 +428,9 @@ export const BrotherDetail = () => {
   const [observationDraftByProcess, setObservationDraftByProcess] = useState<ObservationDraftByProcess>(() => createProcessRecord(() => ''));
   const [observationComposerByProcess, setObservationComposerByProcess] = useState<ObservationComposerByProcess>(() => createProcessRecord(() => false));
   const [observationSavingByProcess, setObservationSavingByProcess] = useState<ObservationSavingByProcess>(() => createProcessRecord(() => false));
+  const [editingObservationId, setEditingObservationId] = useState<string | null>(null);
+  const [observationEditDraftById, setObservationEditDraftById] = useState<ObservationEditDraftById>({});
+  const [mutatingObservationId, setMutatingObservationId] = useState<string | null>(null);
   const observationSavingLockRef = useRef<ObservationSavingByProcess>(createProcessRecord(() => false));
 
   useEffect(() => {
@@ -388,6 +473,9 @@ export const BrotherDetail = () => {
     setObservationDraftByProcess(createProcessRecord(() => ''));
     setObservationComposerByProcess(createProcessRecord(() => false));
     setObservationSavingByProcess(createProcessRecord(() => false));
+    setEditingObservationId(null);
+    setObservationEditDraftById({});
+    setMutatingObservationId(null);
     observationSavingLockRef.current = createProcessRecord(() => false);
 
     if (!id) {
@@ -474,6 +562,7 @@ export const BrotherDetail = () => {
   const hasMultimediaServiceTags = selectedServiceTags.multimedia.length > 0;
   const hasMisericordiaServiceTags = selectedServiceTags.misericordia.length > 0;
   const hasAnyServiceTags = hasWorshipServiceTags || hasMultimediaServiceTags || hasMisericordiaServiceTags;
+  const profileNameParts = splitFullName(brother.name);
 
   const toggleWorshipTag = (tag: MusicalSkillTag) => {
     if (!canManageServiceTags) return;
@@ -516,13 +605,18 @@ export const BrotherDetail = () => {
     try {
       const formData = new FormData(event.currentTarget);
       const altarStartDate = String(formData.get('altar_start_date') ?? '').trim();
-      const { nombres, apellidos } = splitFullName(brother.name);
+      const nombres = String(formData.get('nombres') ?? '').trim();
+      const apellidos = String(formData.get('apellidos') ?? '').trim();
+      const telefono = String(formData.get('telefono') ?? '').trim();
+      const fechaNacimiento = String(formData.get('fecha_nacimiento') ?? '').trim();
 
       const result = await brothersService.upsertBrotherAsync(
         {
           id: brother.id,
-          nombres,
-          apellidos,
+          nombres: nombres || profileNameParts.nombres,
+          apellidos: apellidos || profileNameParts.apellidos,
+          telefono,
+          fechaNacimiento,
           estado: brother.procesoActual,
           fechaIngreso: altarStartDate || undefined,
           fotoUrl: profilePhotoUrl,
@@ -749,7 +843,13 @@ export const BrotherDetail = () => {
         ...previous,
         [process]: false,
       }));
+      setProfileToastType('success');
+      setProfileToastMessage('Observación guardada correctamente.');
+      setShowToast(true);
     } catch {
+      setProfileToastType('error');
+      setProfileToastMessage('No se pudo guardar la observación. Revisá permisos de Supabase.');
+      setShowToast(true);
       return;
     } finally {
       observationSavingLockRef.current[process] = false;
@@ -757,6 +857,94 @@ export const BrotherDetail = () => {
         ...previous,
         [process]: false,
       }));
+    }
+  };
+
+  const startEditObservation = (entry: Observation) => {
+    setEditingObservationId(entry.id);
+    setObservationEditDraftById((previous) => ({
+      ...previous,
+      [entry.id]: entry.text,
+    }));
+  };
+
+  const cancelEditObservation = () => {
+    setEditingObservationId(null);
+  };
+
+  const updateObservationEditDraft = (entryId: string, value: string) => {
+    setObservationEditDraftById((previous) => ({
+      ...previous,
+      [entryId]: value,
+    }));
+  };
+
+  const saveObservationEdit = async (entry: Observation) => {
+    const nextText = (observationEditDraftById[entry.id] ?? '').trim();
+    if (!nextText || mutatingObservationId) {
+      return;
+    }
+
+    setMutatingObservationId(entry.id);
+    try {
+      const saved = await updateObservation(entry.id, {
+        text: nextText,
+        author: entry.author,
+        role: entry.role,
+        process: entry.process,
+      });
+
+      setObservations((previous) =>
+        previous.map((current) =>
+          current.id === entry.id
+            ? {
+                ...current,
+                ...saved,
+                text: saved.text || nextText,
+                process: saved.process ?? current.process,
+                brotherId: saved.brotherId ?? current.brotherId,
+              }
+            : current
+        )
+      );
+      setEditingObservationId(null);
+      setObservationEditDraftById((previous) => {
+        const { [entry.id]: _removed, ...rest } = previous;
+        return rest;
+      });
+      setProfileToastType('success');
+      setProfileToastMessage('Observación actualizada correctamente.');
+      setShowToast(true);
+    } catch {
+      setProfileToastType('error');
+      setProfileToastMessage('No se pudo actualizar la observación. Revisá permisos de Supabase.');
+      setShowToast(true);
+    } finally {
+      setMutatingObservationId(null);
+    }
+  };
+
+  const removeObservation = async (entry: Observation) => {
+    if (mutatingObservationId) {
+      return;
+    }
+
+    setMutatingObservationId(entry.id);
+    try {
+      await deleteObservation(entry.id);
+      setObservations((previous) => previous.filter((current) => current.id !== entry.id));
+      if (editingObservationId === entry.id) {
+        setEditingObservationId(null);
+      }
+      setProfileToastType('success');
+      setProfileToastMessage('Observación eliminada correctamente.');
+      setShowToast(true);
+    } catch {
+      setProfileToastType('error');
+      setProfileToastMessage('No se pudo eliminar la observación. Revisá permisos de Supabase.');
+      setShowToast(true);
+    } finally {
+      setMutatingObservationId(null);
     }
   };
 
@@ -842,7 +1030,7 @@ export const BrotherDetail = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-6 w-full items-stretch">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 w-full items-stretch">
                 <div className="flex items-stretch gap-3 sm:gap-4 bg-[#f8fafc] dark:bg-black/60 p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-white/5 min-h-[100px] sm:min-h-[110px] shadow-inner w-full min-w-0">
                   <div className="p-3 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl">
                     <Users className="text-[#c5a059]" size={20} />
@@ -873,6 +1061,16 @@ export const BrotherDetail = () => {
                     <p className="text-[9px] uppercase tracking-[0.2em] font-black text-slate-500 dark:text-gray-500 mb-1">Líder / Célula</p>
                     <p className="font-bold text-sm text-slate-700 dark:text-gray-200 break-words">{acompanamiento.liderCelulaName || 'No asignada'}</p>
                     <p className="text-[10px] font-black text-[#c5a059] mt-0.5">{acompanamiento.celulaName}</p>
+                  </div>
+                </div>
+
+                <div className="flex items-stretch gap-3 sm:gap-4 bg-[#f8fafc] dark:bg-black/60 p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-white/5 min-h-[100px] sm:min-h-[110px] shadow-inner w-full min-w-0">
+                  <div className="p-3 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl">
+                    <Phone className="text-[#c5a059]" size={20} />
+                  </div>
+                  <div className="text-left flex-1 min-w-0">
+                    <p className="text-[9px] uppercase tracking-[0.2em] font-black text-slate-500 dark:text-gray-500 mb-1">Contacto</p>
+                    <p className="font-bold text-sm text-slate-700 dark:text-gray-200 break-words">{brother.telefono || 'No registrado'}</p>
                   </div>
                 </div>
               </div>
@@ -990,10 +1188,18 @@ export const BrotherDetail = () => {
               isComposerOpen={observationComposerByProcess[Proceso.ALTAR]}
               isSavingObservation={observationSavingByProcess[Proceso.ALTAR]}
               draftValue={observationDraftByProcess[Proceso.ALTAR]}
+              editingObservationId={editingObservationId}
+              editDraftValue={editingObservationId ? observationEditDraftById[editingObservationId] ?? '' : ''}
+              mutatingObservationId={mutatingObservationId}
               onComposerOpen={() => openObservationComposer(Proceso.ALTAR)}
               onComposerClose={() => closeObservationComposer(Proceso.ALTAR)}
               onDraftChange={(value) => updateObservationDraft(Proceso.ALTAR, value)}
               onSaveObservation={() => saveObservation(Proceso.ALTAR)}
+              onEditObservationStart={startEditObservation}
+              onEditObservationCancel={cancelEditObservation}
+              onEditDraftChange={updateObservationEditDraft}
+              onUpdateObservation={saveObservationEdit}
+              onDeleteObservation={removeObservation}
             >
               <div className="flex flex-col sm:flex-row gap-4 md:gap-6">
                 <div className="space-y-1">
@@ -1022,10 +1228,18 @@ export const BrotherDetail = () => {
               isComposerOpen={observationComposerByProcess[Proceso.GRUPO]}
               isSavingObservation={observationSavingByProcess[Proceso.GRUPO]}
               draftValue={observationDraftByProcess[Proceso.GRUPO]}
+              editingObservationId={editingObservationId}
+              editDraftValue={editingObservationId ? observationEditDraftById[editingObservationId] ?? '' : ''}
+              mutatingObservationId={mutatingObservationId}
               onComposerOpen={() => openObservationComposer(Proceso.GRUPO)}
               onComposerClose={() => closeObservationComposer(Proceso.GRUPO)}
               onDraftChange={(value) => updateObservationDraft(Proceso.GRUPO, value)}
               onSaveObservation={() => saveObservation(Proceso.GRUPO)}
+              onEditObservationStart={startEditObservation}
+              onEditObservationCancel={cancelEditObservation}
+              onEditDraftChange={updateObservationEditDraft}
+              onUpdateObservation={saveObservationEdit}
+              onDeleteObservation={removeObservation}
             >
               <div className="flex flex-col sm:flex-row gap-4 md:gap-6">
                 <div className="space-y-1">
@@ -1050,10 +1264,18 @@ export const BrotherDetail = () => {
               isComposerOpen={observationComposerByProcess[Proceso.EXPERIENCIA]}
               isSavingObservation={observationSavingByProcess[Proceso.EXPERIENCIA]}
               draftValue={observationDraftByProcess[Proceso.EXPERIENCIA]}
+              editingObservationId={editingObservationId}
+              editDraftValue={editingObservationId ? observationEditDraftById[editingObservationId] ?? '' : ''}
+              mutatingObservationId={mutatingObservationId}
               onComposerOpen={() => openObservationComposer(Proceso.EXPERIENCIA)}
               onComposerClose={() => closeObservationComposer(Proceso.EXPERIENCIA)}
               onDraftChange={(value) => updateObservationDraft(Proceso.EXPERIENCIA, value)}
               onSaveObservation={() => saveObservation(Proceso.EXPERIENCIA)}
+              onEditObservationStart={startEditObservation}
+              onEditObservationCancel={cancelEditObservation}
+              onEditDraftChange={updateObservationEditDraft}
+              onUpdateObservation={saveObservationEdit}
+              onDeleteObservation={removeObservation}
             >
               <div className="space-y-1">
                 <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#c5a059] flex items-center gap-2 mb-2">
@@ -1077,10 +1299,18 @@ export const BrotherDetail = () => {
               isComposerOpen={observationComposerByProcess[Proceso.EDDI]}
               isSavingObservation={observationSavingByProcess[Proceso.EDDI]}
               draftValue={observationDraftByProcess[Proceso.EDDI]}
+              editingObservationId={editingObservationId}
+              editDraftValue={editingObservationId ? observationEditDraftById[editingObservationId] ?? '' : ''}
+              mutatingObservationId={mutatingObservationId}
               onComposerOpen={() => openObservationComposer(Proceso.EDDI)}
               onComposerClose={() => closeObservationComposer(Proceso.EDDI)}
               onDraftChange={(value) => updateObservationDraft(Proceso.EDDI, value)}
               onSaveObservation={() => saveObservation(Proceso.EDDI)}
+              onEditObservationStart={startEditObservation}
+              onEditObservationCancel={cancelEditObservation}
+              onEditDraftChange={updateObservationEditDraft}
+              onUpdateObservation={saveObservationEdit}
+              onDeleteObservation={removeObservation}
             >
               <div className="flex flex-col sm:flex-row gap-4 md:gap-6">
                 <div className="space-y-1">
@@ -1147,10 +1377,18 @@ export const BrotherDetail = () => {
               isComposerOpen={observationComposerByProcess[Proceso.DISCIPULO]}
               isSavingObservation={observationSavingByProcess[Proceso.DISCIPULO]}
               draftValue={observationDraftByProcess[Proceso.DISCIPULO]}
+              editingObservationId={editingObservationId}
+              editDraftValue={editingObservationId ? observationEditDraftById[editingObservationId] ?? '' : ''}
+              mutatingObservationId={mutatingObservationId}
               onComposerOpen={() => openObservationComposer(Proceso.DISCIPULO)}
               onComposerClose={() => closeObservationComposer(Proceso.DISCIPULO)}
               onDraftChange={(value) => updateObservationDraft(Proceso.DISCIPULO, value)}
               onSaveObservation={() => saveObservation(Proceso.DISCIPULO)}
+              onEditObservationStart={startEditObservation}
+              onEditObservationCancel={cancelEditObservation}
+              onEditDraftChange={updateObservationEditDraft}
+              onUpdateObservation={saveObservationEdit}
+              onDeleteObservation={removeObservation}
             >
               <div className="space-y-5">
                 <div className="space-y-1">
@@ -1215,7 +1453,7 @@ export const BrotherDetail = () => {
         }
       >
         {selectedDiscipuloAltarBrother ? (
-          <div className="space-y-5">
+          <div className="space-y-5 [transform:translateZ(0)] [backface-visibility:hidden] [contain:layout_paint]">
             <button
               type="button"
               onClick={() => setSelectedDiscipuloAltarBrotherId(null)}
@@ -1295,7 +1533,7 @@ export const BrotherDetail = () => {
                           )}
                         </div>
                       </div>
-                      <div className="mt-3 h-[84px] overflow-y-auto pr-1 [scrollbar-width:thin] [scrollbar-color:#c5a05944_transparent] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-[#c5a059]/40 [&::-webkit-scrollbar-thumb]:rounded-full">
+                      <div className="mt-3 space-y-2">
                         {processEntry.observations.length === 0 ? (
                           <p className="text-xs text-slate-500 dark:text-gray-500">Sin observaciones en este proceso.</p>
                         ) : (
@@ -1315,7 +1553,7 @@ export const BrotherDetail = () => {
                       {processEntry.key === Proceso.EDDI && processEntry.grades.length > 0 && (
                         <div className="mt-3 space-y-2">
                           <p className="text-[10px] uppercase tracking-[0.16em] font-black text-slate-500 dark:text-gray-500">Materias y notas</p>
-                          <div className="max-h-[120px] overflow-y-auto pr-1 [scrollbar-width:thin] [scrollbar-color:#c5a05944_transparent] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-[#c5a059]/40 [&::-webkit-scrollbar-thumb]:rounded-full">
+                          <div className="space-y-2">
                             {processEntry.grades.map((grade) => (
                               <div key={grade.id} className="rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-black/45 px-3 py-2 flex items-center justify-between gap-3">
                                 <span className="text-xs text-slate-700 dark:text-gray-300">{grade.materia}</span>
@@ -1411,6 +1649,50 @@ export const BrotherDetail = () => {
             onSubmit={handleProfileSubmit}
             className="space-y-8"
           >
+            <div className="space-y-5 bg-white/[0.02] p-6 rounded-[2rem] border border-white/5">
+              <h4 className="text-[#c5a059] font-black uppercase tracking-[0.2em] text-sm flex items-center gap-2">
+                <Edit2 size={18} /> Datos personales
+              </h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <div className="space-y-2">
+                  <label className="text-[10px] uppercase tracking-widest text-gray-500 font-bold ml-2">Nombre</label>
+                  <input
+                    type="text"
+                    name="nombres"
+                    defaultValue={profileNameParts.nombres}
+                    className="w-full bg-black/60 border border-white/10 rounded-[1.2rem] p-4 text-sm text-white focus:border-[#c5a059] outline-none shadow-inner transition-colors"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] uppercase tracking-widest text-gray-500 font-bold ml-2">Apellido</label>
+                  <input
+                    type="text"
+                    name="apellidos"
+                    defaultValue={profileNameParts.apellidos}
+                    className="w-full bg-black/60 border border-white/10 rounded-[1.2rem] p-4 text-sm text-white focus:border-[#c5a059] outline-none shadow-inner transition-colors"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] uppercase tracking-widest text-gray-500 font-bold ml-2">Fecha de nacimiento</label>
+                  <input
+                    type="date"
+                    name="fecha_nacimiento"
+                    defaultValue={brother.fechaNacimiento ?? ''}
+                    className="w-full bg-black/60 border border-white/10 rounded-[1.2rem] p-4 text-sm text-white focus:border-[#c5a059] outline-none [color-scheme:dark]"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] uppercase tracking-widest text-gray-500 font-bold ml-2">Número de teléfono</label>
+                  <input
+                    type="tel"
+                    name="telefono"
+                    defaultValue={brother.telefono ?? ''}
+                    className="w-full bg-black/60 border border-white/10 rounded-[1.2rem] p-4 text-sm text-white focus:border-[#c5a059] outline-none shadow-inner transition-colors"
+                  />
+                </div>
+              </div>
+            </div>
+
             <div className="space-y-5 bg-white/[0.02] p-6 rounded-[2rem] border border-white/5">
               <h4 className="text-[#c5a059] font-black uppercase tracking-[0.2em] text-sm flex items-center gap-2">
                 <Users size={18} /> Red y Estructura

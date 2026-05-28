@@ -62,6 +62,8 @@ export interface BrotherProfile {
   name: string;
   fotoUrl?: string;
   edad?: number;
+  fechaNacimiento?: string;
+  telefono?: string;
   role: Role;
   procesoActual: Proceso;
   acompanamiento: BrotherAcompanamiento;

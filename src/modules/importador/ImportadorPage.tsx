@@ -1,5 +1,6 @@
 import { ChangeEvent, useMemo, useState } from 'react';
 import { FileSpreadsheet, Upload, CheckCircle2, AlertTriangle } from 'lucide-react';
+import * as XLSX from 'xlsx';
 import { Toast } from '../../components/ui/Toast';
 import { useAuth } from '../../hooks/useAuth';
 import { supabaseImportService } from '../../services/supabaseImportService';
@@ -8,7 +9,7 @@ type TargetField =
   | 'nombres'
   | 'apellidos'
   | 'telefono'
-  | 'edad'
+  | 'fecha_nacimiento'
   | 'celula'
   | 'estado_proceso'
   | 'fecha_ingreso';
@@ -20,30 +21,22 @@ type MappedRow = {
   errors: string[];
 };
 
-const REQUIRED_FIELDS: TargetField[] = ['nombres', 'apellidos', 'celula', 'estado_proceso'];
+const REQUIRED_FIELDS: TargetField[] = ['nombres', 'apellidos', 'celula'];
 
 const TARGET_FIELDS: Array<{ key: TargetField; label: string; required?: boolean }> = [
   { key: 'nombres', label: 'Nombres', required: true },
   { key: 'apellidos', label: 'Apellidos', required: true },
   { key: 'telefono', label: 'Telefono' },
-  { key: 'edad', label: 'Edad' },
+  { key: 'fecha_nacimiento', label: 'Fecha nacimiento' },
   { key: 'celula', label: 'Celula', required: true },
-  { key: 'estado_proceso', label: 'Estado proceso', required: true },
+  { key: 'estado_proceso', label: 'Estado proceso' },
   { key: 'fecha_ingreso', label: 'Fecha ingreso' },
 ];
 
 const PROCESS_VALUES = ['altar', 'grupo', 'experiencia', 'eddi', 'discipulo'];
 const PROCESS_LABELS = ['Altar', 'Grupo', 'Experiencia', 'EDDI', 'Discípulo'];
 
-const TEMPLATE_HEADERS = [
-  'nombres',
-  'apellidos',
-  'telefono',
-  'edad',
-  'celula',
-  'estado_proceso',
-  'fecha_ingreso',
-];
+const TEMPLATE_DOWNLOAD_PATH = '/plantilla_importador_hermanos.xls';
 
 const normalize = (value: string) =>
   value
@@ -62,6 +55,7 @@ const parseCsv = (content: string): { headers: string[]; rows: string[][] } => {
     return { headers: [], rows: [] };
   }
 
+  const delimiter = lines[0].includes('\t') ? '\t' : ',';
   const split = (line: string) => {
     const cells: string[] = [];
     let current = '';
@@ -82,7 +76,7 @@ const parseCsv = (content: string): { headers: string[]; rows: string[][] } => {
         continue;
       }
 
-      if (char === ',' && !insideQuotes) {
+      if (char === delimiter && !insideQuotes) {
         cells.push(current.trim());
         current = '';
         continue;
@@ -99,6 +93,48 @@ const parseCsv = (content: string): { headers: string[]; rows: string[][] } => {
   return { headers, rows };
 };
 
+const parseSpreadsheetRows = (table: unknown[][]): { headers: string[]; rows: string[][] } => {
+  const normalized = table
+    .map((row) =>
+      row.map((cell) => {
+        if (cell === null || cell === undefined) {
+          return '';
+        }
+        return String(cell).trim();
+      }),
+    )
+    .filter((row) => row.some((cell) => cell.length > 0));
+
+  if (normalized.length === 0) {
+    return { headers: [], rows: [] };
+  }
+
+  return {
+    headers: normalized[0],
+    rows: normalized.slice(1),
+  };
+};
+
+const parseXlsx = async (file: File): Promise<{ headers: string[]; rows: string[][] }> => {
+  const buffer = await file.arrayBuffer();
+  const workbook = XLSX.read(buffer, { type: 'array' });
+  const firstSheetName = workbook.SheetNames[0];
+  const firstSheet = firstSheetName ? workbook.Sheets[firstSheetName] : undefined;
+
+  if (!firstSheet) {
+    return { headers: [], rows: [] };
+  }
+
+  const table = XLSX.utils.sheet_to_json(firstSheet, {
+    header: 1,
+    raw: false,
+    defval: '',
+    blankrows: false,
+  }) as unknown[][];
+
+  return parseSpreadsheetRows(table);
+};
+
 export const ImportadorPage = () => {
   const { user } = useAuth();
   const [fileName, setFileName] = useState('');
@@ -108,7 +144,7 @@ export const ImportadorPage = () => {
     nombres: '',
     apellidos: '',
     telefono: '',
-    edad: '',
+    fecha_nacimiento: '',
     celula: '',
     estado_proceso: '',
     fecha_ingreso: '',
@@ -116,44 +152,21 @@ export const ImportadorPage = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [toast, setToast] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
 
-  const downloadTemplateCsv = () => {
-    const templateRows = [
-      [...TEMPLATE_HEADERS, 'estados_disponibles'],
-      ['Juan', 'Perez', '2664123456', '32', 'Vida', 'Altar', '2026-05-20', PROCESS_LABELS[0]],
-      ...PROCESS_LABELS.slice(1).map((value) => [...Array(TEMPLATE_HEADERS.length).fill(''), value]),
-    ];
-    const content = templateRows
-      .map((row) =>
-        row
-          .map((cell) => `"${String(cell).replace(/"/g, '""')}"`)
-          .join(','),
-      )
-      .join('\n');
-
-    const blob = new Blob([`\uFEFF${content}\n`], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.setAttribute('download', 'plantilla_importador_hermanos.csv');
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-  };
-
   const onFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) {
       return;
     }
 
-    if (!file.name.toLowerCase().endsWith('.csv')) {
-      setToast({ text: 'Por ahora el importador de pruebas acepta archivos CSV.', type: 'error' });
+    const lowerFileName = file.name.toLowerCase();
+    if (!lowerFileName.endsWith('.csv') && !lowerFileName.endsWith('.xls') && !lowerFileName.endsWith('.xlsx')) {
+      setToast({ text: 'Por ahora el importador acepta archivos CSV, XLS o XLSX.', type: 'error' });
       return;
     }
 
-    const text = await file.text();
-    const parsed = parseCsv(text);
+    const parsed = lowerFileName.endsWith('.xlsx')
+      ? await parseXlsx(file)
+      : parseCsv(await file.text());
     if (parsed.headers.length === 0) {
       setToast({ text: 'El archivo no tiene cabecera o está vacío.', type: 'error' });
       return;
@@ -200,8 +213,8 @@ export const ImportadorPage = () => {
         }
       }
 
-      if (mapped.edad && !/^\d{1,3}$/.test(mapped.edad)) {
-        errors.push('edad inválida');
+      if (mapped.fecha_nacimiento && Number.isNaN(Date.parse(`${mapped.fecha_nacimiento}T00:00:00`))) {
+        errors.push('fecha_nacimiento invalida');
       }
 
       return {
@@ -223,10 +236,11 @@ export const ImportadorPage = () => {
     }
 
     setIsProcessing(true);
+    const sourceType = fileName.toLowerCase().endsWith('.csv') ? 'csv' : 'excel';
     const batch = await supabaseImportService.createBatch({
       modulo: 'hermanos',
-      sourceType: 'csv',
-      sourceName: fileName || 'archivo.csv',
+      sourceType,
+      sourceName: fileName || 'plantilla_importador_hermanos.xls',
       uploadedByUserId: user.id,
       totalRows: mappedRows.length,
       validRows: validRows.length,
@@ -270,27 +284,27 @@ export const ImportadorPage = () => {
         <p className="text-[10px] uppercase tracking-[0.2em] font-black text-[#c5a059]">Importador</p>
         <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Carga masiva de datos</h1>
         <p className="text-sm text-slate-600 dark:text-gray-400">
-          CSV + mapeo + validación previa antes de impactar datos.
+          Plantilla XLS/CSV/XLSX + mapeo + validación previa antes de impactar datos.
         </p>
       </header>
 
       <section className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#111111] p-5 space-y-3">
         <div className="flex items-center gap-2">
           <Upload size={16} className="text-[#c5a059]" />
-          <h2 className="text-lg font-semibold text-slate-900 dark:text-white">1) Subir CSV</h2>
+          <h2 className="text-lg font-semibold text-slate-900 dark:text-white">1) Subir archivo</h2>
         </div>
-        <button
-          type="button"
-          onClick={downloadTemplateCsv}
+        <a
+          href={TEMPLATE_DOWNLOAD_PATH}
+          download="plantilla_importador_hermanos.xls"
           className="rounded-xl border border-[#c5a059]/40 bg-[#c5a059]/10 text-[#c5a059] px-3 py-2 text-xs font-black uppercase tracking-wider"
         >
-          Descargar plantilla CSV
-        </button>
+          Descargar plantilla XLS
+        </a>
         <div className="rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0a0a0a] p-3 text-xs text-slate-600 dark:text-gray-300">
           <p className="font-semibold mb-1">Datos obligatorios por fila:</p>
           <p>
             <span className="font-bold">nombres</span>, <span className="font-bold">apellidos</span>,{' '}
-            <span className="font-bold">celula</span>, <span className="font-bold">estado_proceso</span>.
+            <span className="font-bold">celula</span>.
           </p>
           <p className="mt-1">
             Valores válidos en <span className="font-bold">estado_proceso</span>:{' '}
@@ -300,7 +314,11 @@ export const ImportadorPage = () => {
             La plantilla incluye esos estados al costado para usarlos como referencia.
           </p>
         </div>
-        <input type="file" accept=".csv,text/csv" onChange={onFileChange} />
+        <input
+          type="file"
+          accept=".csv,.xls,.xlsx,text/csv,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+          onChange={onFileChange}
+        />
         {fileName && <p className="text-xs text-slate-500 dark:text-gray-400">Archivo: {fileName}</p>}
       </section>
 

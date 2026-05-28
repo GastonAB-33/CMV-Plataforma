@@ -17,6 +17,7 @@ interface SupabaseHermanoRow {
   telefono: string | null;
   direccion: string | null;
   edad: number | null;
+  fecha_nacimiento: string | null;
   celula_id: string | null;
   estado: string | null;
   fecha_ingreso: string | null;
@@ -36,7 +37,7 @@ interface UpsertBrotherInput {
   apellidos: string;
   telefono?: string;
   direccion?: string;
-  edad?: number;
+  fechaNacimiento?: string;
   celulaId?: string;
   estado?: string;
   fechaIngreso?: string;
@@ -91,6 +92,29 @@ const coerceCellName = (value?: string): Cell => {
 const buildName = (row: SupabaseHermanoRow): string =>
   [row.nombres, row.apellidos].map((part) => part.trim()).filter(Boolean).join(' ');
 
+const calculateAge = (birthDate?: string | null): number | undefined => {
+  if (!birthDate) {
+    return undefined;
+  }
+
+  const parsed = new Date(`${birthDate}T00:00:00`);
+  if (Number.isNaN(parsed.getTime())) {
+    return undefined;
+  }
+
+  const today = new Date();
+  let age = today.getFullYear() - parsed.getFullYear();
+  const hasHadBirthdayThisYear =
+    today.getMonth() > parsed.getMonth() ||
+    (today.getMonth() === parsed.getMonth() && today.getDate() >= parsed.getDate());
+
+  if (!hasHadBirthdayThisYear) {
+    age -= 1;
+  }
+
+  return age >= 0 ? age : undefined;
+};
+
 const toBrotherProfile = (
   row: SupabaseHermanoRow,
   cellNameById: Map<string, string>,
@@ -105,7 +129,9 @@ const toBrotherProfile = (
     id: row.id,
     name: buildName(row),
     fotoUrl: row.foto_url ?? undefined,
-    edad: row.edad ?? undefined,
+    edad: calculateAge(row.fecha_nacimiento) ?? row.edad ?? undefined,
+    fechaNacimiento: row.fecha_nacimiento ?? undefined,
+    telefono: row.telefono ?? undefined,
     role: Role.HERMANO_NUEVO,
     procesoActual: toProceso(process?.tipo ?? row.estado ?? undefined),
     acompanamiento: {
@@ -160,7 +186,7 @@ export const supabaseCongregationService = {
         client.from('celulas').select('id,nombre,activa,lider_id'),
         client
           .from('hermanos')
-          .select('id,nombres,apellidos,telefono,direccion,edad,celula_id,estado,fecha_ingreso,foto_url')
+          .select('id,nombres,apellidos,telefono,direccion,edad,fecha_nacimiento,celula_id,estado,fecha_ingreso,foto_url')
           .order('nombres', { ascending: true }),
         client
           .from('procesos')
@@ -216,8 +242,8 @@ export const supabaseCongregationService = {
     if (input.direccion !== undefined) {
       payload.direccion = input.direccion.trim() || null;
     }
-    if (input.edad !== undefined) {
-      payload.edad = Number.isFinite(input.edad) ? input.edad : null;
+    if (input.fechaNacimiento !== undefined) {
+      payload.fecha_nacimiento = input.fechaNacimiento || null;
     }
     if (input.celulaId !== undefined) {
       payload.celula_id = input.celulaId || null;
