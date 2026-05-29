@@ -266,11 +266,27 @@ export const ImportadorPage = () => {
       })),
     );
 
-    setIsProcessing(false);
     if (!rowsResult.ok) {
+      setIsProcessing(false);
       setToast({ text: rowsResult.error ?? 'No se pudieron guardar las filas.', type: 'error' });
       return;
     }
+
+    const processResult = await supabaseImportService.processBatch(batch.id);
+    setIsProcessing(false);
+    if (!processResult.ok) {
+      setToast({
+        text: processResult.error ?? `Importacion parcial. Creados: ${processResult.processedRows}, con error: ${processResult.failedRows}.`,
+        type: 'error',
+      });
+      return;
+    }
+
+    setToast({
+      text: `Importacion procesada. Hermanos creados: ${processResult.processedRows}. Omitidos: ${processResult.skippedRows}. Con error: ${processResult.failedRows}.`,
+      type: 'success',
+    });
+    return;
 
     setToast({
       text: `Importación validada. Lote: ${batch.id}. Válidas: ${validRows.length}, con error: ${invalidRows.length}.`,
