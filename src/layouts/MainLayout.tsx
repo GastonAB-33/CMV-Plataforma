@@ -51,7 +51,7 @@ export const MainLayout = ({ children, user }: MainLayoutProps) => {
   };
 
   return (
-    <div className="flex min-h-screen md:h-screen bg-telemed-light dark:bg-telemed-dark text-black dark:text-white overflow-hidden transition-colors">
+    <div className="flex min-h-screen md:h-screen bg-telemed text-black dark:text-white overflow-hidden transition-colors">
       <div className="hidden md:block fixed top-4 right-4 z-[60]">
         <ThemeToggle />
       </div>
@@ -77,7 +77,7 @@ export const MainLayout = ({ children, user }: MainLayoutProps) => {
               <img
                 src="/logo-cmv.png"
                 alt="CMV Logo"
-                className="w-28 h-28 sm:w-32 sm:h-32 object-contain filter drop-shadow-lg group-hover:scale-105 transition-transform duration-300"
+                className="w-32 h-32 sm:w-36 sm:h-36 object-contain filter drop-shadow-xl group-hover:scale-105 transition-transform duration-300"
               />
             </div>
 
@@ -158,7 +158,7 @@ export const MainLayout = ({ children, user }: MainLayoutProps) => {
           </div>
         </header>
 
-        <main className="flex-1 overflow-y-auto pb-32 md:pb-8 bg-telemed-light dark:bg-telemed-dark transition-colors">
+        <main className="flex-1 overflow-y-auto pb-32 md:pb-8 bg-telemed transition-colors">
           {location.pathname === '/hermanos' ? (
             children
           ) : (
