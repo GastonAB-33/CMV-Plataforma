@@ -57,29 +57,36 @@ export const MainLayout = ({ children, user }: MainLayoutProps) => {
       </div>
 
       <aside className="hidden md:flex w-72 bg-white/80 dark:bg-[#0c1424]/90 backdrop-blur-xl flex-col border-r border-slate-200/80 dark:border-white/10 shadow-2xl relative z-20 transition-colors">
-        {/* Recuadro Verde: Tarjeta de Logo en Color Plano Vibrante */}
-        <div className="p-4 pb-6">
+        {/* Recuadro Verde Cuadrado con Logo CMV Grande */}
+        <div className="p-4 pb-4">
           <div
-            className="p-5 rounded-2xl bg-[#059669] text-white shadow-lg shadow-emerald-900/20 cursor-pointer group hover:brightness-105 transition-all"
+            className="w-full aspect-square rounded-2xl bg-[#059669] text-white p-4 flex flex-col items-center justify-between text-center shadow-lg shadow-emerald-900/30 cursor-pointer group hover:brightness-105 transition-all relative overflow-hidden"
             onClick={() => navigate('/hermanos')}
           >
-            <div className="flex items-center justify-between gap-3 mb-3">
-              <div className="w-12 h-12 rounded-xl bg-white/20 p-1 flex items-center justify-center backdrop-blur-sm border border-white/20 shadow-inner">
-                <img
-                  src="/logo-cmv.png"
-                  alt="CMV Logo"
-                  className="w-full h-full object-contain filter drop-shadow"
-                />
-              </div>
-              <span className="text-[9px] uppercase tracking-widest font-black px-2 py-0.5 rounded-full bg-black/20 text-white/90 border border-white/20">
+            <div className="w-full flex items-center justify-between z-10">
+              <span className="text-[9px] uppercase tracking-widest font-black px-2 py-0.5 rounded-md bg-black/20 text-white/95 border border-white/20">
                 Oficial
               </span>
+              <span className="text-[9px] tracking-[0.2em] font-extrabold uppercase text-emerald-100/90">
+                Pastoral
+              </span>
             </div>
-            <div>
-              <h2 className="text-xl font-black tracking-tight uppercase leading-none text-white">
+
+            {/* Logo CMV Grande centrado */}
+            <div className="my-auto flex flex-col items-center justify-center py-1">
+              <img
+                src="/logo-cmv.png"
+                alt="CMV Logo"
+                className="w-28 h-28 sm:w-32 sm:h-32 object-contain filter drop-shadow-lg group-hover:scale-105 transition-transform duration-300"
+              />
+            </div>
+
+            {/* Títulos inferiores */}
+            <div className="w-full pt-1.5 border-t border-white/20 z-10">
+              <h2 className="text-lg font-black tracking-wider uppercase leading-none text-white drop-shadow-sm">
                 CMV
               </h2>
-              <p className="text-[10px] tracking-[0.25em] font-black uppercase text-emerald-100 mt-1">
+              <p className="text-[9px] tracking-[0.25em] font-extrabold uppercase text-emerald-100 mt-0.5">
                 Seguimiento
               </p>
             </div>
@@ -132,8 +139,8 @@ export const MainLayout = ({ children, user }: MainLayoutProps) => {
         <header className="md:hidden sticky top-0 z-40 border-b border-slate-200 dark:border-white/10 bg-white/95 dark:bg-[#0a0a0a]/95 backdrop-blur px-4 py-3">
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-2.5 min-w-0">
-              <div className="w-8 h-8 rounded-lg bg-[#059669] p-0.5 flex items-center justify-center shrink-0">
-                <img src="/logo-cmv.png" alt="CMV" className="w-full h-full object-contain" />
+              <div className="w-10 h-10 rounded-xl bg-[#059669] p-1 flex items-center justify-center shrink-0 shadow-sm">
+                <img src="/logo-cmv.png" alt="CMV" className="w-full h-full object-contain filter drop-shadow" />
               </div>
               <div className="min-w-0">
                 <p className="text-[10px] uppercase tracking-[0.2em] font-black text-emerald-600 dark:text-emerald-400">CMV</p>
@@ -151,10 +158,14 @@ export const MainLayout = ({ children, user }: MainLayoutProps) => {
           </div>
         </header>
 
-        <main className="flex-1 overflow-y-auto p-3 sm:p-4 md:p-8 pb-32 md:pb-8 bg-telemed-light dark:bg-telemed-dark transition-colors">
-          <div className="max-w-7xl mx-auto">
-            {children}
-          </div>
+        <main className="flex-1 overflow-y-auto pb-32 md:pb-8 bg-telemed-light dark:bg-telemed-dark transition-colors">
+          {location.pathname === '/hermanos' ? (
+            children
+          ) : (
+            <div className="max-w-7xl mx-auto p-3 sm:p-4 md:p-8">
+              {children}
+            </div>
+          )}
         </main>
 
         <nav className="md:hidden fixed bottom-3 left-1/2 -translate-x-1/2 w-[94%] bg-white/95 dark:bg-[#181818]/95 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-3xl flex justify-between items-center px-2 pt-2 pb-[calc(env(safe-area-inset-bottom)+0.5rem)] z-50 shadow-[0_20px_50px_rgba(0,0,0,0.2)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.6)] transition-colors">

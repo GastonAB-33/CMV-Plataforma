@@ -17,6 +17,9 @@ const config: Config = {
         primary: '#1D4ED8',
         border: '#E2E8F0',
       },
+      fontFamily: {
+        sans: ['"Plus Jakarta Sans"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+      },
     },
   },
   plugins: [],

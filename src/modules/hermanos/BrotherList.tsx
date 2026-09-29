@@ -196,120 +196,122 @@ export const BrotherList = () => {
   }, [searchTerm, selectedStage]);
 
   return (
-    <div className="space-y-6 md:space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
-      {/* Banner Principal con Imagen de Personas y Gradiente Vibrante detrás de Hermanos */}
-      <div className="relative overflow-hidden rounded-[2rem] border border-slate-200/80 dark:border-white/10 shadow-2xl bg-[#06122d]">
+    <div className="w-full space-y-6 md:space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-700">
+      {/* Banner Principal Recto de Extremo a Extremo con Imagen y Gradiente */}
+      <div className="relative w-full overflow-hidden rounded-none border-b border-slate-200/80 dark:border-white/10 shadow-lg bg-[#06122d]">
         {/* Imagen de fondo de personas */}
         <div className="absolute inset-0 -z-0 overflow-hidden">
           <img
             src="/banner-hermanos.jpg"
             alt="Comunidad CMV"
-            className="w-full h-full object-cover object-[center_30%] filter brightness-95 contrast-105"
+            className="w-full h-full object-cover object-[center_35%] filter brightness-95 contrast-105"
           />
-          {/* Gradiente vibrante inspirado en la referencia Telemedicine y tonos espectro */}
+          {/* Gradiente vibrante inspirado en la referencia Telemedicine */}
           <div className="absolute inset-0 bg-gradient-to-r from-[#06122d]/95 via-[#0284c7]/85 to-[#059669]/80 dark:from-[#050b1a]/95 dark:via-[#0369a1]/85 dark:to-[#047857]/80" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(245,158,11,0.3)_0%,transparent_60%)]" />
           {/* Desvanecimiento gradual hacia abajo donde comienza el sistema */}
           <div className="absolute inset-0 banner-fade-mask bg-gradient-to-b from-transparent via-transparent to-black/50" />
-          <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-slate-100/90 dark:from-[#070c18] to-transparent pointer-events-none" />
         </div>
 
-        {/* Contenido en primer plano por encima del banner */}
-        <header className="relative z-10 p-6 sm:p-8 md:p-10 flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-6">
-          <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/20 dark:bg-white/15 backdrop-blur-md border border-white/25 text-white text-[10px] font-black uppercase tracking-widest shadow-sm">
+        {/* Contenido con generoso padding superior para que no quede pegado arriba */}
+        <header className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 md:px-10 pt-12 sm:pt-16 md:pt-20 pb-10 sm:pb-12 md:pb-14 flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div className="space-y-3">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-black/30 dark:bg-white/15 backdrop-blur-md border border-white/20 text-white text-[11px] font-extrabold uppercase tracking-widest shadow-sm">
               <Sparkles className="text-amber-300" size={13} />
               <span>Plataforma Pastoral CMV</span>
             </div>
-            <h1 className="text-3xl md:text-5xl font-black text-white tracking-tight drop-shadow-md">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-tight drop-shadow-md">
               Hermanos
             </h1>
             <p className="text-sm md:text-base text-emerald-50 dark:text-cyan-100 font-medium max-w-xl drop-shadow-sm">
-              Seguimiento y gestion espiritual de la congregacion.
+              Seguimiento y gestión espiritual de la congregación.
             </p>
           </div>
           <button
             onClick={() => setIsModalOpen(true)}
-            className="hidden md:flex w-full md:w-auto justify-center btn-3d-emerald text-white px-7 md:px-9 py-3.5 md:py-4 rounded-2xl font-black items-center gap-2.5 uppercase tracking-wider text-sm shadow-xl"
+            className="hidden md:flex w-auto justify-center btn-3d-emerald text-white px-8 py-3.5 rounded-xl font-extrabold items-center gap-2.5 uppercase tracking-wider text-sm shadow-xl shrink-0"
           >
-            <UserPlus size={20} />
+            <UserPlus size={18} />
             <span>NUEVO HERMANO</span>
           </button>
         </header>
       </div>
 
-      {/* Sección inferior: Fondo liso con gradiente inverso y controles sin fotos */}
-      <div className="md:hidden space-y-3">
-        <div className="grid grid-cols-2 gap-2">
-          <button
-            type="button"
-            onClick={() => setIsModalOpen(true)}
-            className="justify-center btn-3d-emerald text-white px-4 py-2.5 rounded-xl text-[11px] font-black flex items-center gap-2 uppercase tracking-widest shadow-md"
-          >
-            <UserPlus size={16} />
-            Nuevo hermano
-          </button>
-          <button
-            type="button"
-            onClick={() => setIsSummaryModalOpen(true)}
-            className="justify-center btn-3d-pill-inactive bg-white/90 dark:bg-[#0c1424]/90 border border-slate-200 dark:border-white/10 text-slate-700 dark:text-gray-200 px-4 py-2.5 rounded-xl text-[11px] font-black flex items-center gap-2 uppercase tracking-widest backdrop-blur-md"
-          >
-            Resumen
-          </button>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <div className="relative flex-1 group">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-gray-500 group-focus-within:text-emerald-500 transition-colors" size={16} />
-            <input
-              type="text"
-              placeholder="Buscar por nombre o ID..."
-              className="w-full bg-white/90 dark:bg-[#0c1424]/90 backdrop-blur-md border border-slate-200 dark:border-white/10 focus:border-emerald-500/60 rounded-xl py-2.5 pl-10 pr-3 text-sm text-slate-900 dark:text-white focus:outline-none transition-all shadow-sm"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-          <button
-            type="button"
-            onClick={() => setIsStageFilterModalOpen(true)}
-            className="h-10 w-10 shrink-0 rounded-xl border border-slate-200 dark:border-white/10 btn-3d-pill-inactive bg-white dark:bg-[#0c1424] text-slate-600 dark:text-gray-300 flex items-center justify-center"
-            aria-label="Abrir filtros"
-          >
-            <Filter size={16} />
-          </button>
-        </div>
-      </div>
-
-      <div className="hidden md:block space-y-4 md:space-y-6">
-        <div className="flex flex-col md:flex-row gap-4">
-          <div className="relative flex-1 group">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-gray-500 group-focus-within:text-emerald-500 transition-colors" size={20} />
-            <input
-              type="text"
-              placeholder="Buscar por nombre o ID..."
-              className="w-full bg-white/90 dark:bg-[#0c1424]/90 backdrop-blur-md border border-slate-200 dark:border-white/10 focus:border-emerald-500/60 rounded-[1.2rem] md:rounded-[1.5rem] py-4 md:py-5 pl-12 md:pl-14 pr-4 text-slate-900 dark:text-white focus:outline-none transition-all shadow-inner text-base md:text-lg"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
+      {/* Contenedor centralizado para los controles inferiores y tabla */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 space-y-6 md:space-y-8">
+        {/* Controles móviles */}
+        <div className="md:hidden space-y-3">
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              type="button"
+              onClick={() => setIsModalOpen(true)}
+              className="justify-center btn-3d-emerald text-white px-4 py-3 rounded-xl text-xs font-black flex items-center gap-2 uppercase tracking-wider shadow-md"
+            >
+              <UserPlus size={16} />
+              Nuevo hermano
+            </button>
+            <button
+              type="button"
+              onClick={() => setIsSummaryModalOpen(true)}
+              className="justify-center btn-3d-pill-inactive text-slate-700 dark:text-gray-200 px-4 py-3 rounded-xl text-xs font-black flex items-center gap-2 uppercase tracking-wider"
+            >
+              Resumen
+            </button>
           </div>
 
-          <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar md:pb-0">
-            {STAGES.map((stage) => (
-              <button
-                key={stage}
-                onClick={() => setSelectedStage(stage)}
-                className={`px-5 md:px-8 py-3 md:py-4 rounded-[1.2rem] md:rounded-[1.5rem] text-[11px] md:text-sm font-black whitespace-nowrap transition-all border uppercase tracking-wider md:tracking-widest ${
-                  selectedStage === stage
-                    ? 'btn-3d-pill-active border-emerald-600'
-                    : 'btn-3d-pill-inactive bg-white/90 dark:bg-[#0c1424]/90 text-slate-600 dark:text-gray-300 border-slate-200 dark:border-white/10 hover:border-emerald-500/40'
-                }`}
-              >
-                {stage}
-              </button>
-            ))}
+          <div className="flex items-center gap-2">
+            <div className="relative flex-1 group">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-gray-400 group-focus-within:text-emerald-500 transition-colors" size={16} />
+              <input
+                type="text"
+                placeholder="Buscar por nombre o ID..."
+                className="w-full bg-gradient-to-r from-white/95 via-sky-50/40 to-white/95 dark:from-[#0d192c]/95 dark:via-[#091220]/95 dark:to-[#060c17]/95 backdrop-blur-md border border-slate-200/90 dark:border-white/10 focus:border-emerald-500/60 rounded-xl py-3 pl-10 pr-3 text-sm text-slate-900 dark:text-white focus:outline-none transition-all shadow-sm"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+            <button
+              type="button"
+              onClick={() => setIsStageFilterModalOpen(true)}
+              className="h-11 w-11 shrink-0 rounded-xl btn-3d-pill-inactive text-slate-600 dark:text-gray-300 flex items-center justify-center"
+              aria-label="Abrir filtros"
+            >
+              <Filter size={16} />
+            </button>
           </div>
         </div>
-      </div>
+
+        {/* Barra de búsqueda y selector de etapas escritorio */}
+        <div className="hidden md:block space-y-4 md:space-y-6">
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="relative flex-1 group">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-gray-400 group-focus-within:text-emerald-500 transition-colors" size={20} />
+              <input
+                type="text"
+                placeholder="Buscar por nombre o ID..."
+                className="w-full bg-gradient-to-r from-white/95 via-sky-50/40 to-white/95 dark:from-[#0d192c]/95 dark:via-[#091220]/95 dark:to-[#060c17]/95 backdrop-blur-md border border-slate-200/90 dark:border-white/10 focus:border-emerald-500/60 rounded-xl py-3.5 md:py-4 pl-12 pr-4 text-slate-900 dark:text-white focus:outline-none transition-all shadow-sm text-base"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+
+            <div className="flex gap-2.5 overflow-x-auto pb-1 no-scrollbar md:pb-0">
+              {STAGES.map((stage) => (
+                <button
+                  key={stage}
+                  onClick={() => setSelectedStage(stage)}
+                  className={`px-6 md:px-8 py-3 md:py-3.5 rounded-xl text-sm md:text-base font-extrabold whitespace-nowrap transition-all uppercase tracking-wider ${
+                    selectedStage === stage
+                      ? 'btn-3d-pill-active'
+                      : 'btn-3d-pill-inactive text-slate-700 dark:text-gray-200 hover:text-emerald-700 dark:hover:text-emerald-400'
+                  }`}
+                >
+                  {stage}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
 
       {filteredBrothers.length > 0 && (
         <>
@@ -320,7 +322,7 @@ export const BrotherList = () => {
               return (
                 <article
                   key={brother.id}
-                  className="rounded-3xl border border-slate-200/80 dark:border-white/10 bg-white/90 dark:bg-[#0c1424]/90 backdrop-blur-xl p-4 shadow-xl hover:border-emerald-500/30 transition-all"
+                  className="rounded-xl border border-slate-200/80 dark:border-white/10 bg-gradient-to-br from-white/95 via-sky-50/40 to-emerald-50/30 dark:from-[#0d1829]/95 dark:via-[#091220]/95 dark:to-[#060c17]/95 backdrop-blur-xl p-4 shadow-md hover:border-emerald-500/40 transition-all"
                 >
                   <div
                     role="button"
@@ -335,7 +337,7 @@ export const BrotherList = () => {
                     className="w-full text-left"
                   >
                     <div className="flex items-start gap-3">
-                      <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500/20 via-teal-500/15 to-sky-500/10 flex items-center justify-center text-emerald-600 dark:text-emerald-400 font-black text-xl border border-emerald-500/30 shrink-0 shadow-sm">
+                      <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-emerald-500/20 via-teal-500/15 to-sky-500/10 flex items-center justify-center text-emerald-600 dark:text-emerald-400 font-extrabold text-lg border border-emerald-500/30 shrink-0 shadow-sm">
                         {brother.name.charAt(0)}
                       </div>
                       <div className="min-w-0 flex-1">
@@ -344,9 +346,9 @@ export const BrotherList = () => {
                           className="font-bold text-slate-900 dark:text-white text-base leading-tight"
                           fallbackClassName="font-bold text-slate-900 dark:text-white text-base leading-tight"
                         />
-                        <p className="text-[10px] text-slate-500 dark:text-gray-400 font-black tracking-widest mt-1 uppercase">Miembro activo</p>
+                        <p className="text-[10px] text-slate-500 dark:text-gray-400 font-bold tracking-wider mt-1 uppercase">Miembro activo</p>
                         <div className="mt-2">
-                          <span className={`inline-flex px-3 py-1 rounded-2xl text-[10px] uppercase tracking-[0.16em] font-black border shadow-sm ${STAGE_COLORS[brother.procesoActual]}`}>
+                          <span className={`inline-flex px-3 py-1 rounded-md text-[10px] uppercase tracking-wider font-extrabold border shadow-sm ${STAGE_COLORS[brother.procesoActual]}`}>
                             {brother.procesoActual}
                           </span>
                         </div>
@@ -379,7 +381,7 @@ export const BrotherList = () => {
                       <button
                         type="button"
                         onClick={() => navigate(`/hermanos/${brother.id}`)}
-                        className="mt-2 inline-flex items-center gap-2 text-[11px] uppercase tracking-widest font-black text-emerald-600 dark:text-emerald-400 hover:text-emerald-500"
+                        className="mt-2 inline-flex items-center gap-2 text-xs uppercase tracking-wider font-extrabold text-emerald-600 dark:text-emerald-400 hover:text-emerald-500"
                       >
                         Ver ficha
                         <ChevronRight size={16} />
@@ -394,67 +396,67 @@ export const BrotherList = () => {
               <button
                 type="button"
                 onClick={() => setVisibleCount((current) => current + 6)}
-                className="w-full rounded-2xl btn-3d-pill-inactive bg-white/90 dark:bg-[#0c1424]/90 border border-emerald-500/30 py-3.5 text-[11px] uppercase tracking-[0.18em] font-black text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10 shadow-sm"
+                className="w-full rounded-xl btn-3d-pill-inactive py-3.5 text-xs uppercase tracking-wider font-extrabold text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10 shadow-sm"
               >
                 Cargar mas hermanos
               </button>
             )}
           </div>
 
-          <div className="hidden md:block bg-white/90 dark:bg-[#0c1424]/90 backdrop-blur-xl rounded-[2.5rem] border border-slate-200/80 dark:border-white/10 overflow-hidden shadow-2xl relative">
+          <div className="hidden md:block bg-gradient-to-br from-white/95 via-sky-50/40 to-emerald-50/30 dark:from-[#0d1829]/95 dark:via-[#091220]/95 dark:to-[#060c17]/95 backdrop-blur-xl rounded-xl border border-slate-200/80 dark:border-white/10 overflow-hidden shadow-xl relative">
             <div className="overflow-x-auto no-scrollbar">
               <table className="w-full text-left border-collapse min-w-[800px]">
                 <thead>
-                  <tr className="bg-slate-100/90 dark:bg-black/60 text-slate-500 dark:text-gray-400 text-[10px] uppercase tracking-[0.2em] font-black border-b border-slate-200/80 dark:border-white/10">
-                    <th className="px-10 py-7">Lider / Hermano</th>
-                    <th className="px-10 py-7">Ubicacion / Celula</th>
-                    <th className="px-10 py-7">Etapa espiritual</th>
-                    <th className="px-10 py-7">Responsable</th>
-                    <th className="px-10 py-7"></th>
+                  <tr className="bg-slate-100/90 dark:bg-black/50 text-slate-600 dark:text-gray-300 text-[11px] uppercase tracking-wider font-extrabold border-b border-slate-200/80 dark:border-white/10">
+                    <th className="px-8 py-5">Lider / Hermano</th>
+                    <th className="px-8 py-5">Ubicacion / Celula</th>
+                    <th className="px-8 py-5">Etapa espiritual</th>
+                    <th className="px-8 py-5">Responsable</th>
+                    <th className="px-8 py-5"></th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-200/80 dark:divide-white/5">
                   {filteredBrothers.map((brother) => (
                     <tr key={brother.id} onClick={() => navigate(`/hermanos/${brother.id}`)} className="hover:bg-emerald-500/5 dark:hover:bg-emerald-500/10 transition-all cursor-pointer group">
-                      <td className="px-10 py-6">
-                        <div className="flex items-center gap-6">
-                          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-500/20 via-teal-500/15 to-sky-500/10 flex items-center justify-center text-emerald-600 dark:text-emerald-400 font-black text-2xl border border-emerald-500/30 group-hover:border-emerald-500/60 transition-all shadow-md">
+                      <td className="px-8 py-5">
+                        <div className="flex items-center gap-5">
+                          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500/20 via-teal-500/15 to-sky-500/10 flex items-center justify-center text-emerald-600 dark:text-emerald-400 font-extrabold text-xl border border-emerald-500/30 group-hover:border-emerald-500/60 transition-all shadow-sm">
                             {brother.name.charAt(0)}
                           </div>
                           <div>
                             <BrotherNameTrigger
                               name={brother.name}
-                              className="font-bold text-slate-900 dark:text-white text-xl leading-tight group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors"
-                              fallbackClassName="font-bold text-slate-900 dark:text-white text-xl leading-tight"
+                              className="font-bold text-slate-900 dark:text-white text-lg leading-tight group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors"
+                              fallbackClassName="font-bold text-slate-900 dark:text-white text-lg leading-tight"
                             />
-                            <p className="text-[10px] text-slate-500 dark:text-gray-400 font-black tracking-widest mt-1 uppercase">Miembro activo</p>
+                            <p className="text-[10px] text-slate-500 dark:text-gray-400 font-bold tracking-wider mt-0.5 uppercase">Miembro activo</p>
                           </div>
                         </div>
                       </td>
-                      <td className="px-10 py-6 text-slate-600 dark:text-gray-300">
+                      <td className="px-8 py-5 text-slate-600 dark:text-gray-300">
                         <div className="flex flex-col">
-                          <span className="font-bold text-slate-800 dark:text-gray-200">{brother.cellName}</span>
-                          <span className="text-[10px] uppercase text-slate-500 dark:text-gray-400 tracking-tighter">Zona Norte - CMV</span>
+                          <span className="font-bold text-slate-800 dark:text-gray-200 text-sm">{brother.cellName}</span>
+                          <span className="text-[10px] uppercase text-slate-500 dark:text-gray-400 tracking-wider">Zona Norte - CMV</span>
                         </div>
                       </td>
-                      <td className="px-10 py-6">
-                        <span className={`px-5 py-2 rounded-2xl text-[10px] uppercase tracking-[0.2em] font-black border transition-all duration-300 shadow-sm ${STAGE_COLORS[brother.procesoActual]}`}>
+                      <td className="px-8 py-5">
+                        <span className={`px-4 py-1.5 rounded-lg text-[10px] uppercase tracking-wider font-extrabold border transition-all duration-300 shadow-sm ${STAGE_COLORS[brother.procesoActual]}`}>
                           {brother.procesoActual}
                         </span>
                       </td>
-                      <td className="px-10 py-6">
-                        <div className="flex items-center gap-3">
-                          <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_10px_#10b981]" />
+                      <td className="px-8 py-5">
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_8px_#10b981]" />
                           <BrotherNameTrigger
                             name={brother.acompananteName || 'No asig.'}
-                            className="text-slate-700 dark:text-gray-300 text-sm font-black uppercase tracking-widest hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
-                            fallbackClassName="text-slate-700 dark:text-gray-300 text-sm font-black uppercase tracking-widest"
+                            className="text-slate-700 dark:text-gray-300 text-xs font-extrabold uppercase tracking-wider hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
+                            fallbackClassName="text-slate-700 dark:text-gray-300 text-xs font-extrabold uppercase tracking-wider"
                           />
                         </div>
                       </td>
-                      <td className="px-10 py-6 text-right">
-                        <div className="w-12 h-12 rounded-2xl flex items-center justify-center btn-3d-pill-inactive bg-white dark:bg-[#0c1424] text-slate-500 dark:text-gray-400 group-hover:bg-[#059669] group-hover:text-white transition-all shadow-sm">
-                          <ChevronRight size={22} />
+                      <td className="px-8 py-5 text-right">
+                        <div className="w-10 h-10 rounded-xl flex items-center justify-center btn-3d-pill-inactive text-slate-500 dark:text-gray-400 group-hover:bg-[#059669] group-hover:text-white transition-all shadow-sm">
+                          <ChevronRight size={18} />
                         </div>
                       </td>
                     </tr>
@@ -467,29 +469,32 @@ export const BrotherList = () => {
       )}
 
       {isLoadingBrothers && (
-        <div className="p-10 md:p-16 text-center animate-in fade-in zoom-in-95 duration-500 bg-white dark:bg-[#1a1a1a] rounded-[2.5rem] border border-slate-200 dark:border-white/5 shadow-2xl">
+        <div className="p-10 md:p-16 text-center animate-in fade-in zoom-in-95 duration-500 bg-gradient-to-br from-white/95 to-slate-50/90 dark:from-[#0d1829]/95 dark:to-[#060c17]/95 rounded-xl border border-slate-200 dark:border-white/5 shadow-xl">
           <p className="text-slate-500 dark:text-gray-400 text-sm font-medium">Cargando hermanos...</p>
         </div>
       )}
 
       {!isLoadingBrothers && filteredBrothers.length === 0 && (
-        <div className="p-10 md:p-32 text-center animate-in fade-in zoom-in-95 duration-500 bg-white dark:bg-[#1a1a1a] rounded-[2.5rem] border border-slate-200 dark:border-white/5 shadow-2xl">
-          <div className="w-24 h-24 bg-slate-100 dark:bg-white/5 rounded-[2rem] flex items-center justify-center mx-auto mb-8 border border-slate-200 dark:border-white/5 shadow-inner">
-            <Search className="text-[#c5a059]/50" size={40} />
+        <div className="p-10 md:p-24 text-center animate-in fade-in zoom-in-95 duration-500 bg-gradient-to-br from-white/95 to-slate-50/90 dark:from-[#0d1829]/95 dark:to-[#060c17]/95 rounded-xl border border-slate-200 dark:border-white/5 shadow-xl">
+          <div className="w-20 h-20 bg-slate-100 dark:bg-white/5 rounded-xl flex items-center justify-center mx-auto mb-6 border border-slate-200 dark:border-white/5 shadow-inner">
+            <Search className="text-emerald-600/60 dark:text-emerald-400/60" size={32} />
           </div>
-          <h3 className="text-slate-900 dark:text-white font-black text-2xl mb-3 uppercase tracking-tight">Cero resultados</h3>
-          <p className="text-slate-500 dark:text-gray-500 max-w-sm mx-auto text-sm font-medium leading-relaxed">No encontramos a nadie con ese criterio en el sistema de seguimiento.</p>
+          <h3 className="text-slate-900 dark:text-white font-black text-xl mb-2 uppercase tracking-tight">Cero resultados</h3>
+          <p className="text-slate-500 dark:text-gray-400 max-w-sm mx-auto text-sm font-medium leading-relaxed">No encontramos a nadie con ese criterio en el sistema de seguimiento.</p>
           <button
             onClick={() => {
               setSearchTerm('');
               setSelectedStage('Todas');
             }}
-            className="mt-8 text-[#c5a059] text-sm font-black uppercase tracking-widest hover:underline"
+            className="mt-6 btn-3d-emerald text-white px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider shadow-md"
           >
             Restablecer filtros
           </button>
         </div>
       )}
+
+      {/* Cierre del contenedor centralizado */}
+      </div>
 
       <Modal isOpen={isSummaryModalOpen} onClose={() => setIsSummaryModalOpen(false)} title="Resumen">
         <div className="grid grid-cols-2 gap-3">

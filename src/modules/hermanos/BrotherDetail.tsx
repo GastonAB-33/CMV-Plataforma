@@ -298,18 +298,18 @@ const StageWrapperComponent = ({
   isSavingStage = false,
 }: StageWrapperProps) => (
   <div
-    className={`p-4 md:p-5 rounded-[2rem] md:rounded-[2.5rem] relative overflow-hidden transition-all duration-300 ${
+    className={`p-4 md:p-6 rounded-2xl relative overflow-hidden transition-all duration-300 ${
       isOtherStageEditing
         ? 'opacity-35 grayscale-[60%] pointer-events-none select-none contrast-75 cursor-not-allowed'
         : isEditing
-        ? 'bg-white dark:bg-[#181818] border-2 border-[#c5a059] shadow-[0_0_35px_rgba(197,160,89,0.25)] ring-2 ring-[#c5a059]/40 relative z-10'
+        ? 'bg-gradient-to-br from-white/95 to-slate-50/90 dark:from-[#0d1829]/95 dark:to-[#060c17]/95 border-2 border-emerald-500 shadow-[0_0_30px_rgba(5,150,105,0.25)] ring-2 ring-emerald-500/40 relative z-10'
         : getCardStyle(isCurrent, isCompleted)
     }`}
   >
     <div className="w-full min-w-0 flex items-center justify-between gap-3 mb-4 md:mb-5 pb-3 border-b border-slate-200 dark:border-white/5">
       <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0 flex-1">
         <div
-          className={`w-11 h-11 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-slate-100 to-slate-200 dark:from-black/70 dark:to-black/40 flex items-center justify-center text-[#c5a059] font-black text-xl sm:text-2xl border ${
+          className={`w-11 h-11 sm:w-13 sm:h-13 rounded-xl bg-gradient-to-br from-slate-100 to-slate-200 dark:from-black/70 dark:to-black/40 flex items-center justify-center text-[#c5a059] font-black text-xl sm:text-2xl border ${
             isCurrent && !isCompleted
               ? 'border-[#c5a059] shadow-[0_0_15px_rgba(197,160,89,0.3)]'
               : 'border-[#c5a059]/25'
@@ -331,7 +331,7 @@ const StageWrapperComponent = ({
             </span>
           )}
           {isCurrent && !isCompleted && (
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[9px] uppercase font-black tracking-widest bg-[#c5a059]/15 text-[#a58345] dark:text-[#c5a059] border border-[#c5a059]/40 shadow-sm self-center">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-[9px] uppercase font-black tracking-widest bg-[#c5a059]/15 text-[#a58345] dark:text-[#c5a059] border border-[#c5a059]/40 shadow-sm self-center">
               <span className="w-1.5 h-1.5 rounded-full bg-[#c5a059]" />
               Etapa Actual
             </span>
@@ -348,7 +348,7 @@ const StageWrapperComponent = ({
                 type="button"
                 onClick={onCancelEdit}
                 disabled={isSavingStage}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-300 dark:border-white/15 text-[10px] uppercase font-bold tracking-wider text-slate-600 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-white/5 transition-all disabled:opacity-50"
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-slate-300 dark:border-white/15 text-xs uppercase font-bold tracking-wider text-slate-600 dark:text-gray-300 btn-3d-pill-inactive transition-all disabled:opacity-50"
               >
                 <X size={13} />
                 <span>Cancelar</span>
@@ -358,7 +358,7 @@ const StageWrapperComponent = ({
                 onClick={onSaveEdit}
                 disabled={isSavingStage || isLocked}
                 title={isLocked ? 'Para editar esta etapa tienes que completar la etapa anterior' : undefined}
-                className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-xl text-[10px] uppercase font-black tracking-wider bg-[#c5a059] hover:bg-[#d4af37] text-black shadow-md active:scale-95 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs uppercase font-black tracking-wider btn-3d-emerald text-white shadow-md active:scale-95 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 <Save size={13} />
                 <span>Guardar</span>
@@ -369,7 +369,7 @@ const StageWrapperComponent = ({
               type="button"
               onClick={onStartEdit}
               disabled={isOtherStageEditing}
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl border border-slate-300 dark:border-white/15 hover:border-[#c5a059]/50 text-[10px] uppercase font-black tracking-wider text-slate-700 dark:text-gray-200 hover:text-[#c5a059] bg-white/70 dark:bg-black/50 hover:bg-[#c5a059]/10 transition-all shadow-sm active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs uppercase font-black tracking-wider btn-3d-pill-inactive text-slate-700 dark:text-gray-200 hover:text-emerald-600 transition-all shadow-sm active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed"
             >
               <Edit2 size={12} />
               <span>Editar</span>
