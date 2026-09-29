@@ -1,5 +1,5 @@
 import { ReactNode, useMemo, useState } from 'react';
-import { Home, Users, LineChart, Calendar, GraduationCap, Music, MonitorPlay, HandHelping, Menu, X, MoreHorizontal, Settings, FileSpreadsheet } from 'lucide-react';
+import { Users, LineChart, Menu, X, MoreHorizontal, Settings, FileSpreadsheet, GraduationCap, Award } from 'lucide-react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { Role, User } from '../types';
 import { ThemeToggle } from '../components/ui/ThemeToggle';
@@ -22,19 +22,15 @@ export const MainLayout = ({ children, user }: MainLayoutProps) => {
   const canManageUsers = role === Role.APOSTOL || role === Role.SUPERADMIN;
   const canUseImporter = role === Role.SUPERADMIN;
   const navItems = [
-    { id: 'dashboard', feature: 'dashboard' as AppFeatureKey, path: '/', icon: <Home size={22} />, label: 'Inicio', shortLabel: 'Inicio', primaryMobile: true },
     { id: 'brothers', feature: 'hermanos' as AppFeatureKey, path: '/hermanos', icon: <Users size={22} />, label: 'Hermanos', shortLabel: 'Hermanos', primaryMobile: true },
     { id: 'tracking', feature: 'seguimiento' as AppFeatureKey, path: '/tracking', icon: <LineChart size={22} />, label: 'Seguimiento', shortLabel: 'Seguimiento', primaryMobile: true },
-    { id: 'events', feature: 'eventos' as AppFeatureKey, path: '/events', icon: <Calendar size={22} />, label: 'Eventos/Noticias', shortLabel: 'Eventos', primaryMobile: true },
-    { id: 'eddi-school', feature: 'escuela_eddi' as AppFeatureKey, path: '/escuela-eddi', icon: <GraduationCap size={22} />, label: 'Escuela EDDI', shortLabel: 'EDDI' },
-    { id: 'worship', feature: 'ministerio_adoracion' as AppFeatureKey, path: '/ministerio-adoracion', icon: <Music size={22} />, label: 'Adoracion', shortLabel: 'Adoracion' },
-    { id: 'multimedia', feature: 'ministerio_multimedia' as AppFeatureKey, path: '/ministerio-multimedia', icon: <MonitorPlay size={22} />, label: 'Multimedia', shortLabel: 'Multimedia' },
-    { id: 'misericordia', feature: 'ministerio_misericordia' as AppFeatureKey, path: '/ministerio-misericordia', icon: <HandHelping size={22} />, label: 'Misericordia', shortLabel: 'Misericordia' },
+    { id: 'eddi', feature: 'escuela_eddi' as AppFeatureKey, path: '/escuela-eddi', icon: <GraduationCap size={22} />, label: 'Escuela EDDI', shortLabel: 'EDDI', primaryMobile: false },
+    { id: 'edem', feature: 'escuela_edem' as AppFeatureKey, path: '/escuela-edem', icon: <Award size={22} />, label: 'Escuela EDEM', shortLabel: 'EDEM', primaryMobile: false },
     ...(canManageUsers
-      ? [{ id: 'config-users', feature: 'dashboard' as AppFeatureKey, path: '/configuracion/usuarios', icon: <Settings size={22} />, label: 'Configuracion', shortLabel: 'Config' }]
+      ? [{ id: 'config-users', feature: 'dashboard' as AppFeatureKey, path: '/configuracion/usuarios', icon: <Settings size={22} />, label: 'Configuracion', shortLabel: 'Config', primaryMobile: true }]
       : []),
     ...(canUseImporter
-      ? [{ id: 'importador', feature: 'hermanos' as AppFeatureKey, path: '/importador', icon: <FileSpreadsheet size={22} />, label: 'Importador', shortLabel: 'Importar' }]
+      ? [{ id: 'importador', feature: 'hermanos' as AppFeatureKey, path: '/importador', icon: <FileSpreadsheet size={22} />, label: 'Importador', shortLabel: 'Importar', primaryMobile: true }]
       : []),
   ].filter((item) => hasPermissionAtLeastForUser(user, item.feature, 'view'));
 
@@ -62,7 +58,10 @@ export const MainLayout = ({ children, user }: MainLayoutProps) => {
 
       <aside className="hidden md:flex w-72 bg-slate-100 dark:bg-[#1a1a1a] flex-col border-r border-slate-200 dark:border-white/5 shadow-2xl relative z-20 transition-colors">
         <div className="p-8 pb-10">
-          <div className="flex items-center gap-3 group cursor-pointer">
+          <div
+            className="flex items-center gap-3 group cursor-pointer"
+            onClick={() => navigate('/hermanos')}
+          >
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#c5a059] to-[#8a6d3b] flex items-center justify-center shadow-[0_0_20px_rgba(197,160,89,0.3)]">
               <span className="text-black font-black text-xl italic">C</span>
             </div>

@@ -1,3 +1,4 @@
+import { canonicalizeCellName, normalizeCellKey } from './cellNormalization';
 import { getSupabaseClient } from './supabaseClient';
 
 export interface ImportBatchInput {
@@ -174,15 +175,18 @@ export const supabaseImportService = {
     let failedRows = 0;
 
     const getOrCreateCell = async (cellName: string): Promise<string> => {
-      const { data: existingCell, error: existingCellError } = await client
+      const canonicalName = canonicalizeCellName(cellName);
+      const { data: existingCells, error: existingCellError } = await client
         .from('celulas')
-        .select('id')
-        .eq('nombre', cellName)
-        .maybeSingle();
+        .select('id,nombre,activa');
 
       if (existingCellError) {
         throw new Error(existingCellError.message);
       }
+
+      const existingCell = (existingCells ?? []).find((cell) =>
+        normalizeCellKey(canonicalizeCellName(cell.nombre)) === normalizeCellKey(canonicalName) && cell.activa !== false
+      );
 
       if (existingCell?.id) {
         return existingCell.id as string;
@@ -191,7 +195,7 @@ export const supabaseImportService = {
       const { data: createdCell, error: createdCellError } = await client
         .from('celulas')
         .insert({
-          nombre: cellName,
+          nombre: canonicalName,
           lider_id: null,
           descripcion: null,
           activa: true,

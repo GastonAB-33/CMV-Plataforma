@@ -1,4 +1,4 @@
-import { Cell, EDDIExamGrade, Proceso, Role } from '../../types';
+import { Cell, EDDIExamGrade, EDEMExamGrade, Proceso, Role } from '../../types';
 
 export type BrotherId = string;
 export type BrotherObservationAuthorRole = 'pastor' | 'lider' | 'discipulo';
@@ -32,12 +32,19 @@ export interface BrotherAltarStage {
   fechaInicio?: string;
   fechaFin?: string;
   observaciones?: BrotherTimelineObservation[];
+  interrumpido?: boolean;
+  motivoInterrupcion?: string;
+  fechaInterrupcion?: string;
 }
 
 export interface BrotherGrupoStage {
   fechaInicio?: string;
   fechaFin?: string;
   observaciones?: BrotherTimelineObservation[];
+  interrumpido?: boolean;
+  motivoInterrupcion?: string;
+  fechaInterrupcion?: string;
+  interrumpidoPor?: { id?: string; name?: string; role?: string };
 }
 
 export interface BrotherExperienciaStage {
@@ -57,12 +64,20 @@ export interface BrotherDiscipuloStage {
   observaciones?: BrotherTimelineObservation[];
 }
 
+export interface BrotherEDEMStage {
+  fechaInicio?: string;
+  fechaFin?: string;
+  observaciones?: BrotherTimelineObservation[];
+  notasExamenes?: EDEMExamGrade[];
+}
+
 export interface BrotherProfile {
   id: BrotherId;
   name: string;
   fotoUrl?: string;
   edad?: number;
   fechaNacimiento?: string;
+  fechaIngreso?: string;
   telefono?: string;
   role: Role;
   procesoActual: Proceso;
@@ -72,6 +87,7 @@ export interface BrotherProfile {
   experiencia?: BrotherExperienciaStage;
   eddi?: BrotherEDDIStage;
   discipulo?: BrotherDiscipuloStage;
+  edem?: BrotherEDEMStage;
   observations: BrotherLegacyObservation[];
   disciples?: string[];
 }
@@ -118,4 +134,7 @@ export interface BrothersRepository {
   list(): BrotherProfile[];
   findById(id: BrotherId): BrotherProfile | undefined;
   listCells(): Cell[];
+  addBrother?(brother: BrotherProfile): void;
+  removeBrother?(id: BrotherId): void;
+  clearMockBrothers?(): void;
 }

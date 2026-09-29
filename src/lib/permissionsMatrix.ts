@@ -7,6 +7,7 @@ export type AppFeatureKey =
   | 'seguimiento'
   | 'eventos'
   | 'escuela_eddi'
+  | 'escuela_edem'
   | 'ministerio_adoracion'
   | 'ministerio_multimedia'
   | 'ministerio_misericordia'
@@ -39,6 +40,7 @@ const DEFAULT_ROLE_PERMISSION_MATRIX: Record<Role, RolePermissionProfile> = {
       seguimiento: 'manage',
       eventos: 'manage',
       escuela_eddi: 'manage',
+      escuela_edem: 'manage',
       ministerio_adoracion: 'manage',
       ministerio_multimedia: 'manage',
       ministerio_misericordia: 'manage',
@@ -53,6 +55,7 @@ const DEFAULT_ROLE_PERMISSION_MATRIX: Record<Role, RolePermissionProfile> = {
       seguimiento: 'manage',
       eventos: 'manage',
       escuela_eddi: 'manage',
+      escuela_edem: 'manage',
       ministerio_adoracion: 'manage',
       ministerio_multimedia: 'manage',
       ministerio_misericordia: 'manage',
@@ -67,6 +70,7 @@ const DEFAULT_ROLE_PERMISSION_MATRIX: Record<Role, RolePermissionProfile> = {
       seguimiento: 'edit',
       eventos: 'manage',
       escuela_eddi: 'view',
+      escuela_edem: 'manage',
       ministerio_adoracion: 'view',
       ministerio_multimedia: 'view',
       ministerio_misericordia: 'view',
@@ -81,6 +85,7 @@ const DEFAULT_ROLE_PERMISSION_MATRIX: Record<Role, RolePermissionProfile> = {
       seguimiento: 'edit',
       eventos: 'edit',
       escuela_eddi: 'view',
+      escuela_edem: 'view',
       ministerio_adoracion: 'view',
       ministerio_multimedia: 'view',
       ministerio_misericordia: 'view',
@@ -95,6 +100,7 @@ const DEFAULT_ROLE_PERMISSION_MATRIX: Record<Role, RolePermissionProfile> = {
       seguimiento: 'edit',
       eventos: 'edit',
       escuela_eddi: 'view',
+      escuela_edem: 'view',
       ministerio_adoracion: 'view',
       ministerio_multimedia: 'view',
       ministerio_misericordia: 'view',
@@ -109,6 +115,7 @@ const DEFAULT_ROLE_PERMISSION_MATRIX: Record<Role, RolePermissionProfile> = {
       seguimiento: 'view',
       eventos: 'view',
       escuela_eddi: 'view',
+      escuela_edem: 'view',
       ministerio_adoracion: 'view',
       ministerio_multimedia: 'view',
       ministerio_misericordia: 'view',
@@ -123,6 +130,7 @@ const DEFAULT_ROLE_PERMISSION_MATRIX: Record<Role, RolePermissionProfile> = {
       seguimiento: 'view',
       eventos: 'view',
       escuela_eddi: 'none',
+      escuela_edem: 'none',
       ministerio_adoracion: 'none',
       ministerio_multimedia: 'none',
       ministerio_misericordia: 'none',
@@ -137,6 +145,7 @@ const DEFAULT_ROLE_PERMISSION_MATRIX: Record<Role, RolePermissionProfile> = {
       seguimiento: 'none',
       eventos: 'none',
       escuela_eddi: 'none',
+      escuela_edem: 'none',
       ministerio_adoracion: 'none',
       ministerio_multimedia: 'none',
       ministerio_misericordia: 'none',
@@ -177,10 +186,21 @@ const loadPermissionMatrix = () => {
 
   try {
     const parsed = JSON.parse(raw) as Record<Role, RolePermissionProfile>;
-    rolePermissionMatrixState = {
-      ...rolePermissionMatrixState,
-      ...parsed,
-    };
+    const merged = deepCloneMatrix(DEFAULT_ROLE_PERMISSION_MATRIX);
+    for (const r of Object.keys(DEFAULT_ROLE_PERMISSION_MATRIX) as Role[]) {
+      if (parsed[r]) {
+        merged[r] = {
+          ...merged[r],
+          ...parsed[r],
+          features: {
+            ...merged[r].features,
+            ...(parsed[r]?.features ?? {}),
+          },
+        };
+      }
+    }
+    rolePermissionMatrixState = merged;
+    persistPermissionMatrix();
   } catch {
     // Keep defaults.
   }
@@ -210,7 +230,9 @@ const resolveUserCells = (user: User): Set<string> => {
 };
 
 export const getPermissionLevel = (role: Role, feature: AppFeatureKey): PermissionLevel =>
-  rolePermissionMatrixState[role].features[feature];
+  rolePermissionMatrixState[role]?.features?.[feature] ??
+  DEFAULT_ROLE_PERMISSION_MATRIX[role]?.features?.[feature] ??
+  'none';
 
 const maxPermission = (left: PermissionLevel, right: PermissionLevel): PermissionLevel => {
   const order: PermissionLevel[] = ['none', 'view', 'edit', 'manage'];
@@ -325,7 +347,9 @@ export const applyRolePermissionsOverrides = (
 
   const next = deepCloneMatrix(rolePermissionMatrixState);
   for (const row of rows) {
-    next[row.role].features[row.feature] = row.permission;
+    if (next[row.role]?.features) {
+      next[row.role].features[row.feature] = row.permission;
+    }
   }
   rolePermissionMatrixState = next;
   persistPermissionMatrix();

@@ -2,6 +2,7 @@ import { Proceso } from '../../../types';
 import { hermanosModuleService } from '../../hermanos/services/hermanosModuleService';
 import { BrotherProfile } from '../../hermanos/types';
 import { BrotherProcessSnapshot, SeguimientoRepository, StageDatesByProcess } from '../types';
+import { stageProgressionService } from '../../../services/stageProgressionService';
 
 const toStageDatesByProcess = (brother: BrotherProfile): StageDatesByProcess => ({
   [Proceso.ALTAR]: {
@@ -22,6 +23,10 @@ const toStageDatesByProcess = (brother: BrotherProfile): StageDatesByProcess => 
   [Proceso.DISCIPULO]: {
     startDate: brother.discipulo?.fechaInicio,
   },
+  [Proceso.EDEM]: {
+    startDate: brother.edem?.fechaInicio,
+    endDate: brother.edem?.fechaFin,
+  },
 });
 
 const cloneStageDatesByProcess = (stageDatesByProcess: StageDatesByProcess): StageDatesByProcess => ({
@@ -30,6 +35,7 @@ const cloneStageDatesByProcess = (stageDatesByProcess: StageDatesByProcess): Sta
   [Proceso.EXPERIENCIA]: { ...stageDatesByProcess[Proceso.EXPERIENCIA] },
   [Proceso.EDDI]: { ...stageDatesByProcess[Proceso.EDDI] },
   [Proceso.DISCIPULO]: { ...stageDatesByProcess[Proceso.DISCIPULO] },
+  [Proceso.EDEM]: { ...stageDatesByProcess[Proceso.EDEM] },
 });
 
 const cloneSnapshot = (snapshot: BrotherProcessSnapshot): BrotherProcessSnapshot => ({
@@ -41,7 +47,7 @@ const toSnapshot = (brother: BrotherProfile): BrotherProcessSnapshot => ({
   brotherId: brother.id,
   brotherName: brother.name,
   cellName: brother.acompanamiento.celulaName,
-  currentProcess: brother.procesoActual,
+  currentProcess: stageProgressionService.resolveProcess(brother),
   stageDatesByProcess: toStageDatesByProcess(brother),
 });
 

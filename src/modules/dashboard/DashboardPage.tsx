@@ -41,14 +41,16 @@ const STAGE_ORDER: Proceso[] = [
   Proceso.EXPERIENCIA,
   Proceso.EDDI,
   Proceso.DISCIPULO,
+  Proceso.EDEM,
 ];
 
 const STAGE_LABEL: Record<Proceso, string> = {
   [Proceso.ALTAR]: 'Altar',
   [Proceso.GRUPO]: 'Grupo',
   [Proceso.EXPERIENCIA]: 'Experiencia',
-  [Proceso.EDDI]: 'EDDI',
+  [Proceso.EDDI]: 'EDDI Escuela de Discipulados',
   [Proceso.DISCIPULO]: 'Discipulo',
+  [Proceso.EDEM]: 'EDEM Escuela de Entrenamiento Ministerial',
 };
 
 interface DashboardActivityItem {

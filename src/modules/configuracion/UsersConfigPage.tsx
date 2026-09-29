@@ -1,6 +1,6 @@
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { Shield, UserCog } from 'lucide-react';
-import { Navigate } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import { Toast } from '../../components/ui/Toast';
 import { Modal } from '../../components/ui/Modal';
 import { useAuth } from '../../hooks/useAuth';
@@ -36,6 +36,7 @@ const FEATURE_LABELS: Record<AppFeatureKey, string> = {
   seguimiento: 'Seguimiento',
   eventos: 'Eventos/Noticias',
   escuela_eddi: 'Escuela EDDI',
+  escuela_edem: 'Escuela EDEM',
   ministerio_adoracion: 'Ministerio Adoracion',
   ministerio_multimedia: 'Ministerio Multimedia',
   ministerio_misericordia: 'Ministerio Misericordia',
@@ -48,6 +49,7 @@ const FEATURE_ORDER: AppFeatureKey[] = [
   'seguimiento',
   'eventos',
   'escuela_eddi',
+  'escuela_edem',
   'ministerio_adoracion',
   'ministerio_multimedia',
   'ministerio_misericordia',
@@ -275,10 +277,37 @@ export const UsersConfigPage = () => {
     <div className="space-y-6 animate-in fade-in duration-500">
       <header className="space-y-2">
         <p className="text-[10px] uppercase tracking-[0.2em] font-black text-[#c5a059]">Configuracion</p>
-        <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Usuarios y permisos</h1>
-        <p className="text-sm text-slate-600 dark:text-gray-400">
-          Gestiona perfiles, roles y estado de acceso para toda la plataforma.
-        </p>
+        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-3">
+          <div>
+            <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Usuarios y permisos</h1>
+            <p className="text-sm text-slate-600 dark:text-gray-400">
+              Gestiona perfiles, roles y estado de acceso para toda la plataforma.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <span className="rounded-xl border border-[#c5a059]/40 bg-[#c5a059]/10 px-3 py-2 text-xs uppercase tracking-widest font-black text-[#c5a059]">
+              Usuarios
+            </span>
+            <Link
+              to="/configuracion/celulas"
+              className="rounded-xl border border-slate-200 dark:border-white/10 px-3 py-2 text-xs uppercase tracking-widest font-black text-slate-600 dark:text-gray-300 hover:border-[#c5a059]/40"
+            >
+              Células
+            </Link>
+            <Link
+              to="/configuracion/matrimonios"
+              className="rounded-xl border border-slate-200 dark:border-white/10 px-3 py-2 text-xs uppercase tracking-widest font-black text-slate-600 dark:text-gray-300 hover:border-[#c5a059]/40"
+            >
+              Matrimonios
+            </Link>
+            <Link
+              to="/configuracion/discipulado"
+              className="rounded-xl border border-slate-200 dark:border-white/10 px-3 py-2 text-xs uppercase tracking-widest font-black text-slate-600 dark:text-gray-300 hover:border-[#c5a059]/40"
+            >
+              Discipulado
+            </Link>
+          </div>
+        </div>
       </header>
 
       <section className="grid grid-cols-1 md:grid-cols-3 gap-3">

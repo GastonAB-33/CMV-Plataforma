@@ -1,6 +1,6 @@
 import { User } from '../types';
 
-export type ManagedModuleKey = 'escuela_eddi' | 'ministerio_adoracion' | 'ministerio_multimedia' | 'ministerio_misericordia';
+export type ManagedModuleKey = 'escuela_eddi' | 'escuela_edem' | 'ministerio_adoracion' | 'ministerio_multimedia' | 'ministerio_misericordia';
 
 interface ModuleAccessConfig {
   responsibleUserIds: string[];
@@ -11,6 +11,10 @@ const MODULE_ACCESS: Record<ManagedModuleKey, ModuleAccessConfig> = {
   escuela_eddi: {
     responsibleUserIds: ['u-1', 'u-2'],
     responsibleNames: ['Pastor Carlos', 'Pastora Ana'],
+  },
+  escuela_edem: {
+    responsibleUserIds: ['u-1', 'u-2'],
+    responsibleNames: ['Apostol Principal', 'Pastor Carlos'],
   },
   ministerio_adoracion: {
     responsibleUserIds: ['u-1', 'u-3'],

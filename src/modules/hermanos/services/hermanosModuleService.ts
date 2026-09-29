@@ -113,6 +113,24 @@ export class HermanosModuleService {
   async findByIdAsync(id: BrotherId): Promise<BrotherProfile | undefined> {
     return this.findById(id);
   }
+
+  addBrother(brother: BrotherProfile): void {
+    if (this.repository.addBrother) {
+      this.repository.addBrother(brother);
+    }
+  }
+
+  removeBrother(id: BrotherId): void {
+    if (this.repository.removeBrother) {
+      this.repository.removeBrother(id);
+    }
+  }
+
+  clearMockBrothers(): void {
+    if (this.repository.clearMockBrothers) {
+      this.repository.clearMockBrothers();
+    }
+  }
 }
 
 const brothersRepository = new InMemoryBrothersRepository();

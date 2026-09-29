@@ -54,11 +54,39 @@ const normalizeBrother = (brother: Brother | BrotherProfile): BrotherProfile => 
 
 const cloneBrotherProfile = (brother: BrotherProfile): BrotherProfile => normalizeBrother(brother);
 
+const MOCK_STORAGE_KEY = 'cmv_mock_simulated_brothers_v1';
+
+const readSavedMockBrothers = (): BrotherProfile[] => {
+  if (typeof window === 'undefined' || !window.localStorage) return [];
+  try {
+    const raw = window.localStorage.getItem(MOCK_STORAGE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed.map(normalizeBrother) : [];
+  } catch {
+    return [];
+  }
+};
+
+const writeSavedMockBrothers = (brothers: BrotherProfile[]) => {
+  if (typeof window === 'undefined' || !window.localStorage) return;
+  try {
+    const mocks = brothers.filter((b) => b.id.startsWith('mock-altar-'));
+    window.localStorage.setItem(MOCK_STORAGE_KEY, JSON.stringify(mocks));
+  } catch {
+    // Ignore quota
+  }
+};
+
 export class InMemoryBrothersRepository implements BrothersRepository {
   private readonly brothers: BrotherProfile[];
 
   constructor(seed: Brother[] = MOCK_BROTHERS) {
-    this.brothers = seed.map(normalizeBrother);
+    const seedBrothers = seed.map(normalizeBrother);
+    const savedMocks = readSavedMockBrothers();
+    const seedIds = new Set(seedBrothers.map((b) => b.id));
+    const nonDuplicatedMocks = savedMocks.filter((m) => !seedIds.has(m.id));
+    this.brothers = [...seedBrothers, ...nonDuplicatedMocks];
   }
 
   list(): BrotherProfile[] {
@@ -76,5 +104,30 @@ export class InMemoryBrothersRepository implements BrothersRepository {
       uniqueCells.add(brother.acompanamiento.celulaName);
     }
     return Array.from(uniqueCells);
+  }
+
+  addBrother(brother: BrotherProfile): void {
+    const existingIndex = this.brothers.findIndex((entry) => entry.id === brother.id);
+    if (existingIndex >= 0) {
+      this.brothers[existingIndex] = cloneBrotherProfile(brother);
+    } else {
+      this.brothers.push(cloneBrotherProfile(brother));
+    }
+    writeSavedMockBrothers(this.brothers);
+  }
+
+  removeBrother(id: BrotherId): void {
+    const index = this.brothers.findIndex((entry) => entry.id === id);
+    if (index >= 0) {
+      this.brothers.splice(index, 1);
+    }
+    writeSavedMockBrothers(this.brothers);
+  }
+
+  clearMockBrothers(): void {
+    const remaining = this.brothers.filter((b) => !b.id.startsWith('mock-altar-'));
+    this.brothers.length = 0;
+    this.brothers.push(...remaining);
+    writeSavedMockBrothers(this.brothers);
   }
 }

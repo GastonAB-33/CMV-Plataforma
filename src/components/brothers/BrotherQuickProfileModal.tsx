@@ -38,8 +38,9 @@ const processLabel: Record<Proceso, string> = {
   [Proceso.ALTAR]: 'Altar',
   [Proceso.GRUPO]: 'Grupo',
   [Proceso.EXPERIENCIA]: 'Experiencia',
-  [Proceso.EDDI]: 'EDDI',
+  [Proceso.EDDI]: 'EDDI Escuela de Discipulados',
   [Proceso.DISCIPULO]: 'Discipulado',
+  [Proceso.EDEM]: 'EDEM Escuela de Entrenamiento Ministerial',
 };
 
 export const BrotherQuickProfileModal = ({ isOpen, onClose, brother, currentUser }: BrotherQuickProfileModalProps) => {
