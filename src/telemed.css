@@ -1,11 +1,13 @@
-/* Telemedicine App Gradient Backdrops */
+/* Telemedicine App Gradient Backdrops with Fractal Glass Texture */
 .bg-telemed {
   background-color: #eef6f5;
   background-image: 
-    radial-gradient(circle at 12% 15%, rgba(2, 132, 199, 0.12) 0%, transparent 45%),
-    radial-gradient(circle at 88% 18%, rgba(16, 185, 129, 0.12) 0%, transparent 40%),
-    radial-gradient(circle at 50% 90%, rgba(245, 158, 11, 0.08) 0%, transparent 50%),
-    linear-gradient(145deg, #e4f3ef 0%, #edf5f9 45%, #f4f8fb 75%, #eaf2fb 100%);
+    linear-gradient(145deg, rgba(238, 246, 245, 0.86) 0%, rgba(228, 243, 239, 0.82) 45%, rgba(234, 242, 251, 0.88) 100%),
+    url('/fractal-glass-bg.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
 }
 
 .dark .bg-telemed,
@@ -14,10 +16,24 @@ body.dark .bg-telemed,
 .dark body {
   background-color: #060e1b !important;
   background-image: 
+    linear-gradient(155deg, rgba(6, 14, 27, 0.86) 0%, rgba(9, 21, 38, 0.82) 45%, rgba(3, 7, 15, 0.90) 100%),
     radial-gradient(circle at 15% 12%, rgba(2, 132, 199, 0.22) 0%, transparent 50%),
     radial-gradient(circle at 85% 16%, rgba(16, 185, 129, 0.18) 0%, transparent 45%),
-    radial-gradient(circle at 50% 88%, rgba(245, 158, 11, 0.1) 0%, transparent 55%),
-    linear-gradient(155deg, #091526 0%, #060f1c 45%, #03070f 100%) !important;
+    url('/fractal-glass-bg.jpg') !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-attachment: fixed !important;
+  background-repeat: no-repeat !important;
+}
+
+/* Floating Glass Dashboard Panels */
+.glass-floating-panel {
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 20px 45px -15px rgba(2, 132, 199, 0.12), 0 0 0 1px rgba(255, 255, 255, 0.6);
+}
+.dark .glass-floating-panel {
+  box-shadow: 0 25px 55px -12px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.08);
 }
 
 /* Banner Mask Fade */

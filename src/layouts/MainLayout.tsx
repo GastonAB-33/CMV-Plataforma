@@ -56,15 +56,15 @@ export const MainLayout = ({ children, user }: MainLayoutProps) => {
         <ThemeToggle />
       </div>
 
-      <aside className="hidden md:flex w-72 bg-white/80 dark:bg-[#0c1424]/90 backdrop-blur-xl flex-col border-r border-slate-200/80 dark:border-white/10 shadow-2xl relative z-20 transition-colors">
+      <aside className="hidden md:flex w-72 bg-white/80 dark:bg-[#070f1d]/85 backdrop-blur-2xl flex-col border-r border-white/30 dark:border-white/10 shadow-2xl relative z-20 transition-colors">
         {/* Recuadro Verde Cuadrado con Logo CMV Grande */}
         <div className="p-4 pb-4">
           <div
-            className="w-full aspect-square rounded-2xl bg-[#059669] text-white p-4 flex flex-col items-center justify-between text-center shadow-lg shadow-emerald-900/30 cursor-pointer group hover:brightness-105 transition-all relative overflow-hidden"
+            className="w-full aspect-square rounded-2xl bg-[#059669] text-white p-4 flex flex-col items-center justify-between text-center shadow-xl shadow-emerald-900/35 cursor-pointer group hover:brightness-105 transition-all relative overflow-hidden"
             onClick={() => navigate('/hermanos')}
           >
             <div className="w-full flex items-center justify-between z-10">
-              <span className="text-[9px] uppercase tracking-widest font-black px-2 py-0.5 rounded-md bg-black/20 text-white/95 border border-white/20">
+              <span className="text-[9px] uppercase tracking-widest font-black px-2 py-0.5 rounded-md bg-black/25 text-white/95 border border-white/20">
                 Oficial
               </span>
               <span className="text-[9px] tracking-[0.2em] font-extrabold uppercase text-emerald-100/90">
@@ -77,16 +77,16 @@ export const MainLayout = ({ children, user }: MainLayoutProps) => {
               <img
                 src="/logo-cmv.png"
                 alt="CMV Logo"
-                className="w-32 h-32 sm:w-36 sm:h-36 object-contain filter drop-shadow-xl group-hover:scale-105 transition-transform duration-300"
+                className="w-36 h-36 sm:w-40 sm:h-40 md:w-44 md:h-44 object-contain filter drop-shadow-2xl group-hover:scale-105 transition-transform duration-300"
               />
             </div>
 
             {/* Títulos inferiores */}
-            <div className="w-full pt-1.5 border-t border-white/20 z-10">
-              <h2 className="text-lg font-black tracking-wider uppercase leading-none text-white drop-shadow-sm">
+            <div className="w-full pt-1.5 border-t border-white/25 z-10">
+              <h2 className="text-2xl font-black tracking-widest uppercase leading-none text-white drop-shadow-md">
                 CMV
               </h2>
-              <p className="text-[9px] tracking-[0.25em] font-extrabold uppercase text-emerald-100 mt-0.5">
+              <p className="text-[10px] tracking-[0.3em] font-extrabold uppercase text-emerald-100 mt-1">
                 Seguimiento
               </p>
             </div>

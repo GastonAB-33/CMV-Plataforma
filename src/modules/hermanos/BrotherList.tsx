@@ -197,8 +197,8 @@ export const BrotherList = () => {
 
   return (
     <div className="w-full space-y-6 md:space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-700">
-      {/* Banner Principal Recto de Extremo a Extremo con Imagen y Gradiente */}
-      <div className="relative w-full overflow-hidden rounded-none border-b border-slate-200/80 dark:border-white/10 shadow-lg bg-[#06122d]">
+      {/* Banner Principal Recto de Extremo a Extremo con Imagen, Gradiente y Textura Fractal */}
+      <div className="relative w-full overflow-hidden rounded-none border-b border-slate-200/80 dark:border-white/10 shadow-xl bg-[#06122d]">
         {/* Imagen de fondo de personas */}
         <div className="absolute inset-0 -z-0 overflow-hidden">
           <img
@@ -206,34 +206,41 @@ export const BrotherList = () => {
             alt="Comunidad CMV"
             className="w-full h-full object-cover object-[center_35%] filter brightness-95 contrast-105"
           />
+          {/* Capa de textura fractal glass para una refracción luminosa integrada */}
+          <div 
+            className="absolute inset-0 opacity-20 mix-blend-overlay bg-cover bg-center pointer-events-none"
+            style={{ backgroundImage: "url('/fractal-glass-bg.jpg')" }}
+          />
           {/* Gradiente vibrante inspirado en la referencia Telemedicine */}
           <div className="absolute inset-0 bg-gradient-to-r from-[#06122d]/95 via-[#0284c7]/85 to-[#059669]/80 dark:from-[#050b1a]/95 dark:via-[#0369a1]/85 dark:to-[#047857]/80" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(245,158,11,0.3)_0%,transparent_60%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(245,158,11,0.35)_0%,transparent_60%)]" />
           {/* Desvanecimiento gradual hacia abajo donde comienza el sistema */}
           <div className="absolute inset-0 banner-fade-mask bg-gradient-to-b from-transparent via-transparent to-black/50" />
         </div>
 
-        {/* Contenido con generoso padding superior para que no quede pegado arriba */}
-        <header className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 md:px-10 pt-12 sm:pt-16 md:pt-20 pb-10 sm:pb-12 md:pb-14 flex flex-col md:flex-row md:items-end justify-between gap-6">
-          <div className="space-y-3">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-black/30 dark:bg-white/15 backdrop-blur-md border border-white/20 text-white text-[11px] font-extrabold uppercase tracking-widest shadow-sm">
-              <Sparkles className="text-amber-300" size={13} />
+        {/* Contenido más amplio y espacioso, con padding generoso para evitar superposiciones */}
+        <header className="relative z-10 max-w-7xl mx-auto px-6 sm:px-10 md:px-12 pt-16 sm:pt-20 md:pt-24 pb-14 sm:pb-16 md:pb-20 flex flex-col md:flex-row md:items-end justify-between gap-8 md:gap-12">
+          <div className="space-y-4 max-w-2xl">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-black/30 dark:bg-white/15 backdrop-blur-md border border-white/25 text-white text-[11px] font-extrabold uppercase tracking-widest shadow-sm">
+              <Sparkles className="text-amber-300" size={14} />
               <span>Plataforma Pastoral CMV</span>
             </div>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-tight drop-shadow-md">
+            <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white tracking-tight drop-shadow-lg leading-none">
               Hermanos
             </h1>
-            <p className="text-sm md:text-base text-emerald-50 dark:text-cyan-100 font-medium max-w-xl drop-shadow-sm">
+            <p className="text-base sm:text-lg text-emerald-50 dark:text-cyan-100 font-medium drop-shadow-sm leading-relaxed">
               Seguimiento y gestión espiritual de la congregación.
             </p>
           </div>
-          <button
-            onClick={() => setIsModalOpen(true)}
-            className="hidden md:flex w-auto justify-center btn-3d-emerald text-white px-8 py-3.5 rounded-xl font-extrabold items-center gap-2.5 uppercase tracking-wider text-sm shadow-xl shrink-0"
-          >
-            <UserPlus size={18} />
-            <span>NUEVO HERMANO</span>
-          </button>
+          <div className="shrink-0 pt-2 md:pt-0">
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="w-full sm:w-auto justify-center btn-3d-emerald text-white px-9 md:px-11 py-4 md:py-4.5 rounded-xl font-extrabold flex items-center gap-3 uppercase tracking-wider text-sm md:text-base shadow-2xl"
+            >
+              <UserPlus size={20} />
+              <span>NUEVO HERMANO</span>
+            </button>
+          </div>
         </header>
       </div>
 
@@ -289,7 +296,7 @@ export const BrotherList = () => {
               <input
                 type="text"
                 placeholder="Buscar por nombre o ID..."
-                className="w-full bg-gradient-to-r from-white/95 via-sky-50/40 to-white/95 dark:from-[#0d192c]/95 dark:via-[#091220]/95 dark:to-[#060c17]/95 backdrop-blur-md border border-slate-200/90 dark:border-white/10 focus:border-emerald-500/60 rounded-xl py-3.5 md:py-4 pl-12 pr-4 text-slate-900 dark:text-white focus:outline-none transition-all shadow-sm text-base"
+                className="w-full bg-gradient-to-r from-white/90 via-sky-50/60 to-white/90 dark:from-[#0d192c]/90 dark:via-[#091220]/90 dark:to-[#060c17]/90 backdrop-blur-xl border border-white/60 dark:border-white/15 focus:border-emerald-500/60 rounded-xl py-3.5 md:py-4 pl-12 pr-4 text-slate-900 dark:text-white focus:outline-none transition-all shadow-[0_10px_30px_-5px_rgba(2,132,199,0.08)] dark:shadow-[0_12px_35px_rgba(0,0,0,0.5)] text-base"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
@@ -322,7 +329,7 @@ export const BrotherList = () => {
               return (
                 <article
                   key={brother.id}
-                  className="rounded-xl border border-slate-200/80 dark:border-white/10 bg-gradient-to-br from-white/95 via-sky-50/40 to-emerald-50/30 dark:from-[#0d1829]/95 dark:via-[#091220]/95 dark:to-[#060c17]/95 backdrop-blur-xl p-4 shadow-md hover:border-emerald-500/40 transition-all"
+                  className="rounded-xl border border-white/60 dark:border-white/15 bg-gradient-to-br from-white/90 via-sky-50/60 to-emerald-50/40 dark:from-[#0d1829]/90 dark:via-[#091220]/90 dark:to-[#060c17]/90 backdrop-blur-xl p-4 shadow-lg hover:border-emerald-500/50 transition-all"
                 >
                   <div
                     role="button"
@@ -403,7 +410,7 @@ export const BrotherList = () => {
             )}
           </div>
 
-          <div className="hidden md:block bg-gradient-to-br from-white/95 via-sky-50/40 to-emerald-50/30 dark:from-[#0d1829]/95 dark:via-[#091220]/95 dark:to-[#060c17]/95 backdrop-blur-xl rounded-xl border border-slate-200/80 dark:border-white/10 overflow-hidden shadow-xl relative">
+          <div className="hidden md:block bg-gradient-to-br from-white/90 via-sky-50/60 to-emerald-50/40 dark:from-[#0d1829]/90 dark:via-[#091220]/90 dark:to-[#060c17]/90 backdrop-blur-2xl rounded-2xl border border-white/70 dark:border-white/15 overflow-hidden shadow-[0_20px_50px_rgba(2,132,199,0.12)] dark:shadow-[0_25px_60px_rgba(0,0,0,0.65)] relative">
             <div className="overflow-x-auto no-scrollbar">
               <table className="w-full text-left border-collapse min-w-[800px]">
                 <thead>
