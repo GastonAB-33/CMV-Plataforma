@@ -158,7 +158,7 @@ export const MainLayout = ({ children, user }: MainLayoutProps) => {
           </div>
         </header>
 
-        <main className="flex-1 overflow-y-auto pb-32 md:pb-8 bg-telemed transition-colors">
+        <main className="flex-1 overflow-y-auto pb-32 md:pb-8 bg-transparent transition-colors">
           {location.pathname === '/hermanos' ? (
             children
           ) : (

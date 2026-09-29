@@ -1,8 +1,17 @@
-/* Telemedicine App Gradient Backdrops with Fractal Glass Texture */
+/* Telemedicine App Gradient Backdrops with Fractal Glass Texture & Ambient Mesh */
 .bg-telemed {
-  background-color: #eef6f5;
+  background-color: #f7faf9;
   background-image: 
-    linear-gradient(145deg, rgba(238, 246, 245, 0.86) 0%, rgba(228, 243, 239, 0.82) 45%, rgba(234, 242, 251, 0.88) 100%),
+    /* Toque sutil y elegante de durazno/apricot suave (reducido y delicado) */
+    radial-gradient(ellipse 55% 45% at 18% 6%, rgba(248, 165, 142, 0.32) 0%, rgba(251, 191, 172, 0.16) 30%, transparent 60%),
+    /* Cian / menta / turquesa luminoso en lateral derecho y centro */
+    radial-gradient(ellipse 65% 55% at 85% 26%, rgba(77, 208, 197, 0.30) 0%, rgba(132, 225, 216, 0.18) 35%, transparent 65%),
+    /* Tono pizarra petróleo / slate-teal suave en la parte inferior izquierda */
+    radial-gradient(circle 50% at 12% 80%, rgba(68, 107, 115, 0.18) 0%, transparent 52%),
+    /* Destello cielo en la parte inferior derecha */
+    radial-gradient(circle 45% at 82% 88%, rgba(56, 189, 248, 0.18) 0%, transparent 50%),
+    /* Velo de base en degradé claro translúcido que permite lucir los tonos del fondo estriado */
+    linear-gradient(145deg, rgba(253, 246, 242, 0.58) 0%, rgba(234, 248, 246, 0.52) 45%, rgba(230, 244, 252, 0.60) 100%),
     url('/fractal-glass-bg.jpg');
   background-size: cover;
   background-position: center;
@@ -14,11 +23,18 @@
 html.dark .bg-telemed,
 body.dark .bg-telemed,
 .dark body {
-  background-color: #060e1b !important;
+  background-color: #040913 !important;
   background-image: 
-    linear-gradient(155deg, rgba(6, 14, 27, 0.86) 0%, rgba(9, 21, 38, 0.82) 45%, rgba(3, 7, 15, 0.90) 100%),
-    radial-gradient(circle at 15% 12%, rgba(2, 132, 199, 0.22) 0%, transparent 50%),
-    radial-gradient(circle at 85% 16%, rgba(16, 185, 129, 0.18) 0%, transparent 45%),
+    /* Resplandor durazno/cobre sutil en la parte superior izquierda en tono oscuro */
+    radial-gradient(ellipse 55% 45% at 18% 8%, rgba(234, 118, 91, 0.28) 0%, rgba(194, 85, 60, 0.13) 32%, transparent 60%),
+    /* Cian y turquesa boreal vibrante en el lateral derecho */
+    radial-gradient(ellipse 65% 55% at 85% 28%, rgba(45, 212, 191, 0.26) 0%, rgba(20, 184, 166, 0.14) 40%, transparent 65%),
+    /* Pizarra petróleo oscura en el cuadrante inferior izquierdo */
+    radial-gradient(circle 50% at 12% 80%, rgba(18, 64, 76, 0.52) 0%, transparent 55%),
+    /* Azul zafiro nocturno en el cuadrante inferior derecho */
+    radial-gradient(circle 45% at 82% 88%, rgba(2, 132, 199, 0.22) 0%, transparent 50%),
+    /* Base nocturna zafiro oscuro translúcido que deja traslucir el relieve acanalado fractal y sus colores */
+    linear-gradient(155deg, rgba(9, 17, 28, 0.82) 0%, rgba(5, 15, 25, 0.80) 45%, rgba(3, 8, 16, 0.88) 100%),
     url('/fractal-glass-bg.jpg') !important;
   background-size: cover !important;
   background-position: center !important;
