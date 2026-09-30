@@ -45,6 +45,7 @@ import {
 } from '../../services/observationsService';
 import { Acompanamiento, Proceso, Role } from '../../types';
 import { BrotherProfile } from './types';
+import { getAvatarForBrother } from '../../services/avatarService';
 import { eddiModuleService } from '../eddi/services/eddiModuleService';
 import { edemModuleService } from '../edem/services/edemModuleService';
 import { seguimientoModuleService } from '../seguimiento/services/seguimientoModuleService';
@@ -844,7 +845,8 @@ export const BrotherDetail = () => {
   }, [isGrupoInterrumpido, resolvedGrupoVidaStartDate, resolvedGrupoVidaEndDate]);
 
   const captureAttributes = photoService.getInputCaptureAttributes();
-  const profilePhotoUrl = selectedPhotoUrl ?? brother?.fotoUrl;
+  const defaultAvatar = useMemo(() => (brother ? getAvatarForBrother(brother.name, brother.fotoUrl) : ''), [brother]);
+  const profilePhotoUrl = selectedPhotoUrl ?? brother?.fotoUrl ?? defaultAvatar;
   const observationRoleByUserRole: Record<Role, ObservationRole> = {
     [Role.SUPERADMIN]: 'Pastor',
     [Role.APOSTOL]: 'Pastor',
@@ -2339,9 +2341,9 @@ export const BrotherDetail = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white dark:bg-black text-slate-900 dark:text-white pb-20 animate-in fade-in duration-700">
+    <div className="min-h-screen bg-transparent text-slate-900 dark:text-white pb-20 animate-in fade-in duration-700">
       <div className="max-w-5xl mx-auto px-4 pt-6 md:pt-8 space-y-10">
-        <header className="flex flex-col md:flex-row items-center md:items-start gap-6 md:gap-8 bg-white dark:bg-[#1a1a1a] p-5 sm:p-6 md:p-7 rounded-[2rem] md:rounded-[2.5rem] border border-slate-200 dark:border-white/5 shadow-xl relative overflow-hidden mt-3 md:mt-4">
+        <header className="flex flex-col md:flex-row items-center md:items-start gap-6 md:gap-8 bg-gradient-to-br from-white/90 via-sky-50/60 to-emerald-50/40 dark:from-[#0d1829]/90 dark:via-[#091220]/90 dark:to-[#060c17]/90 p-6 sm:p-7 md:p-8 rounded-2xl border border-white/70 dark:border-white/15 shadow-[0_20px_50px_rgba(2,132,199,0.12)] dark:shadow-[0_25px_60px_rgba(0,0,0,0.65)] backdrop-blur-2xl relative overflow-hidden mt-3 md:mt-4">
           <div className="absolute top-0 right-0 p-10 opacity-5 pointer-events-none">
             <ShieldCheck size={180} className="text-[#c5a059]" />
           </div>
@@ -2368,7 +2370,7 @@ export const BrotherDetail = () => {
                     }
                   }}
                 >
-                  <div className="w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-2xl md:rounded-3xl bg-gradient-to-br from-[#c5a059]/20 to-transparent flex items-center justify-center text-[#c5a059] font-black text-4xl sm:text-5xl md:text-6xl shadow-[0_0_40px_rgba(197,160,89,0.2)] overflow-hidden border-2 border-[#c5a059]/30 relative transition-transform duration-500 group-hover:scale-[1.02]">
+                  <div className="w-28 h-28 sm:w-32 sm:h-32 md:w-36 md:h-36 rounded-2xl overflow-hidden border-2 border-white/80 dark:border-white/20 shadow-2xl relative transition-transform duration-500 group-hover:scale-[1.02] bg-slate-200 dark:bg-slate-800">
                     {profilePhotoUrl ? (
                       <img src={profilePhotoUrl} alt={brother.name} className="w-full h-full object-cover" />
                     ) : (
@@ -2438,7 +2440,7 @@ export const BrotherDetail = () => {
             {/* Lateral Derecho: Fichas de información compactas una debajo de otra */}
             <div className="flex flex-col gap-2 w-full">
               {/* 1. Célula */}
-              <div className="flex items-center gap-3 bg-[#f8fafc] dark:bg-black/50 px-3.5 py-2 sm:py-2.5 rounded-xl border border-slate-200 dark:border-white/5 shadow-sm">
+              <div className="flex items-center gap-3 bg-white/70 dark:bg-black/40 backdrop-blur-md px-4 py-2.5 rounded-xl border border-white/80 dark:border-white/10 shadow-sm">
                 <div className="p-1.5 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg flex items-center justify-center shrink-0">
                   <MapPin className="text-[#c5a059]" size={15} />
                 </div>
@@ -2449,7 +2451,7 @@ export const BrotherDetail = () => {
               </div>
 
               {/* 2. Líderes */}
-              <div className="flex items-center gap-3 bg-[#f8fafc] dark:bg-black/50 px-3.5 py-2 sm:py-2.5 rounded-xl border border-slate-200 dark:border-white/5 shadow-sm">
+              <div className="flex items-center gap-3 bg-white/70 dark:bg-black/40 backdrop-blur-md px-4 py-2.5 rounded-xl border border-white/80 dark:border-white/10 shadow-sm">
                 <div className="p-1.5 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg flex items-center justify-center shrink-0">
                   <Users className="text-[#c5a059]" size={15} />
                 </div>
@@ -2460,7 +2462,7 @@ export const BrotherDetail = () => {
               </div>
 
               {/* 3. Hermano Mayor */}
-              <div className="flex items-center gap-3 bg-[#f8fafc] dark:bg-black/50 px-3.5 py-2 sm:py-2.5 rounded-xl border border-slate-200 dark:border-white/5 shadow-sm">
+              <div className="flex items-center gap-3 bg-white/70 dark:bg-black/40 backdrop-blur-md px-4 py-2.5 rounded-xl border border-white/80 dark:border-white/10 shadow-sm">
                 <div className="p-1.5 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg flex items-center justify-center shrink-0">
                   <ShieldCheck className="text-[#c5a059]" size={15} />
                 </div>
@@ -2471,7 +2473,7 @@ export const BrotherDetail = () => {
               </div>
 
               {/* 4. Edad */}
-              <div className="flex items-center gap-3 bg-[#f8fafc] dark:bg-black/50 px-3.5 py-2 sm:py-2.5 rounded-xl border border-slate-200 dark:border-white/5 shadow-sm">
+              <div className="flex items-center gap-3 bg-white/70 dark:bg-black/40 backdrop-blur-md px-4 py-2.5 rounded-xl border border-white/80 dark:border-white/10 shadow-sm">
                 <div className="p-1.5 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg flex items-center justify-center shrink-0">
                   <Calendar className="text-[#c5a059]" size={15} />
                 </div>
@@ -2484,7 +2486,7 @@ export const BrotherDetail = () => {
               </div>
 
               {/* 5. Contacto */}
-              <div className="flex items-center gap-3 bg-[#f8fafc] dark:bg-black/50 px-3.5 py-2 sm:py-2.5 rounded-xl border border-slate-200 dark:border-white/5 shadow-sm">
+              <div className="flex items-center gap-3 bg-white/70 dark:bg-black/40 backdrop-blur-md px-4 py-2.5 rounded-xl border border-white/80 dark:border-white/10 shadow-sm">
                 <div className="p-1.5 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg flex items-center justify-center shrink-0">
                   <Phone className="text-[#c5a059]" size={15} />
                 </div>

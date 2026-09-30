@@ -22,7 +22,7 @@ export const EscuelaEdemPage = () => {
 
   return (
     <div className="space-y-8 animate-in fade-in duration-700">
-      <header className="bg-white dark:bg-[#1a1a1a] border border-slate-200 dark:border-white/5 rounded-3xl p-6 md:p-8">
+      <header className="bg-gradient-to-br from-white/90 via-sky-50/60 to-emerald-50/40 dark:from-[#0d1829]/90 dark:via-[#091220]/90 dark:to-[#060c17]/90 border border-white/70 dark:border-white/15 backdrop-blur-2xl shadow-xl rounded-3xl p-6 md:p-8">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
             <div className="inline-flex items-center gap-2 text-purple-400 text-xs uppercase tracking-[0.2em] font-black">
@@ -52,21 +52,21 @@ export const EscuelaEdemPage = () => {
       </header>
 
       <section className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <article className="p-5 rounded-2xl bg-white dark:bg-[#1a1a1a] border border-slate-200 dark:border-white/5">
+        <article className="p-5 rounded-2xl bg-gradient-to-br from-white/90 via-sky-50/60 to-emerald-50/40 dark:from-[#0d1829]/90 dark:via-[#091220]/90 dark:to-[#060c17]/90 border border-white/70 dark:border-white/15 backdrop-blur-2xl shadow-xl">
           <div className="flex items-center gap-2 text-purple-400">
             <BookOpenCheck size={16} />
             <span className="text-xs uppercase tracking-widest font-black">Cohortes Ministeriales</span>
           </div>
           <p className="text-3xl font-black text-slate-900 dark:text-white mt-3">{cohorts.length}</p>
         </article>
-        <article className="p-5 rounded-2xl bg-white dark:bg-[#1a1a1a] border border-slate-200 dark:border-white/5">
+        <article className="p-5 rounded-2xl bg-gradient-to-br from-white/90 via-sky-50/60 to-emerald-50/40 dark:from-[#0d1829]/90 dark:via-[#091220]/90 dark:to-[#060c17]/90 border border-white/70 dark:border-white/15 backdrop-blur-2xl shadow-xl">
           <div className="flex items-center gap-2 text-purple-400">
             <Users size={16} />
             <span className="text-xs uppercase tracking-widest font-black">Ministros en Formación</span>
           </div>
           <p className="text-3xl font-black text-slate-900 dark:text-white mt-3">{students.length}</p>
         </article>
-        <article className="p-5 rounded-2xl bg-white dark:bg-[#1a1a1a] border border-slate-200 dark:border-white/5">
+        <article className="p-5 rounded-2xl bg-gradient-to-br from-white/90 via-sky-50/60 to-emerald-50/40 dark:from-[#0d1829]/90 dark:via-[#091220]/90 dark:to-[#060c17]/90 border border-white/70 dark:border-white/15 backdrop-blur-2xl shadow-xl">
           <div className="flex items-center gap-2 text-purple-400">
             <CalendarDays size={16} />
             <span className="text-xs uppercase tracking-widest font-black">Cátedras Próximas</span>
@@ -75,7 +75,7 @@ export const EscuelaEdemPage = () => {
         </article>
       </section>
 
-      <section className="bg-white dark:bg-[#1a1a1a] border border-slate-200 dark:border-white/5 rounded-3xl p-6">
+      <section className="bg-gradient-to-br from-white/90 via-sky-50/60 to-emerald-50/40 dark:from-[#0d1829]/90 dark:via-[#091220]/90 dark:to-[#060c17]/90 border border-white/70 dark:border-white/15 backdrop-blur-2xl shadow-xl rounded-3xl p-6">
         <h2 className="text-xl font-black text-slate-900 dark:text-white mb-4">Cohortes EDEM</h2>
         <div className="md:hidden space-y-3">
           {cohorts.map((cohort) => (
@@ -119,7 +119,7 @@ export const EscuelaEdemPage = () => {
       </section>
 
       <section className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-        <article className="bg-white dark:bg-[#1a1a1a] border border-slate-200 dark:border-white/5 rounded-3xl p-6">
+        <article className="bg-gradient-to-br from-white/90 via-sky-50/60 to-emerald-50/40 dark:from-[#0d1829]/90 dark:via-[#091220]/90 dark:to-[#060c17]/90 border border-white/70 dark:border-white/15 backdrop-blur-2xl shadow-xl rounded-3xl p-6">
           <h2 className="text-lg font-black text-slate-900 dark:text-white mb-4">Progreso de Ministros en Formación</h2>
           <div className="space-y-3">
             {students.map((student) => (
@@ -139,7 +139,7 @@ export const EscuelaEdemPage = () => {
           </div>
         </article>
 
-        <article className="bg-white dark:bg-[#1a1a1a] border border-slate-200 dark:border-white/5 rounded-3xl p-6">
+        <article className="bg-gradient-to-br from-white/90 via-sky-50/60 to-emerald-50/40 dark:from-[#0d1829]/90 dark:via-[#091220]/90 dark:to-[#060c17]/90 border border-white/70 dark:border-white/15 backdrop-blur-2xl shadow-xl rounded-3xl p-6">
           <h2 className="text-lg font-black text-slate-900 dark:text-white mb-4">Cátedras y Agenda Ministerial</h2>
           <div className="space-y-3">
             {classes.map((item) => (

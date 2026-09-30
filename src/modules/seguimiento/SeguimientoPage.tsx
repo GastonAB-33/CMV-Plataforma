@@ -480,7 +480,7 @@ export const SeguimientoPage = () => {
         {/* Fila de 5 Tarjetas KPI Prioritarias */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3.5">
           {/* KPI 1: Altares Congregacionales */}
-          <article className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#151515] p-4 flex flex-col justify-between shadow-sm">
+          <article className="rounded-2xl border border-white/70 dark:border-white/10 bg-gradient-to-br from-white/90 via-sky-50/50 to-emerald-50/30 dark:from-[#0d1829]/90 dark:via-[#091220]/90 dark:to-[#060c17]/90 p-4 flex flex-col justify-between shadow-lg backdrop-blur-xl">
             <div className="flex items-center justify-between pb-2">
               <span className="text-[10px] uppercase tracking-wider font-black text-slate-500 dark:text-gray-400">
                 Altares Totales
@@ -511,7 +511,7 @@ export const SeguimientoPage = () => {
           </article>
 
           {/* KPI 2: Grupos de Vida */}
-          <article className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#151515] p-4 flex flex-col justify-between shadow-sm">
+          <article className="rounded-2xl border border-white/70 dark:border-white/10 bg-gradient-to-br from-white/90 via-sky-50/50 to-emerald-50/30 dark:from-[#0d1829]/90 dark:via-[#091220]/90 dark:to-[#060c17]/90 p-4 flex flex-col justify-between shadow-lg backdrop-blur-xl">
             <div className="flex items-center justify-between pb-2">
               <span className="text-[10px] uppercase tracking-wider font-black text-slate-500 dark:text-gray-400">
                 Grupos de Vida
@@ -536,7 +536,7 @@ export const SeguimientoPage = () => {
           </article>
 
           {/* KPI 3: Escuela y Discipulado */}
-          <article className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#151515] p-4 flex flex-col justify-between shadow-sm">
+          <article className="rounded-2xl border border-white/70 dark:border-white/10 bg-gradient-to-br from-white/90 via-sky-50/50 to-emerald-50/30 dark:from-[#0d1829]/90 dark:via-[#091220]/90 dark:to-[#060c17]/90 p-4 flex flex-col justify-between shadow-lg backdrop-blur-xl">
             <div className="flex items-center justify-between pb-2">
               <span className="text-[10px] uppercase tracking-wider font-black text-slate-500 dark:text-gray-400">
                 EDDI y Conectores
@@ -561,7 +561,7 @@ export const SeguimientoPage = () => {
           </article>
 
           {/* KPI 4: Células Congregacionales */}
-          <article className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#151515] p-4 flex flex-col justify-between shadow-sm">
+          <article className="rounded-2xl border border-white/70 dark:border-white/10 bg-gradient-to-br from-white/90 via-sky-50/50 to-emerald-50/30 dark:from-[#0d1829]/90 dark:via-[#091220]/90 dark:to-[#060c17]/90 p-4 flex flex-col justify-between shadow-lg backdrop-blur-xl">
             <div className="flex items-center justify-between pb-2">
               <span className="text-[10px] uppercase tracking-wider font-black text-slate-500 dark:text-gray-400">
                 Células Activas
@@ -586,7 +586,7 @@ export const SeguimientoPage = () => {
           </article>
 
           {/* KPI 5: Discípulos Activos */}
-          <article className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#151515] p-4 flex flex-col justify-between shadow-sm">
+          <article className="rounded-2xl border border-white/70 dark:border-white/10 bg-gradient-to-br from-white/90 via-sky-50/50 to-emerald-50/30 dark:from-[#0d1829]/90 dark:via-[#091220]/90 dark:to-[#060c17]/90 p-4 flex flex-col justify-between shadow-lg backdrop-blur-xl">
             <div className="flex items-center justify-between pb-2">
               <span className="text-[10px] uppercase tracking-wider font-black text-slate-500 dark:text-gray-400">
                 Discípulos Activos

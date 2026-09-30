@@ -48,7 +48,14 @@ export const brothersService = {
     refreshCachesFromBrothers(hermanosModuleService.list());
   },
 
-  clearMockBrothers(): void {
+  
+  updateBrotherPhoto(id: BrotherId, photoUrl: string): void {
+    const brother = this.findById(id);
+    if (brother) {
+      this.addBrother({ ...brother, fotoUrl: photoUrl });
+    }
+  },
+clearMockBrothers(): void {
     hermanosModuleService.clearMockBrothers();
     refreshCachesFromBrothers(hermanosModuleService.list());
   },

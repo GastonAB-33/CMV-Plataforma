@@ -9,6 +9,7 @@ import { STAGE_COLORS } from '../../theme/stages';
 import { Modal } from '../../components/ui/Modal';
 import { Toast } from '../../components/ui/Toast';
 import { BrotherNameTrigger } from '../../components/brothers/BrotherNameTrigger';
+import { getAvatarForBrother } from '../../services/avatarService';
 import { BrotherListItem } from './types';
 
 const STAGES = ['Todas', Proceso.ALTAR, Proceso.GRUPO, Proceso.EXPERIENCIA, Proceso.EDDI, Proceso.DISCIPULO] as const;
@@ -343,25 +344,32 @@ export const BrotherList = () => {
                     }}
                     className="w-full text-left"
                   >
-                    <div className="flex items-start gap-3">
-                      <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-emerald-500/20 via-teal-500/15 to-sky-500/10 flex items-center justify-center text-emerald-600 dark:text-emerald-400 font-extrabold text-lg border border-emerald-500/30 shrink-0 shadow-sm">
-                        {brother.name.charAt(0)}
+                    <div className="flex items-start gap-3.5">
+                      <div className="w-13 h-13 rounded-xl overflow-hidden border border-white/70 dark:border-white/20 shadow-md shrink-0 bg-slate-200 dark:bg-slate-800 relative">
+                        <img
+                          src={brother.fotoUrl || getAvatarForBrother(brother.name)}
+                          alt={brother.name}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            (e.currentTarget as HTMLElement).style.display = 'none';
+                          }}
+                        />
                       </div>
                       <div className="min-w-0 flex-1">
                         <BrotherNameTrigger
                           name={brother.name}
-                          className="font-bold text-slate-900 dark:text-white text-base leading-tight"
-                          fallbackClassName="font-bold text-slate-900 dark:text-white text-base leading-tight"
+                          className="font-black text-slate-900 dark:text-white text-lg leading-tight"
+                          fallbackClassName="font-black text-slate-900 dark:text-white text-lg leading-tight"
                         />
-                        <p className="text-[10px] text-slate-500 dark:text-gray-400 font-bold tracking-wider mt-1 uppercase">Miembro activo</p>
-                        <div className="mt-2">
-                          <span className={`inline-flex px-3 py-1 rounded-md text-[10px] uppercase tracking-wider font-extrabold border shadow-sm ${STAGE_COLORS[brother.procesoActual]}`}>
+                        <p className="text-[11px] text-slate-500 dark:text-gray-400 font-bold tracking-wider mt-1 uppercase">Miembro activo</p>
+                        <div className="mt-2.5">
+                          <span className={`inline-flex px-3.5 py-1.5 rounded-lg text-xs uppercase tracking-wider font-black border shadow-sm ${STAGE_COLORS[brother.procesoActual]}`}>
                             {brother.procesoActual}
                           </span>
                         </div>
                       </div>
                       <ChevronDown
-                        size={18}
+                        size={20}
                         className={`shrink-0 mt-1 text-slate-400 dark:text-gray-500 transition-transform ${isExpanded ? 'rotate-180 text-emerald-500' : ''}`}
                       />
                     </div>
@@ -414,9 +422,9 @@ export const BrotherList = () => {
             <div className="overflow-x-auto no-scrollbar">
               <table className="w-full text-left border-collapse min-w-[800px]">
                 <thead>
-                  <tr className="bg-slate-100/90 dark:bg-black/50 text-slate-600 dark:text-gray-300 text-[11px] uppercase tracking-wider font-extrabold border-b border-slate-200/80 dark:border-white/10">
-                    <th className="px-8 py-5">Lider / Hermano</th>
-                    <th className="px-8 py-5">Ubicacion / Celula</th>
+                  <tr className="bg-slate-100/90 dark:bg-black/50 text-slate-600 dark:text-gray-300 text-xs uppercase tracking-wider font-black border-b border-slate-200/80 dark:border-white/10">
+                    <th className="px-8 py-5">Líder / Hermano</th>
+                    <th className="px-8 py-5">Ubicación / Célula</th>
                     <th className="px-8 py-5">Etapa espiritual</th>
                     <th className="px-8 py-5">Responsable</th>
                     <th className="px-8 py-5"></th>
@@ -427,43 +435,50 @@ export const BrotherList = () => {
                     <tr key={brother.id} onClick={() => navigate(`/hermanos/${brother.id}`)} className="hover:bg-emerald-500/5 dark:hover:bg-emerald-500/10 transition-all cursor-pointer group">
                       <td className="px-8 py-5">
                         <div className="flex items-center gap-5">
-                          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500/20 via-teal-500/15 to-sky-500/10 flex items-center justify-center text-emerald-600 dark:text-emerald-400 font-extrabold text-xl border border-emerald-500/30 group-hover:border-emerald-500/60 transition-all shadow-sm">
-                            {brother.name.charAt(0)}
+                          <div className="w-13 h-13 rounded-xl overflow-hidden border border-white/70 dark:border-white/20 shadow-md shrink-0 bg-slate-200 dark:bg-slate-800 relative group-hover:scale-105 transition-transform">
+                            <img
+                              src={brother.fotoUrl || getAvatarForBrother(brother.name)}
+                              alt={brother.name}
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                (e.currentTarget as HTMLElement).style.display = 'none';
+                              }}
+                            />
                           </div>
                           <div>
                             <BrotherNameTrigger
                               name={brother.name}
-                              className="font-bold text-slate-900 dark:text-white text-lg leading-tight group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors"
-                              fallbackClassName="font-bold text-slate-900 dark:text-white text-lg leading-tight"
+                              className="font-black text-slate-900 dark:text-white text-xl leading-tight group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors"
+                              fallbackClassName="font-black text-slate-900 dark:text-white text-xl leading-tight"
                             />
-                            <p className="text-[10px] text-slate-500 dark:text-gray-400 font-bold tracking-wider mt-0.5 uppercase">Miembro activo</p>
+                            <p className="text-[11px] text-slate-500 dark:text-gray-400 font-extrabold tracking-wider mt-0.5 uppercase">Miembro activo</p>
                           </div>
                         </div>
                       </td>
                       <td className="px-8 py-5 text-slate-600 dark:text-gray-300">
                         <div className="flex flex-col">
-                          <span className="font-bold text-slate-800 dark:text-gray-200 text-sm">{brother.cellName}</span>
-                          <span className="text-[10px] uppercase text-slate-500 dark:text-gray-400 tracking-wider">Zona Norte - CMV</span>
+                          <span className="font-extrabold text-slate-800 dark:text-gray-100 text-base">{brother.cellName}</span>
+                          <span className="text-[11px] uppercase font-bold text-slate-500 dark:text-gray-400 tracking-wider">Zona Norte - CMV</span>
                         </div>
                       </td>
                       <td className="px-8 py-5">
-                        <span className={`px-4 py-1.5 rounded-lg text-[10px] uppercase tracking-wider font-extrabold border transition-all duration-300 shadow-sm ${STAGE_COLORS[brother.procesoActual]}`}>
+                        <span className={`px-4.5 py-2 rounded-xl text-xs uppercase tracking-wider font-black border transition-all duration-300 shadow-sm ${STAGE_COLORS[brother.procesoActual]}`}>
                           {brother.procesoActual}
                         </span>
                       </td>
                       <td className="px-8 py-5">
                         <div className="flex items-center gap-2.5">
-                          <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_8px_#10b981]" />
+                          <div className="w-3 h-3 rounded-full bg-emerald-500 shadow-[0_0_10px_#10b981]" />
                           <BrotherNameTrigger
                             name={brother.acompananteName || 'No asig.'}
-                            className="text-slate-700 dark:text-gray-300 text-xs font-extrabold uppercase tracking-wider hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
-                            fallbackClassName="text-slate-700 dark:text-gray-300 text-xs font-extrabold uppercase tracking-wider"
+                            className="text-slate-700 dark:text-gray-200 text-sm font-black uppercase tracking-wider hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
+                            fallbackClassName="text-slate-700 dark:text-gray-200 text-sm font-black uppercase tracking-wider"
                           />
                         </div>
                       </td>
                       <td className="px-8 py-5 text-right">
-                        <div className="w-10 h-10 rounded-xl flex items-center justify-center btn-3d-pill-inactive text-slate-500 dark:text-gray-400 group-hover:bg-[#059669] group-hover:text-white transition-all shadow-sm">
-                          <ChevronRight size={18} />
+                        <div className="w-11 h-11 rounded-xl flex items-center justify-center btn-3d-pill-inactive text-slate-500 dark:text-gray-400 group-hover:bg-[#059669] group-hover:text-white transition-all shadow-sm">
+                          <ChevronRight size={20} />
                         </div>
                       </td>
                     </tr>
