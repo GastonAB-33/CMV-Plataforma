@@ -680,14 +680,14 @@ export const StageSimulatorModal: React.FC<StageSimulatorModalProps> = ({
         <button
           type="button"
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-6 z-40 flex items-center gap-2.5 px-4 py-2.5 rounded-full bg-slate-900/90 dark:bg-black/90 border border-[#c5a059] shadow-2xl text-white hover:bg-[#c5a059] hover:text-black transition-all group active:scale-95 backdrop-blur-md"
+          className="fixed bottom-6 right-6 z-40 flex items-center gap-2.5 px-4 py-2.5 rounded-full bg-slate-900/90 dark:bg-black/90 border border-emerald-500/50 shadow-2xl text-white hover:bg-emerald-600 hover:text-white transition-all group active:scale-95 backdrop-blur-md"
           title="Abrir Simulador de Progresión de Etapas"
         >
-          <div className="w-6 h-6 rounded-full bg-[#c5a059]/20 group-hover:bg-black/20 flex items-center justify-center text-[#c5a059] group-hover:text-black">
+          <div className="w-6 h-6 rounded-full bg-emerald-500/20 group-hover:bg-black/20 flex items-center justify-center text-emerald-600 dark:text-emerald-400 group-hover:text-black">
             <FlaskConical size={14} className="animate-pulse" />
           </div>
           <span className="text-xs font-black uppercase tracking-wider">Simulador</span>
-          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#c5a059]/20 text-[#c5a059] group-hover:bg-black/20 group-hover:text-black border border-[#c5a059]/40">
+          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 group-hover:bg-black/20 group-hover:text-black border border-emerald-500/50/40">
             E{currentStage}
           </span>
         </button>
@@ -695,15 +695,15 @@ export const StageSimulatorModal: React.FC<StageSimulatorModalProps> = ({
 
       {/* Modal / Widget Flotante del Simulador */}
       {isOpen && (
-        <div className="fixed bottom-6 right-6 z-50 w-96 max-w-[calc(100vw-2rem)] bg-white dark:bg-[#151515] border-2 border-[#c5a059] rounded-3xl shadow-[0_10px_40px_rgba(0,0,0,0.5)] overflow-hidden transition-all duration-300">
+        <div className="fixed bottom-6 right-6 z-50 w-96 max-w-[calc(100vw-2rem)] bg-white dark:bg-[#151515] border-2 border-emerald-500 dark:border-emerald-400 rounded-3xl shadow-[0_10px_40px_rgba(0,0,0,0.5)] overflow-hidden transition-all duration-300">
           {/* Cabecera */}
-          <div className="px-4 py-3.5 bg-gradient-to-r from-slate-900 to-slate-800 text-white flex items-center justify-between border-b border-[#c5a059]/40">
+          <div className="px-4 py-3.5 bg-gradient-to-r from-slate-900 to-slate-800 text-white flex items-center justify-between border-b border-emerald-500/40">
             <div className="flex items-center gap-2.5">
-              <div className="p-1.5 rounded-xl bg-[#c5a059]/20 text-[#c5a059]">
+              <div className="p-1.5 rounded-xl bg-emerald-500/20 text-emerald-600 dark:text-emerald-400">
                 <FlaskConical size={16} />
               </div>
               <div>
-                <h4 className="text-xs font-black uppercase tracking-wider text-[#c5a059]">
+                <h4 className="text-xs font-black uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
                   Simulador de Etapas
                 </h4>
                 <p className="text-[10px] text-slate-300">
@@ -738,7 +738,7 @@ export const StageSimulatorModal: React.FC<StageSimulatorModalProps> = ({
             <div className="p-4 space-y-4 max-h-[75vh] overflow-y-auto text-slate-800 dark:text-gray-200">
               {/* Sección 1: Saltos Rápidos de Etapa (1 a 8) */}
               <div>
-                <span className="text-[10px] uppercase font-black tracking-widest text-[#c5a059] flex items-center gap-1.5 mb-2">
+                <span className="text-[10px] uppercase font-black tracking-widest text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5 mb-2">
                   <Layers size={12} />
                   Saltar a Etapa
                 </span>
@@ -753,10 +753,10 @@ export const StageSimulatorModal: React.FC<StageSimulatorModalProps> = ({
                         onClick={() => jumpToStage(stg)}
                         className={`px-2 py-2 rounded-xl text-center flex flex-col items-center justify-center gap-0.5 border transition-all active:scale-95 ${
                           isCurrent
-                            ? 'bg-[#c5a059] text-black border-[#d4af37] font-black shadow-md ring-2 ring-[#c5a059]/50'
+                            ? 'btn-3d-emerald text-white border-emerald-400 font-black shadow-md ring-2 ring-emerald-500/50'
                             : isCompleted
                             ? 'bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 border-emerald-300 dark:border-emerald-800/40 hover:bg-emerald-100'
-                            : 'bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-gray-400 border-slate-200 dark:border-white/10 hover:border-[#c5a059]/40 hover:text-[#c5a059]'
+                            : 'bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-gray-400 border-slate-200 dark:border-white/10 hover:border-emerald-500/40 hover:text-emerald-600 dark:text-emerald-400'
                         }`}
                       >
                         <span className="text-xs font-black">E{stg}</span>
@@ -786,7 +786,7 @@ export const StageSimulatorModal: React.FC<StageSimulatorModalProps> = ({
               {/* Sección 2: Altares y Discípulos de Prueba (Etapas 4, 5 y 6) */}
               <div className="pt-2 border-t border-slate-200 dark:border-white/10">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-[10px] uppercase font-black tracking-widest text-[#c5a059] flex items-center gap-1.5">
+                  <span className="text-[10px] uppercase font-black tracking-widest text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
                     <Users size={12} />
                     Altares de Prueba ({mockAltars.length})
                   </span>
@@ -842,7 +842,7 @@ export const StageSimulatorModal: React.FC<StageSimulatorModalProps> = ({
 
               {/* Sección 3: Inyección de Notas EDDI y EDEM */}
               <div className="pt-2 border-t border-slate-200 dark:border-white/10 space-y-2">
-                <span className="text-[10px] uppercase font-black tracking-widest text-[#c5a059] flex items-center gap-1.5">
+                <span className="text-[10px] uppercase font-black tracking-widest text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
                   <BookOpen size={12} />
                   Calificaciones de Escuelas
                 </span>
@@ -870,7 +870,7 @@ export const StageSimulatorModal: React.FC<StageSimulatorModalProps> = ({
 
               {/* Sección 4: Avance y Retroceso Paso a Paso */}
               <div className="pt-2 border-t border-slate-200 dark:border-white/10">
-                <span className="text-[10px] uppercase font-black tracking-widest text-[#c5a059] flex items-center gap-1.5 mb-2">
+                <span className="text-[10px] uppercase font-black tracking-widest text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5 mb-2">
                   <Sparkles size={12} />
                   Acciones Rápidas
                 </span>
@@ -888,7 +888,7 @@ export const StageSimulatorModal: React.FC<StageSimulatorModalProps> = ({
                     type="button"
                     onClick={advanceOneStage}
                     disabled={currentStage >= 8 && progression.isStageCompleted(8)}
-                    className="px-3 py-2 rounded-xl bg-[#c5a059]/15 border border-[#c5a059]/50 hover:bg-[#c5a059] hover:text-black text-[#a58345] dark:text-[#c5a059] text-xs font-black flex items-center justify-center gap-1.5 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                    className="px-3 py-2 rounded-xl btn-3d-emerald text-white text-xs font-black flex items-center justify-center gap-1.5 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
                   >
                     <FastForward size={13} />
                     <span>Avanzar 1</span>

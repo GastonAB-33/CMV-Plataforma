@@ -175,7 +175,7 @@ export const MainLayout = ({ children, user }: MainLayoutProps) => {
               to={item.path}
               onClick={() => setIsMobileMenuOpen(false)}
               className={({ isActive }) =>
-                `flex flex-col items-center gap-1 transition-all duration-300 px-1.5 py-1 ${isActive ? 'text-[#c5a059]' : 'text-slate-500 dark:text-gray-300'}`
+                `flex flex-col items-center gap-1 transition-all duration-300 px-1.5 py-1 ${isActive ? 'text-emerald-600 dark:text-emerald-400 font-extrabold' : 'text-slate-500 dark:text-gray-300'}`
               }
             >
               <div className="p-1 rounded-full transition-colors group">
@@ -187,7 +187,7 @@ export const MainLayout = ({ children, user }: MainLayoutProps) => {
           <button
             type="button"
             onClick={() => setIsMobileMenuOpen((prev) => !prev)}
-            className={`flex flex-col items-center gap-1 px-1.5 py-1 transition-all duration-300 ${isMobileMenuOpen || isSecondaryRouteActive ? 'text-[#c5a059]' : 'text-slate-500 dark:text-gray-300'}`}
+            className={`flex flex-col items-center gap-1 px-1.5 py-1 transition-all duration-300 ${isMobileMenuOpen || isSecondaryRouteActive ? 'text-emerald-600 dark:text-emerald-400 font-extrabold' : 'text-slate-500 dark:text-gray-300'}`}
             aria-label="Abrir menu completo"
           >
             <div className="p-1 rounded-full">
@@ -205,7 +205,7 @@ export const MainLayout = ({ children, user }: MainLayoutProps) => {
             onClick={(event) => event.stopPropagation()}
           >
             <div className="mb-4 pb-4 border-b border-slate-200 dark:border-white/10">
-              <p className="text-[10px] uppercase tracking-[0.2em] font-black text-[#c5a059]">Sesion</p>
+              <p className="text-[10px] uppercase tracking-[0.2em] font-black text-emerald-600 dark:text-emerald-400">Sesion</p>
               <p className="text-sm font-semibold text-slate-900 dark:text-white capitalize mt-1">{roleLabel}</p>
             </div>
             <nav className="space-y-2">

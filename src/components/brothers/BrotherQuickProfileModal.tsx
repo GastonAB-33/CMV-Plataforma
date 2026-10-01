@@ -192,7 +192,7 @@ export const BrotherQuickProfileModal = ({ isOpen, onClose, brother, currentUser
             onClick={() => setSection('general')}
             className={`px-3 py-1 rounded-full text-[10px] uppercase tracking-widest font-black border ${
               section === 'general'
-                ? 'border-[#c5a059]/40 bg-[#c5a059]/15 text-[#c5a059]'
+                ? 'border-emerald-500/40 bg-emerald-500/15 text-emerald-600 dark:text-emerald-400'
                 : 'border-slate-300 dark:border-white/10 text-slate-500 dark:text-gray-400'
             }`}
           >
@@ -203,7 +203,7 @@ export const BrotherQuickProfileModal = ({ isOpen, onClose, brother, currentUser
             onClick={() => setSection('eddi')}
             className={`px-3 py-1 rounded-full text-[10px] uppercase tracking-widest font-black border ${
               section === 'eddi'
-                ? 'border-[#c5a059]/40 bg-[#c5a059]/15 text-[#c5a059]'
+                ? 'border-emerald-500/40 bg-emerald-500/15 text-emerald-600 dark:text-emerald-400'
                 : 'border-slate-300 dark:border-white/10 text-slate-500 dark:text-gray-400'
             }`}
           >
@@ -215,7 +215,7 @@ export const BrotherQuickProfileModal = ({ isOpen, onClose, brother, currentUser
               onClick={() => setSection('servicio')}
               className={`px-3 py-1 rounded-full text-[10px] uppercase tracking-widest font-black border ${
                 section === 'servicio'
-                  ? 'border-[#c5a059]/40 bg-[#c5a059]/15 text-[#c5a059]'
+                  ? 'border-emerald-500/40 bg-emerald-500/15 text-emerald-600 dark:text-emerald-400'
                   : 'border-slate-300 dark:border-white/10 text-slate-500 dark:text-gray-400'
               }`}
             >
@@ -237,7 +237,7 @@ export const BrotherQuickProfileModal = ({ isOpen, onClose, brother, currentUser
                 type="button"
                 onClick={handleSave}
                 disabled={saving || !draft.trim()}
-                className="px-4 py-2 rounded-xl text-[10px] uppercase tracking-widest font-black bg-[#c5a059] text-black disabled:opacity-60"
+                className="px-4 py-2 rounded-xl text-[10px] uppercase tracking-widest font-black btn-3d-emerald text-white disabled:opacity-60"
               >
                 Guardar observacion
               </button>

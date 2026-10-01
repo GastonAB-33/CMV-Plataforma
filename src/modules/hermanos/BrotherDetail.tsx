@@ -69,16 +69,16 @@ const canEditProfile = [Role.APOSTOL, Role.PASTOR, Role.LIDER_CELULA, Role.DISCI
 
 const getCardStyle = (isCurrent: boolean, isCompleted?: boolean) => {
   if (isCurrent && !isCompleted) {
-    return 'bg-white dark:bg-[#1a1a1a] border-2 border-[#c5a059]/70 dark:border-[#c5a059] shadow-[0_8px_24px_rgba(15,23,42,0.08)] dark:shadow-[0_0_30px_rgba(197,160,89,0.15)] relative overflow-hidden ring-1 ring-[#c5a059]/25';
+    return 'bg-gradient-to-br from-white/95 via-emerald-50/20 to-sky-50/20 dark:from-[#0d1829]/95 dark:via-[#091220]/95 dark:to-[#060c17]/95 border-2 border-emerald-500/80 dark:border-emerald-400/70 shadow-[0_12px_32px_rgba(16,185,129,0.15)] dark:shadow-[0_0_30px_rgba(16,185,129,0.22)] relative overflow-hidden ring-2 ring-emerald-500/25 backdrop-blur-xl';
   }
   if (isCompleted) {
-    return 'bg-white dark:bg-[#1a1a1a] border border-emerald-500/70 dark:border-emerald-400/50 shadow-[0_4px_20px_rgba(16,185,129,0.06)] relative overflow-hidden';
+    return 'bg-white/85 dark:bg-[#0d1829]/75 border border-emerald-500/50 dark:border-emerald-400/40 shadow-[0_4px_20px_rgba(16,185,129,0.08)] relative overflow-hidden backdrop-blur-lg';
   }
-  return 'bg-[#f8fafc] dark:bg-[#1a1a1a] border border-slate-200 dark:border-white/5 opacity-100 dark:opacity-80';
+  return 'bg-white/60 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 opacity-80 backdrop-blur-sm';
 };
 
 const ApproximateDateHint = () => (
-  <div className="flex items-center gap-2 p-2.5 rounded-xl bg-[#c5a059]/10 border border-[#c5a059]/25 text-[#a58345] dark:text-[#c5a059] text-[11px] font-medium mt-1">
+  <div className="flex items-center gap-2 p-2.5 rounded-xl bg-emerald-500/10 dark:bg-emerald-500/15 border border-emerald-500/25 dark:border-emerald-400/20 text-emerald-700 dark:text-emerald-300  text-[11px] font-medium mt-1">
     <span className="text-sm shrink-0">💡</span>
     <span>
       <strong>Sugerencia:</strong> Si no recuerdas las fechas exactas, puedes ingresar una fecha aproximada para completar la etapa y habilitar el avance a la siguiente.
@@ -310,15 +310,15 @@ const StageWrapperComponent = ({
     <div className="w-full min-w-0 flex items-center justify-between gap-3 mb-4 md:mb-5 pb-3 border-b border-slate-200 dark:border-white/5">
       <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0 flex-1">
         <div
-          className={`w-11 h-11 sm:w-13 sm:h-13 rounded-xl bg-gradient-to-br from-slate-100 to-slate-200 dark:from-black/70 dark:to-black/40 flex items-center justify-center text-[#c5a059] font-black text-xl sm:text-2xl border ${
+          className={`w-11 h-11 sm:w-13 sm:h-13 rounded-xl bg-gradient-to-br from-slate-100 to-slate-200 dark:from-black/70 dark:to-black/40 flex items-center justify-center text-emerald-600 dark:text-emerald-400 font-black text-xl sm:text-2xl border ${
             isCurrent && !isCompleted
-              ? 'border-[#c5a059] shadow-[0_0_15px_rgba(197,160,89,0.3)]'
-              : 'border-[#c5a059]/25'
+              ? 'border-emerald-500 dark:border-emerald-400 shadow-[0_0_15px_rgba(16, 185, 129,0.3)]'
+              : 'border-emerald-500/25 dark:border-emerald-400/20'
           } shrink-0 relative`}
         >
           {number}
           {isCurrent && !isCompleted && (
-            <span className="absolute -top-1 -right-1 w-3 h-3 bg-[#c5a059] rounded-full ring-2 ring-white dark:ring-black animate-pulse" />
+            <span className="absolute -top-1 -right-1 w-3 h-3 bg-emerald-600 dark:bg-emerald-500 rounded-full ring-2 ring-white dark:ring-black animate-pulse" />
           )}
         </div>
 
@@ -332,8 +332,8 @@ const StageWrapperComponent = ({
             </span>
           )}
           {isCurrent && !isCompleted && (
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-[9px] uppercase font-black tracking-widest bg-[#c5a059]/15 text-[#a58345] dark:text-[#c5a059] border border-[#c5a059]/40 shadow-sm self-center">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#c5a059]" />
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-[9px] uppercase font-black tracking-widest bg-emerald-500/15 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300  border border-emerald-500/40 dark:border-emerald-400/30 shadow-sm self-center">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 dark:bg-emerald-500" />
               Etapa Actual
             </span>
           )}
@@ -384,7 +384,7 @@ const StageWrapperComponent = ({
       <div className={`w-full min-w-0 space-y-5 flex flex-col justify-center ${centerClassName ?? ''}`}>
         {isEditing && isLocked && (
           <div className="flex items-center gap-2.5 p-3.5 rounded-2xl bg-amber-500/10 dark:bg-amber-500/15 border border-amber-500/30 text-amber-800 dark:text-amber-300 text-xs font-semibold mb-2">
-            <AlertTriangle size={16} className="text-[#c5a059] shrink-0" />
+            <AlertTriangle size={16} className="text-emerald-600 dark:text-emerald-400 shrink-0" />
             <span>
               Para editar esta etapa tienes que completar la etapa anterior{lockedReason ? ` (${lockedReason})` : ''}.
             </span>
@@ -395,7 +395,7 @@ const StageWrapperComponent = ({
 
       {!isLocked && (
         <div className="w-full min-w-0 bg-[#f3f4f6] dark:bg-black/60 p-4 sm:p-6 rounded-[1.5rem] sm:rounded-[2rem] border border-slate-200 dark:border-white/5 flex flex-col overflow-hidden md:min-h-[240px] shadow-inner">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4 text-[#c5a059]">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4 text-emerald-600 dark:text-emerald-400">
             <div className="flex items-center gap-3">
               <MessageSquare size={16} />
               <span className="text-[10px] uppercase font-black tracking-[0.2em]">{rightTitle}</span>
@@ -403,7 +403,7 @@ const StageWrapperComponent = ({
             <button
               type="button"
               onClick={onComposerOpen}
-              className="w-full sm:w-auto text-center text-[10px] uppercase font-black tracking-[0.12em] px-3 py-1.5 rounded-full border border-[#c5a059]/35 bg-[#c5a059]/15 dark:bg-[#c5a059]/10 text-[#a58345] dark:text-[#c5a059] hover:bg-[#c5a059] hover:text-black transition-colors"
+              className="w-full sm:w-auto text-center text-[10px] uppercase font-black tracking-[0.12em] px-3 py-1.5 rounded-full border border-emerald-500/35 dark:border-emerald-400/30 bg-emerald-500/15 dark:bg-emerald-500/20 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-300  hover:bg-emerald-600 hover:text-white transition-colors"
             >
               Agregar observación
             </button>
@@ -414,7 +414,7 @@ const StageWrapperComponent = ({
                 value={draftValue}
                 onChange={(event) => onDraftChange(event.target.value)}
                 placeholder="Escribí la observación..."
-                className="w-full bg-white dark:bg-black/60 border border-slate-200 dark:border-white/10 rounded-xl p-3 text-sm text-slate-800 dark:text-white focus:border-[#c5a059] outline-none min-h-[88px] resize-none shadow-inner"
+                className="w-full bg-white dark:bg-black/60 border border-slate-200 dark:border-white/10 rounded-xl p-3 text-sm text-slate-800 dark:text-white focus:border-emerald-500 outline-none min-h-[88px] resize-none shadow-inner"
               />
               <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2">
                 <button
@@ -428,7 +428,7 @@ const StageWrapperComponent = ({
                   type="button"
                   onClick={onSaveObservation}
                   disabled={!draftValue.trim() || isSavingObservation}
-                  className="w-full sm:w-auto text-center text-[10px] uppercase font-black tracking-[0.12em] px-3 py-1.5 rounded-full border border-[#c5a059]/40 bg-[#c5a059] text-black disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full sm:w-auto text-center text-[10px] uppercase font-black tracking-[0.12em] px-3 py-1.5 rounded-full border border-emerald-500/40 dark:border-emerald-400/30 bg-emerald-600 dark:bg-emerald-500 text-white disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Guardar
                 </button>
@@ -436,12 +436,12 @@ const StageWrapperComponent = ({
             </div>
           )}
           {rightEntries && rightEntries.length > 0 ? (
-            <div className="max-h-[230px] overflow-y-auto pr-2 [scrollbar-width:thin] [scrollbar-color:#c5a05944_transparent] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-[#c5a059]/40 [&::-webkit-scrollbar-thumb]:rounded-full">
+            <div className="max-h-[230px] overflow-y-auto pr-2 [scrollbar-width:thin] [scrollbar-color:#10b98144_transparent] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-emerald-600 dark:bg-emerald-500/40 [&::-webkit-scrollbar-thumb]:rounded-full">
               <div className="space-y-3">
                 {rightEntries.map((entry) => (
                     <article key={entry.id} className="rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-black/35 p-3.5">
                       <div className="flex flex-wrap items-start gap-2 mb-2">
-                        <span className="text-[9px] uppercase tracking-[0.2em] font-black text-[#c5a059] border border-[#c5a059]/40 bg-[#c5a059]/10 px-2 py-1 rounded-full">
+                        <span className="text-[9px] uppercase tracking-[0.2em] font-black text-emerald-600 dark:text-emerald-400 border border-emerald-500/40 dark:border-emerald-400/30 bg-emerald-500/10 dark:bg-emerald-500/15 px-2 py-1 rounded-full">
                           {observationRoleBadgeLabel[entry.role]}
                         </span>
                         <span className="text-sm font-semibold text-slate-700 dark:text-gray-200 break-words">{entry.author}</span>
@@ -452,7 +452,7 @@ const StageWrapperComponent = ({
                           <textarea
                             value={editDraftValue}
                             onChange={(event) => onEditDraftChange(entry.id, event.target.value)}
-                            className="w-full bg-white dark:bg-black border border-slate-200 dark:border-white/10 rounded-xl p-2.5 text-xs text-slate-800 dark:text-white focus:border-[#c5a059] outline-none min-h-[64px] resize-none shadow-inner"
+                            className="w-full bg-white dark:bg-black border border-slate-200 dark:border-white/10 rounded-xl p-2.5 text-xs text-slate-800 dark:text-white focus:border-emerald-500 outline-none min-h-[64px] resize-none shadow-inner"
                           />
                           <div className="flex items-center justify-end gap-2">
                             <button
@@ -466,7 +466,7 @@ const StageWrapperComponent = ({
                               type="button"
                               onClick={() => onUpdateObservation(entry)}
                               disabled={!editDraftValue.trim() || mutatingObservationId === entry.id}
-                              className="px-3 py-1 rounded-lg border border-[#c5a059]/40 bg-[#c5a059] text-[10px] uppercase font-black text-black disabled:opacity-50"
+                              className="px-3 py-1 rounded-lg border border-emerald-500/40 dark:border-emerald-400/30 bg-emerald-600 dark:bg-emerald-500 text-[10px] uppercase font-black text-white disabled:opacity-50"
                             >
                               Guardar
                             </button>
@@ -504,7 +504,7 @@ const StageWrapperComponent = ({
               </div>
             </div>
           ) : (
-            <div className="flex-1 flex items-center justify-center opacity-40 text-center min-h-[88px] max-h-[210px] overflow-y-auto pr-2 [scrollbar-width:thin] [scrollbar-color:#c5a05944_transparent] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-[#c5a059]/40 [&::-webkit-scrollbar-thumb]:rounded-full">
+            <div className="flex-1 flex items-center justify-center opacity-40 text-center min-h-[88px] max-h-[210px] overflow-y-auto pr-2 [scrollbar-width:thin] [scrollbar-color:#10b98144_transparent] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-emerald-600 dark:bg-emerald-500/40 [&::-webkit-scrollbar-thumb]:rounded-full">
               <p className="text-xs text-slate-500 dark:text-gray-500 font-bold uppercase tracking-widest mt-2">{rightEmpty}</p>
             </div>
           )}
@@ -2332,7 +2332,7 @@ export const BrotherDetail = () => {
       <div className="min-h-screen bg-white dark:bg-black flex items-center justify-center">
         <div className="text-center space-y-4">
           <h2 className="text-2xl text-slate-900 dark:text-white font-bold">Hermano no encontrado</h2>
-          <button onClick={() => navigate('/hermanos')} className="text-[#c5a059] hover:underline font-bold">
+          <button onClick={() => navigate('/hermanos')} className="text-emerald-600 dark:text-emerald-400 hover:underline font-bold">
             Volver al listado
           </button>
         </div>
@@ -2345,12 +2345,12 @@ export const BrotherDetail = () => {
       <div className="max-w-5xl mx-auto px-4 pt-6 md:pt-8 space-y-10">
         <header className="flex flex-col md:flex-row items-center md:items-start gap-6 md:gap-8 bg-gradient-to-br from-white/90 via-sky-50/60 to-emerald-50/40 dark:from-[#0d1829]/90 dark:via-[#091220]/90 dark:to-[#060c17]/90 p-6 sm:p-7 md:p-8 rounded-2xl border border-white/70 dark:border-white/15 shadow-[0_20px_50px_rgba(2,132,199,0.12)] dark:shadow-[0_25px_60px_rgba(0,0,0,0.65)] backdrop-blur-2xl relative overflow-hidden mt-3 md:mt-4">
           <div className="absolute top-0 right-0 p-10 opacity-5 pointer-events-none">
-            <ShieldCheck size={180} className="text-[#c5a059]" />
+            <ShieldCheck size={180} className="text-emerald-500/10 dark:text-cyan-400/10" />
           </div>
 
           <button
             onClick={() => navigate('/hermanos')}
-            className="absolute top-4 left-4 sm:top-5 sm:left-5 p-2.5 sm:p-3 bg-slate-100 dark:bg-black/40 rounded-xl text-slate-500 dark:text-gray-400 hover:text-[#c5a059] transition-all border border-slate-200 dark:border-white/5 active:scale-95 z-20"
+            className="absolute top-4 left-4 sm:top-5 sm:left-5 p-2.5 sm:p-3 bg-slate-100 dark:bg-black/40 rounded-xl text-slate-500 dark:text-gray-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-all border border-slate-200 dark:border-white/5 active:scale-95 z-20"
           >
             <ArrowLeft size={18} className="sm:w-5 sm:h-5" />
           </button>
@@ -2378,10 +2378,10 @@ export const BrotherDetail = () => {
                     )}
 
                     <div className="absolute inset-0 pointer-events-none bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center gap-1.5 backdrop-blur-md">
-                      <div className="w-8 h-8 rounded-full bg-[#c5a059]/20 flex items-center justify-center">
-                        <Camera className="text-[#c5a059]" size={18} />
+                      <div className="w-8 h-8 rounded-full bg-emerald-500/20 dark:bg-emerald-500/25 flex items-center justify-center">
+                        <Camera className="text-emerald-600 dark:text-emerald-400" size={18} />
                       </div>
-                      <span className="text-[8px] uppercase font-black text-[#c5a059] tracking-widest">Foto</span>
+                      <span className="text-[8px] uppercase font-black text-emerald-600 dark:text-emerald-400 tracking-widest">Foto</span>
                     </div>
                   </div>
                   <input
@@ -2410,14 +2410,14 @@ export const BrotherDetail = () => {
 
                 <div className="flex-1 min-w-0 flex flex-col items-center md:items-start text-center md:text-left">
                   <div className="flex flex-wrap justify-center md:justify-start items-center gap-2 mb-2">
-                    <span className="text-[9px] uppercase tracking-[0.35em] font-black text-[#c5a059]">Ficha Personal</span>
-                    <div className="hidden sm:block h-[1px] w-8 bg-[#c5a059]/30" />
-                    <span className="bg-[#c5a059] text-black px-3 py-1 rounded-full text-[8px] uppercase tracking-[0.18em] font-black shadow-md">
+                    <span className="text-[10px] uppercase tracking-[0.35em] font-black text-emerald-600 dark:text-cyan-400">Ficha Personal</span>
+                    <div className="hidden sm:block h-[1px] w-8 bg-emerald-500/30" />
+                    <span className="bg-gradient-to-r from-emerald-600 to-teal-500 text-white px-3.5 py-1 rounded-full text-[9px] uppercase tracking-[0.2em] font-black shadow-md">
                       {progression.currentStageBadgeLabel}
                     </span>
                   </div>
 
-                  <h1 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight text-[#c5a059] uppercase break-words mb-3" style={{ textShadow: '0 4px 16px rgba(197,160,89,0.3)' }}>
+                  <h1 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight text-slate-900 dark:text-white uppercase break-words mb-3">
                     {brother.name}
                   </h1>
 
@@ -2427,7 +2427,7 @@ export const BrotherDetail = () => {
                         initAccompanimentSelectors(brother);
                         setIsEditModalOpen(true);
                       }}
-                      className="w-full sm:w-auto bg-gradient-to-r from-[#c5a059]/10 to-[#c5a059]/20 hover:from-[#c5a059] hover:to-[#d4af37] text-[#c5a059] hover:text-black border border-[#c5a059]/40 px-4 py-2 rounded-xl font-black text-[9px] uppercase tracking-[0.18em] flex items-center justify-center gap-2 transition-all shadow-md active:scale-95"
+                      className="w-full sm:w-auto bg-gradient-to-r from-emerald-500/15 to-teal-500/15 hover:from-emerald-500 hover:to-teal-500 text-emerald-600 dark:text-emerald-400 hover:text-white border border-emerald-500/40 dark:border-emerald-400/30 px-4 py-2 rounded-xl font-black text-[9px] uppercase tracking-[0.18em] flex items-center justify-center gap-2 transition-all shadow-md active:scale-95"
                     >
                       <Edit2 size={14} />
                       <span>Editar Ficha</span>
@@ -2442,7 +2442,7 @@ export const BrotherDetail = () => {
               {/* 1. Célula */}
               <div className="flex items-center gap-3 bg-white/70 dark:bg-black/40 backdrop-blur-md px-4 py-2.5 rounded-xl border border-white/80 dark:border-white/10 shadow-sm">
                 <div className="p-1.5 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg flex items-center justify-center shrink-0">
-                  <MapPin className="text-[#c5a059]" size={15} />
+                  <MapPin className="text-emerald-600 dark:text-emerald-400" size={15} />
                 </div>
                 <div className="text-left flex-1 min-w-0">
                   <p className="text-[8px] uppercase tracking-[0.15em] font-black text-slate-400 dark:text-gray-500 leading-none mb-0.5">Célula</p>
@@ -2453,7 +2453,7 @@ export const BrotherDetail = () => {
               {/* 2. Líderes */}
               <div className="flex items-center gap-3 bg-white/70 dark:bg-black/40 backdrop-blur-md px-4 py-2.5 rounded-xl border border-white/80 dark:border-white/10 shadow-sm">
                 <div className="p-1.5 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg flex items-center justify-center shrink-0">
-                  <Users className="text-[#c5a059]" size={15} />
+                  <Users className="text-emerald-600 dark:text-emerald-400" size={15} />
                 </div>
                 <div className="text-left flex-1 min-w-0">
                   <p className="text-[8px] uppercase tracking-[0.15em] font-black text-slate-400 dark:text-gray-500 leading-none mb-0.5">Líderes</p>
@@ -2464,7 +2464,7 @@ export const BrotherDetail = () => {
               {/* 3. Hermano Mayor */}
               <div className="flex items-center gap-3 bg-white/70 dark:bg-black/40 backdrop-blur-md px-4 py-2.5 rounded-xl border border-white/80 dark:border-white/10 shadow-sm">
                 <div className="p-1.5 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg flex items-center justify-center shrink-0">
-                  <ShieldCheck className="text-[#c5a059]" size={15} />
+                  <ShieldCheck className="text-emerald-600 dark:text-emerald-400" size={15} />
                 </div>
                 <div className="text-left flex-1 min-w-0">
                   <p className="text-[8px] uppercase tracking-[0.15em] font-black text-slate-400 dark:text-gray-500 leading-none mb-0.5">Hermano Mayor</p>
@@ -2475,7 +2475,7 @@ export const BrotherDetail = () => {
               {/* 4. Edad */}
               <div className="flex items-center gap-3 bg-white/70 dark:bg-black/40 backdrop-blur-md px-4 py-2.5 rounded-xl border border-white/80 dark:border-white/10 shadow-sm">
                 <div className="p-1.5 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg flex items-center justify-center shrink-0">
-                  <Calendar className="text-[#c5a059]" size={15} />
+                  <Calendar className="text-emerald-600 dark:text-emerald-400" size={15} />
                 </div>
                 <div className="text-left flex-1 min-w-0">
                   <p className="text-[8px] uppercase tracking-[0.15em] font-black text-slate-400 dark:text-gray-500 leading-none mb-0.5">Edad</p>
@@ -2488,7 +2488,7 @@ export const BrotherDetail = () => {
               {/* 5. Contacto */}
               <div className="flex items-center gap-3 bg-white/70 dark:bg-black/40 backdrop-blur-md px-4 py-2.5 rounded-xl border border-white/80 dark:border-white/10 shadow-sm">
                 <div className="p-1.5 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg flex items-center justify-center shrink-0">
-                  <Phone className="text-[#c5a059]" size={15} />
+                  <Phone className="text-emerald-600 dark:text-emerald-400" size={15} />
                 </div>
                 <div className="text-left flex-1 min-w-0">
                   <p className="text-[8px] uppercase tracking-[0.15em] font-black text-slate-400 dark:text-gray-500 leading-none mb-0.5">Contacto</p>
@@ -2503,7 +2503,7 @@ export const BrotherDetail = () => {
           <section className="bg-white dark:bg-[#1a1a1a] border border-slate-200 dark:border-white/5 rounded-[1.5rem] md:rounded-[2rem] p-5 sm:p-6 shadow-sm">
             <div className="flex items-center justify-between gap-4 mb-4">
               <h2 className="text-base sm:text-lg font-black uppercase tracking-[0.12em] text-slate-900 dark:text-white flex items-center gap-2.5">
-                <Music2 size={18} className="text-[#c5a059]" />
+                <Music2 size={18} className="text-emerald-600 dark:text-emerald-400" />
                 Talentos y dones de servicio
               </h2>
 
@@ -2511,7 +2511,7 @@ export const BrotherDetail = () => {
                 <button
                   type="button"
                   onClick={() => setIsEditingTalents(true)}
-                  className="px-3.5 py-1.5 rounded-xl text-[10px] uppercase tracking-widest font-black border border-[#c5a059]/40 bg-[#c5a059]/10 text-[#c5a059] hover:bg-[#c5a059] hover:text-black transition-all flex items-center gap-1.5 active:scale-95"
+                  className="px-3.5 py-1.5 rounded-xl text-[10px] uppercase tracking-widest font-black border border-emerald-500/40 dark:border-emerald-400/30 bg-emerald-500/10 dark:bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-600 hover:text-white transition-all flex items-center gap-1.5 active:scale-95"
                 >
                   <Edit2 size={13} />
                   <span>{talentsText.trim() ? 'Editar' : 'Agregar'}</span>
@@ -2526,7 +2526,7 @@ export const BrotherDetail = () => {
                   onChange={(e) => setTalentsText(e.target.value)}
                   placeholder="Escribe libremente los talentos musicales, técnicos, manuales, dones espirituales, vocaciones y áreas de servicio de este hermano..."
                   rows={4}
-                  className="w-full bg-[#f8fafc] dark:bg-black/50 border border-slate-200 dark:border-white/10 rounded-2xl p-4 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-gray-500 focus:border-[#c5a059] focus:ring-1 focus:ring-[#c5a059] outline-none shadow-inner resize-y transition-all"
+                  className="w-full bg-[#f8fafc] dark:bg-black/50 border border-slate-200 dark:border-white/10 rounded-2xl p-4 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-gray-500 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/30 outline-none shadow-inner resize-y transition-all"
                   autoFocus
                 />
                 <div className="flex items-center justify-end gap-2">
@@ -2544,7 +2544,7 @@ export const BrotherDetail = () => {
                     type="button"
                     onClick={handleSaveTalents}
                     disabled={isSavingTalents}
-                    className="px-5 py-2 rounded-xl text-[10px] uppercase tracking-widest font-black bg-gradient-to-r from-[#c5a059] to-[#d4af37] text-black hover:opacity-95 shadow-md flex items-center gap-1.5 active:scale-95 transition-all"
+                    className="px-5 py-2 rounded-xl text-[10px] uppercase tracking-widest font-black btn-3d-emerald text-white shadow-md flex items-center gap-1.5 active:scale-95 transition-all"
                   >
                     <Save size={13} />
                     <span>{isSavingTalents ? 'Guardando...' : 'Guardar'}</span>
@@ -2561,7 +2561,7 @@ export const BrotherDetail = () => {
               <div
                 onClick={() => canEditProfile && setIsEditingTalents(true)}
                 className={`rounded-2xl border border-dashed border-slate-200 dark:border-white/10 p-6 text-center ${
-                  canEditProfile ? 'cursor-pointer hover:border-[#c5a059]/50 hover:bg-slate-50 dark:hover:bg-white/[0.02] transition-colors' : ''
+                  canEditProfile ? 'cursor-pointer hover:border-emerald-500/50 hover:bg-slate-50 dark:hover:bg-white/[0.02] transition-colors' : ''
                 }`}
               >
                 <p className="text-xs sm:text-sm text-slate-500 dark:text-gray-400">
@@ -2575,7 +2575,7 @@ export const BrotherDetail = () => {
 
           <div className="flex items-center gap-6 px-2">
             <h2 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight uppercase">Línea de Vida</h2>
-            <div className="h-[2px] flex-1 bg-gradient-to-r from-[#c5a059]/30 to-transparent" />
+            <div className="h-[2px] flex-1 bg-gradient-to-r from-emerald-500/30 via-teal-500/20 to-transparent" />
           </div>
 
           <div className="flex flex-col gap-6">
@@ -2613,7 +2613,7 @@ export const BrotherDetail = () => {
               onDeleteObservation={removeObservation}
             >
               {editingStage === 1 ? (
-                <div className="space-y-4 p-4 rounded-2xl bg-[#c5a059]/5 dark:bg-[#c5a059]/10 border border-[#c5a059]/30">
+                <div className="space-y-4 p-4 rounded-2xl bg-emerald-500/5 dark:bg-emerald-500/10 dark:bg-emerald-500/15 border border-emerald-500/30 dark:border-emerald-400/20">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {/* Fecha Inicio */}
                     <div className="space-y-1.5">
@@ -2635,7 +2635,7 @@ export const BrotherDetail = () => {
                         type="date"
                         value={altarStartDateDraft}
                         onChange={(e) => setAltarStartDateDraft(e.target.value)}
-                        className="w-full bg-white dark:bg-black border border-slate-200 dark:border-white/10 rounded-xl p-2.5 text-xs text-slate-800 dark:text-gray-100 outline-none focus:border-[#c5a059] [color-scheme:dark]"
+                        className="w-full bg-white dark:bg-black border border-slate-200 dark:border-white/10 rounded-xl p-2.5 text-xs text-slate-800 dark:text-gray-100 outline-none focus:border-emerald-500 [color-scheme:dark]"
                       />
                       <span className="text-[10px] text-slate-400 dark:text-gray-500 block">
                         Activa &quot;En Proceso&quot;
@@ -2662,7 +2662,7 @@ export const BrotherDetail = () => {
                         type="date"
                         value={altarEndDateDraft}
                         onChange={(e) => setAltarEndDateDraft(e.target.value)}
-                        className="w-full bg-white dark:bg-black border border-slate-200 dark:border-white/10 rounded-xl p-2.5 text-xs text-slate-800 dark:text-gray-100 outline-none focus:border-[#c5a059] [color-scheme:dark]"
+                        className="w-full bg-white dark:bg-black border border-slate-200 dark:border-white/10 rounded-xl p-2.5 text-xs text-slate-800 dark:text-gray-100 outline-none focus:border-emerald-500 [color-scheme:dark]"
                       />
                       <span className="text-[10px] text-slate-400 dark:text-gray-500 block">
                         Activa &quot;Finalizado&quot;
@@ -2673,14 +2673,14 @@ export const BrotherDetail = () => {
                   <ApproximateDateHint />
 
                   {/* Selector de Hermano Mayor */}
-                  <div className="space-y-1.5 pt-2 border-t border-[#c5a059]/20">
+                  <div className="space-y-1.5 pt-2 border-t border-emerald-500/20 dark:border-white/10">
                     <label className="text-[10px] uppercase font-black tracking-wider text-slate-600 dark:text-gray-400">
                       Hermano Mayor o Matrimonio a cargo del Altar
                     </label>
                     <select
                       value={altarHermanoMayorDraft}
                       onChange={(e) => setAltarHermanoMayorDraft(e.target.value)}
-                      className="w-full bg-white dark:bg-black border border-slate-200 dark:border-white/10 rounded-xl p-2.5 text-xs text-slate-800 dark:text-gray-100 outline-none focus:border-[#c5a059]"
+                      className="w-full bg-white dark:bg-black border border-slate-200 dark:border-white/10 rounded-xl p-2.5 text-xs text-slate-800 dark:text-gray-100 outline-none focus:border-emerald-500"
                     >
                       <option value="">Sin asignar</option>
                       {marriages.length > 0 && (
@@ -2703,7 +2703,7 @@ export const BrotherDetail = () => {
                   </div>
 
                   {/* Estado del Altar y Opciones */}
-                  <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-[#c5a059]/20">
+                  <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-emerald-500/20 dark:border-white/10">
                     <div className="flex items-center gap-2">
                       <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-gray-400">
                         Estado resultante:
@@ -2775,7 +2775,7 @@ export const BrotherDetail = () => {
                   <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-black/40 p-4 sm:p-5 space-y-4 shadow-sm w-full">
                     <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 dark:border-white/5 pb-3">
                       <div className="flex items-center gap-3">
-                        <div className="p-2.5 bg-[#c5a059]/10 rounded-xl text-[#c5a059]">
+                        <div className="p-2.5 bg-emerald-500/10 dark:bg-emerald-500/15 rounded-xl text-emerald-600 dark:text-emerald-400">
                           <UserCheck size={18} />
                         </div>
                         <div>
@@ -2865,12 +2865,12 @@ export const BrotherDetail = () => {
               onDeleteObservation={removeObservation}
             >
               {editingStage === 2 ? (
-                <div className="space-y-4 p-4 rounded-2xl bg-[#c5a059]/5 dark:bg-[#c5a059]/10 border border-[#c5a059]/30">
+                <div className="space-y-4 p-4 rounded-2xl bg-emerald-500/5 dark:bg-emerald-500/10 dark:bg-emerald-500/15 border border-emerald-500/30 dark:border-emerald-400/20">
                   {/* Edición Experiencia Transformadora */}
                   <div className="p-3.5 rounded-xl bg-white dark:bg-black/40 border border-slate-200 dark:border-white/10 space-y-2">
                     <div className="flex items-center justify-between">
                       <label className="text-[10px] uppercase font-black tracking-wider text-slate-600 dark:text-gray-400 flex items-center gap-1.5">
-                        <Sparkles size={13} className="text-[#c5a059]" />
+                        <Sparkles size={13} className="text-emerald-600 dark:text-emerald-400" />
                         Experiencia Transformadora (Fecha)
                       </label>
                       {experienciaDateDraft && (
@@ -2887,7 +2887,7 @@ export const BrotherDetail = () => {
                       type="date"
                       value={experienciaDateDraft}
                       onChange={(e) => setExperienciaDateDraft(e.target.value)}
-                      className="w-full bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/10 rounded-xl p-2.5 text-xs text-slate-800 dark:text-gray-100 outline-none focus:border-[#c5a059] [color-scheme:dark]"
+                      className="w-full bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/10 rounded-xl p-2.5 text-xs text-slate-800 dark:text-gray-100 outline-none focus:border-emerald-500 [color-scheme:dark]"
                     />
                     <div className="flex items-center gap-2 pt-1">
                       <span className="text-[10px] text-slate-400 dark:text-gray-500">Estado:</span>
@@ -2908,7 +2908,7 @@ export const BrotherDetail = () => {
                   <div className="p-3.5 rounded-xl bg-white dark:bg-black/40 border border-slate-200 dark:border-white/10 space-y-3">
                     <div className="flex items-center justify-between">
                       <label className="text-[10px] uppercase font-black tracking-wider text-slate-600 dark:text-gray-400 flex items-center gap-1.5">
-                        <Users size={13} className="text-[#c5a059]" />
+                        <Users size={13} className="text-emerald-600 dark:text-emerald-400" />
                         Fechas Grupo de Vida
                       </label>
                       {brother.grupo?.interrumpido ? (
@@ -2959,7 +2959,7 @@ export const BrotherDetail = () => {
                           type="date"
                           value={grupoStartDateDraft}
                           onChange={(e) => setGrupoStartDateDraft(e.target.value)}
-                          className="w-full bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/10 rounded-xl p-2.5 text-xs text-slate-800 dark:text-gray-100 outline-none focus:border-[#c5a059] [color-scheme:dark]"
+                          className="w-full bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/10 rounded-xl p-2.5 text-xs text-slate-800 dark:text-gray-100 outline-none focus:border-emerald-500 [color-scheme:dark]"
                         />
                       </div>
 
@@ -2980,7 +2980,7 @@ export const BrotherDetail = () => {
                           type="date"
                           value={grupoEndDateDraft}
                           onChange={(e) => setGrupoEndDateDraft(e.target.value)}
-                          className="w-full bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/10 rounded-xl p-2.5 text-xs text-slate-800 dark:text-gray-100 outline-none focus:border-[#c5a059] [color-scheme:dark]"
+                          className="w-full bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/10 rounded-xl p-2.5 text-xs text-slate-800 dark:text-gray-100 outline-none focus:border-emerald-500 [color-scheme:dark]"
                         />
                       </div>
                     </div>
@@ -2989,7 +2989,7 @@ export const BrotherDetail = () => {
 
                   {/* Edición Responsables */}
                   <div className="p-3.5 rounded-xl bg-white dark:bg-black/40 border border-slate-200 dark:border-white/10 space-y-3">
-                    <label className="text-[10px] uppercase font-black tracking-wider text-[#c5a059] flex items-center gap-1.5">
+                    <label className="text-[10px] uppercase font-black tracking-wider text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
                       <UserCheck size={13} />
                       Responsables Asignados
                     </label>
@@ -3003,7 +3003,7 @@ export const BrotherDetail = () => {
                         <select
                           value={editLiderChoice}
                           onChange={(e) => setEditLiderChoice(e.target.value)}
-                          className="w-full bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/10 rounded-xl p-2.5 text-xs text-slate-800 dark:text-gray-100 outline-none focus:border-[#c5a059]"
+                          className="w-full bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/10 rounded-xl p-2.5 text-xs text-slate-800 dark:text-gray-100 outline-none focus:border-emerald-500"
                         >
                           <option value="">Sin asignar</option>
                           {marriages.length > 0 && (
@@ -3032,7 +3032,7 @@ export const BrotherDetail = () => {
                             placeholder="Nombre del líder o matrimonio..."
                             value={editLiderCustom}
                             onChange={(e) => setEditLiderCustom(e.target.value)}
-                            className="w-full bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/10 rounded-xl p-2 text-xs text-slate-900 dark:text-white focus:border-[#c5a059] outline-none mt-1"
+                            className="w-full bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/10 rounded-xl p-2 text-xs text-slate-900 dark:text-white focus:border-emerald-500 outline-none mt-1"
                           />
                         )}
                       </div>
@@ -3045,7 +3045,7 @@ export const BrotherDetail = () => {
                         <select
                           value={editHermanoMayorChoice}
                           onChange={(e) => setEditHermanoMayorChoice(e.target.value)}
-                          className="w-full bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/10 rounded-xl p-2.5 text-xs text-slate-800 dark:text-gray-100 outline-none focus:border-[#c5a059]"
+                          className="w-full bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/10 rounded-xl p-2.5 text-xs text-slate-800 dark:text-gray-100 outline-none focus:border-emerald-500"
                         >
                           <option value="">Sin asignar</option>
                           {marriages.length > 0 && (
@@ -3074,7 +3074,7 @@ export const BrotherDetail = () => {
                             placeholder="Nombre del hermano mayor..."
                             value={editHermanoMayorCustom}
                             onChange={(e) => setEditHermanoMayorCustom(e.target.value)}
-                            className="w-full bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/10 rounded-xl p-2 text-xs text-slate-900 dark:text-white focus:border-[#c5a059] outline-none mt-1"
+                            className="w-full bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/10 rounded-xl p-2 text-xs text-slate-900 dark:text-white focus:border-emerald-500 outline-none mt-1"
                           />
                         )}
                       </div>
@@ -3098,7 +3098,7 @@ export const BrotherDetail = () => {
                           className={
                             brother.experiencia?.fechaRealizacion
                               ? 'text-emerald-600 dark:text-emerald-400'
-                              : 'text-[#c5a059]'
+                              : 'text-emerald-600 dark:text-emerald-400'
                           }
                         />
                         <span className="text-xs font-black uppercase tracking-[0.14em] text-slate-800 dark:text-gray-200">
@@ -3143,7 +3143,7 @@ export const BrotherDetail = () => {
                         : grupoVidaStatus === 'FINALIZADO'
                         ? 'border-emerald-500/40 bg-emerald-50/50 dark:bg-emerald-950/20 shadow-sm'
                         : grupoVidaStatus === 'EN_CURSO'
-                        ? 'border-[#c5a059]/40 bg-[#c5a059]/5 dark:bg-[#c5a059]/10 shadow-sm'
+                        ? 'border-emerald-500/40 dark:border-emerald-400/30 bg-emerald-500/5 dark:bg-emerald-500/10 dark:bg-emerald-500/15 shadow-sm'
                         : 'border-slate-200 dark:border-white/10 bg-white/60 dark:bg-black/30'
                     }`}
                   >
@@ -3157,7 +3157,7 @@ export const BrotherDetail = () => {
                               : grupoVidaStatus === 'FINALIZADO'
                               ? 'text-emerald-600 dark:text-emerald-400'
                               : grupoVidaStatus === 'EN_CURSO'
-                              ? 'text-[#c5a059]'
+                              ? 'text-emerald-600 dark:text-emerald-400'
                               : 'text-slate-400'
                           }
                         />
@@ -3173,7 +3173,7 @@ export const BrotherDetail = () => {
                               : grupoVidaStatus === 'FINALIZADO'
                               ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/30 font-black'
                               : grupoVidaStatus === 'EN_CURSO'
-                              ? 'bg-[#c5a059]/20 text-[#a58345] dark:text-[#c5a059] border-[#c5a059]/40 font-black'
+                              ? 'bg-emerald-500/20 dark:bg-emerald-500/25 text-emerald-700 dark:text-emerald-300  border-emerald-500/40 dark:border-emerald-400/30 font-black'
                               : 'bg-slate-200/60 dark:bg-white/10 text-slate-500 dark:text-gray-400 border-slate-300 dark:border-white/10'
                           }`}
                         >
@@ -3246,7 +3246,7 @@ export const BrotherDetail = () => {
                     {/* Responsables: Líder de Grupo de Vida y Hermano Mayor */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-3">
                       <div className="flex items-center gap-2.5 p-2.5 rounded-xl bg-slate-50 dark:bg-black/30 border border-slate-100 dark:border-white/5">
-                        <div className="p-1.5 bg-[#c5a059]/10 text-[#c5a059] rounded-lg shrink-0">
+                        <div className="p-1.5 bg-emerald-500/10 dark:bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 rounded-lg shrink-0">
                           <Users size={14} />
                         </div>
                         <div className="min-w-0">
@@ -3260,7 +3260,7 @@ export const BrotherDetail = () => {
                       </div>
 
                       <div className="flex items-center gap-2.5 p-2.5 rounded-xl bg-slate-50 dark:bg-black/30 border border-slate-100 dark:border-white/5">
-                        <div className="p-1.5 bg-[#c5a059]/10 text-[#c5a059] rounded-lg shrink-0">
+                        <div className="p-1.5 bg-emerald-500/10 dark:bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 rounded-lg shrink-0">
                           <UserCheck size={14} />
                         </div>
                         <div className="min-w-0">
@@ -3314,7 +3314,7 @@ export const BrotherDetail = () => {
               onDeleteObservation={removeObservation}
             >
               {editingStage === 3 ? (
-                <div className="space-y-4 p-4 rounded-2xl bg-[#c5a059]/5 dark:bg-[#c5a059]/10 border border-[#c5a059]/30">
+                <div className="space-y-4 p-4 rounded-2xl bg-emerald-500/5 dark:bg-emerald-500/10 dark:bg-emerald-500/15 border border-emerald-500/30 dark:border-emerald-400/20">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-1.5">
                       <div className="flex items-center justify-between">
@@ -3335,7 +3335,7 @@ export const BrotherDetail = () => {
                         type="date"
                         value={eddiStartDateDraft}
                         onChange={(e) => setEddiStartDateDraft(e.target.value)}
-                        className="w-full bg-white dark:bg-black border border-slate-200 dark:border-white/10 rounded-xl p-2.5 text-xs text-slate-800 dark:text-gray-100 outline-none focus:border-[#c5a059] [color-scheme:dark]"
+                        className="w-full bg-white dark:bg-black border border-slate-200 dark:border-white/10 rounded-xl p-2.5 text-xs text-slate-800 dark:text-gray-100 outline-none focus:border-emerald-500 [color-scheme:dark]"
                       />
                     </div>
 
@@ -3358,7 +3358,7 @@ export const BrotherDetail = () => {
                         type="date"
                         value={eddiEndDateDraft}
                         onChange={(e) => setEddiEndDateDraft(e.target.value)}
-                        className="w-full bg-white dark:bg-black border border-slate-200 dark:border-white/10 rounded-xl p-2.5 text-xs text-slate-800 dark:text-gray-100 outline-none focus:border-[#c5a059] [color-scheme:dark]"
+                        className="w-full bg-white dark:bg-black border border-slate-200 dark:border-white/10 rounded-xl p-2.5 text-xs text-slate-800 dark:text-gray-100 outline-none focus:border-emerald-500 [color-scheme:dark]"
                       />
                     </div>
                   </div>
@@ -3381,12 +3381,12 @@ export const BrotherDetail = () => {
               )}
 
               <div className="space-y-3 min-w-0">
-                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#c5a059] flex items-center gap-2">
+                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-600 dark:text-emerald-400 flex items-center gap-2">
                   <BookOpen size={14} /> Tabla de Notas EDDI
                 </span>
 
                 {eddiTracking.grades.length > 0 ? (
-                  <div className="overflow-x-auto rounded-2xl border border-slate-200 dark:border-white/10 w-full max-h-[260px] [scrollbar-width:thin] [scrollbar-color:#c5a05944_transparent] [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-[#c5a059]/40 [&::-webkit-scrollbar-thumb]:rounded-full">
+                  <div className="overflow-x-auto rounded-2xl border border-slate-200 dark:border-white/10 w-full max-h-[260px] [scrollbar-width:thin] [scrollbar-color:#10b98144_transparent] [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-emerald-600 dark:bg-emerald-500/40 [&::-webkit-scrollbar-thumb]:rounded-full">
                     <table className="min-w-[620px] text-xs sm:text-sm">
                       <thead className="bg-slate-100 dark:bg-black/70 sticky top-0 z-[1]">
                         <tr className="text-[10px] uppercase tracking-[0.2em] text-slate-500 dark:text-gray-500">
@@ -3460,7 +3460,7 @@ export const BrotherDetail = () => {
                 {/* Subpanel Asignaciones y Célula */}
                 <div className="p-3 rounded-2xl bg-white/60 dark:bg-black/30 border border-slate-200 dark:border-white/10 space-y-2.5">
                   <div className="flex flex-wrap items-center justify-between gap-2">
-                    <span className="text-[10px] uppercase font-black tracking-[0.15em] text-[#c5a059] flex items-center gap-1.5">
+                    <span className="text-[10px] uppercase font-black tracking-[0.15em] text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
                       <Building2 size={14} /> Célula y Acompañamiento
                     </span>
                   </div>
@@ -3489,12 +3489,12 @@ export const BrotherDetail = () => {
 
                 {/* Fechas de Etapa 4 y Estado de Grupo de Vida */}
                 {editingStage === 4 ? (
-                  <div className="space-y-3 p-4 rounded-2xl bg-[#c5a059]/5 dark:bg-[#c5a059]/10 border border-[#c5a059]/30">
+                  <div className="space-y-3 p-4 rounded-2xl bg-emerald-500/5 dark:bg-emerald-500/10 dark:bg-emerald-500/15 border border-emerald-500/30 dark:border-emerald-400/20">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div className="space-y-1.5">
                         <div className="flex items-center justify-between">
                           <label className="text-[10px] uppercase font-black tracking-wider text-slate-600 dark:text-gray-400 flex items-center gap-1.5">
-                            <Award size={13} className="text-[#c5a059]" /> Fecha Inicio
+                            <Award size={13} className="text-emerald-600 dark:text-emerald-400" /> Fecha Inicio
                           </label>
                           {discipuloStartDateDraft && (
                             <button
@@ -3510,14 +3510,14 @@ export const BrotherDetail = () => {
                           type="date"
                           value={discipuloStartDateDraft}
                           onChange={(e) => setDiscipuloStartDateDraft(e.target.value)}
-                          className="w-full bg-white dark:bg-black border border-slate-200 dark:border-white/10 rounded-xl p-2.5 text-xs text-slate-800 dark:text-gray-100 outline-none focus:border-[#c5a059] [color-scheme:dark]"
+                          className="w-full bg-white dark:bg-black border border-slate-200 dark:border-white/10 rounded-xl p-2.5 text-xs text-slate-800 dark:text-gray-100 outline-none focus:border-emerald-500 [color-scheme:dark]"
                         />
                       </div>
 
                       <div className="space-y-1.5">
                         <div className="flex items-center justify-between">
                           <label className="text-[10px] uppercase font-black tracking-wider text-slate-600 dark:text-gray-400 flex items-center gap-1.5">
-                            <Award size={13} className="text-[#c5a059]" /> Fecha Fin
+                            <Award size={13} className="text-emerald-600 dark:text-emerald-400" /> Fecha Fin
                           </label>
                           {discipuloEndDateDraft && (
                             <button
@@ -3533,7 +3533,7 @@ export const BrotherDetail = () => {
                           type="date"
                           value={discipuloEndDateDraft}
                           onChange={(e) => setDiscipuloEndDateDraft(e.target.value)}
-                          className="w-full bg-white dark:bg-black border border-slate-200 dark:border-white/10 rounded-xl p-2.5 text-xs text-slate-800 dark:text-gray-100 outline-none focus:border-[#c5a059] [color-scheme:dark]"
+                          className="w-full bg-white dark:bg-black border border-slate-200 dark:border-white/10 rounded-xl p-2.5 text-xs text-slate-800 dark:text-gray-100 outline-none focus:border-emerald-500 [color-scheme:dark]"
                         />
                       </div>
                     </div>
@@ -3543,19 +3543,19 @@ export const BrotherDetail = () => {
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <div className="flex flex-wrap items-center gap-4 sm:gap-6">
                       <div className="space-y-1">
-                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#c5a059] flex items-center gap-1.5">
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
                           <Award size={13} /> Fecha Inicio
                         </span>
-                        <p className="text-sm font-bold text-slate-800 dark:text-gray-200 bg-white dark:bg-black/55 px-4 py-2 rounded-xl inline-flex border border-slate-200 dark:border-[#c5a059]/25 shadow-inner">
+                        <p className="text-sm font-bold text-slate-800 dark:text-gray-200 bg-white dark:bg-black/55 px-4 py-2 rounded-xl inline-flex border border-slate-200 dark:border-emerald-500/25 dark:border-emerald-400/20 shadow-inner">
                           {displayDate(brother.discipulo?.fechaInicio || stageDatesService.getBrotherStageDates(brother.id)?.discipuloFechaInicio)}
                         </p>
                       </div>
 
                       <div className="space-y-1">
-                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#c5a059] flex items-center gap-1.5">
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
                           <Award size={13} /> Fecha Fin
                         </span>
-                        <p className="text-sm font-bold text-slate-800 dark:text-gray-200 bg-white dark:bg-black/55 px-4 py-2 rounded-xl inline-flex border border-slate-200 dark:border-[#c5a059]/25 shadow-inner">
+                        <p className="text-sm font-bold text-slate-800 dark:text-gray-200 bg-white dark:bg-black/55 px-4 py-2 rounded-xl inline-flex border border-slate-200 dark:border-emerald-500/25 dark:border-emerald-400/20 shadow-inner">
                           {displayDate(stageDatesService.getBrotherStageDates(brother.id)?.discipuloFechaFin)}
                         </p>
                       </div>
@@ -3611,7 +3611,7 @@ export const BrotherDetail = () => {
                 <div className="space-y-3">
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <div className="flex items-center gap-2">
-                      <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#c5a059]">
+                      <span className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-600 dark:text-emerald-400">
                         Seguimiento de altares
                       </span>
                       {isGrupoVidaApproved && (
@@ -3629,7 +3629,7 @@ export const BrotherDetail = () => {
                           setSelectedDiscipuloAltarBrotherId(null);
                           setIsDiscipuloAltarsModalOpen(true);
                         }}
-                        className="px-3.5 py-1.5 rounded-xl text-[10px] uppercase tracking-widest font-black border border-[#c5a059]/40 bg-[#c5a059]/15 text-[#c5a059] hover:bg-[#c5a059] hover:text-black transition-colors"
+                        className="px-3.5 py-1.5 rounded-xl text-[10px] uppercase tracking-widest font-black border border-emerald-500/40 dark:border-emerald-400/30 bg-emerald-500/15 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-600 hover:text-white transition-colors"
                       >
                         Ver
                       </button>
@@ -3644,12 +3644,12 @@ export const BrotherDetail = () => {
                         setSelectedDiscipuloAltarBrotherId(null);
                         setIsDiscipuloAltarsModalOpen(true);
                       }}
-                      className="rounded-xl border border-slate-200 dark:border-white/10 bg-[#f8fafc] dark:bg-black/45 p-3 cursor-pointer hover:border-[#c5a059]/40 transition-colors flex flex-col justify-between min-h-[86px]"
+                      className="rounded-xl border border-slate-200 dark:border-white/10 bg-[#f8fafc] dark:bg-black/45 p-3 cursor-pointer hover:border-emerald-500/40 transition-colors flex flex-col justify-between min-h-[86px]"
                     >
                       <div className="min-h-[28px] flex items-start">
                         <p className="text-[9px] sm:text-[10px] uppercase tracking-wider leading-tight font-black text-slate-500 dark:text-gray-400 break-normal">Altares abiertos</p>
                       </div>
-                      <p className="text-xl sm:text-2xl font-black text-[#a58345] dark:text-[#c5a059] mt-auto">{stage4Stats.opened}</p>
+                      <p className="text-xl sm:text-2xl font-black text-emerald-700 dark:text-emerald-300  mt-auto">{stage4Stats.opened}</p>
                     </div>
                     <div
                       onClick={() => {
@@ -3720,12 +3720,12 @@ export const BrotherDetail = () => {
             >
               <div className="space-y-3.5">
                 {editingStage === 5 ? (
-                  <div className="space-y-3 p-4 rounded-2xl bg-[#c5a059]/5 dark:bg-[#c5a059]/10 border border-[#c5a059]/30">
+                  <div className="space-y-3 p-4 rounded-2xl bg-emerald-500/5 dark:bg-emerald-500/10 dark:bg-emerald-500/15 border border-emerald-500/30 dark:border-emerald-400/20">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div className="space-y-1.5">
                         <div className="flex items-center justify-between">
                           <label className="text-[10px] uppercase font-black tracking-wider text-slate-600 dark:text-gray-400 flex items-center gap-1.5">
-                            <Crown size={13} className="text-[#c5a059]" /> Fecha Inicio Hermano Mayor
+                            <Crown size={13} className="text-emerald-600 dark:text-emerald-400" /> Fecha Inicio Hermano Mayor
                           </label>
                           {hermanoMayorStartDateDraft && (
                             <button
@@ -3741,14 +3741,14 @@ export const BrotherDetail = () => {
                           type="date"
                           value={hermanoMayorStartDateDraft}
                           onChange={(e) => setHermanoMayorStartDateDraft(e.target.value)}
-                          className="w-full bg-white dark:bg-black border border-slate-200 dark:border-white/10 rounded-xl p-2.5 text-xs text-slate-800 dark:text-gray-100 outline-none focus:border-[#c5a059] [color-scheme:dark]"
+                          className="w-full bg-white dark:bg-black border border-slate-200 dark:border-white/10 rounded-xl p-2.5 text-xs text-slate-800 dark:text-gray-100 outline-none focus:border-emerald-500 [color-scheme:dark]"
                         />
                       </div>
 
                       <div className="space-y-1.5">
                         <div className="flex items-center justify-between">
                           <label className="text-[10px] uppercase font-black tracking-wider text-slate-600 dark:text-gray-400 flex items-center gap-1.5">
-                            <Crown size={13} className="text-[#c5a059]" /> Fecha Fin Hermano Mayor
+                            <Crown size={13} className="text-emerald-600 dark:text-emerald-400" /> Fecha Fin Hermano Mayor
                           </label>
                           {hermanoMayorEndDateDraft && (
                             <button
@@ -3764,7 +3764,7 @@ export const BrotherDetail = () => {
                           type="date"
                           value={hermanoMayorEndDateDraft}
                           onChange={(e) => setHermanoMayorEndDateDraft(e.target.value)}
-                          className="w-full bg-white dark:bg-black border border-slate-200 dark:border-white/10 rounded-xl p-2.5 text-xs text-slate-800 dark:text-gray-100 outline-none focus:border-[#c5a059] [color-scheme:dark]"
+                          className="w-full bg-white dark:bg-black border border-slate-200 dark:border-white/10 rounded-xl p-2.5 text-xs text-slate-800 dark:text-gray-100 outline-none focus:border-emerald-500 [color-scheme:dark]"
                         />
                       </div>
                     </div>
@@ -3774,10 +3774,10 @@ export const BrotherDetail = () => {
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <div className="flex flex-wrap items-center gap-4 sm:gap-6">
                       <div className="space-y-1">
-                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#c5a059] flex items-center gap-1.5">
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
                           <Crown size={13} /> Fecha Inicio
                         </span>
-                        <p className="text-sm font-bold text-slate-800 dark:text-gray-200 bg-white dark:bg-black/55 px-4 py-2 rounded-xl inline-flex border border-slate-200 dark:border-[#c5a059]/25 shadow-inner">
+                        <p className="text-sm font-bold text-slate-800 dark:text-gray-200 bg-white dark:bg-black/55 px-4 py-2 rounded-xl inline-flex border border-slate-200 dark:border-emerald-500/25 dark:border-emerald-400/20 shadow-inner">
                           {displayDate(
                             stageDatesService.getBrotherStageDates(brother.id)?.hermanoMayorFechaInicio ||
                             grupoVidaApproval.approvedAt?.slice(0, 10)
@@ -3786,10 +3786,10 @@ export const BrotherDetail = () => {
                       </div>
 
                       <div className="space-y-1">
-                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#c5a059] flex items-center gap-1.5">
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
                           <Crown size={13} /> Fecha Fin
                         </span>
-                        <p className="text-sm font-bold text-slate-800 dark:text-gray-200 bg-white dark:bg-black/55 px-4 py-2 rounded-xl inline-flex border border-slate-200 dark:border-[#c5a059]/25 shadow-inner">
+                        <p className="text-sm font-bold text-slate-800 dark:text-gray-200 bg-white dark:bg-black/55 px-4 py-2 rounded-xl inline-flex border border-slate-200 dark:border-emerald-500/25 dark:border-emerald-400/20 shadow-inner">
                           {displayDate(stageDatesService.getBrotherStageDates(brother.id)?.hermanoMayorFechaFin)}
                         </p>
                       </div>
@@ -3811,7 +3811,7 @@ export const BrotherDetail = () => {
                 {(isGrupoVidaApproved || grupoVidaMembers.length > 0) && (
                   <div className="p-3 rounded-2xl bg-white/60 dark:bg-black/30 border border-slate-200 dark:border-white/10 space-y-2.5">
                     <div className="flex flex-wrap items-center justify-between gap-2">
-                      <span className="text-[10px] uppercase font-black tracking-[0.15em] text-[#c5a059] flex items-center gap-1.5">
+                      <span className="text-[10px] uppercase font-black tracking-[0.15em] text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
                         <Users size={14} /> {grupoVidaApproval.grupoVidaNombre || `Grupo de Vida de ${brother.name}`}
                       </span>
                       <button
@@ -3820,7 +3820,7 @@ export const BrotherDetail = () => {
                           setSelectedGrupoVidaMemberId(null);
                           setIsGrupoVidaMembersModalOpen(true);
                         }}
-                        className="px-3 py-1.5 rounded-xl text-[10px] uppercase font-black bg-[#c5a059] text-black hover:bg-[#d4af37] shadow-sm transition-all flex items-center gap-1.5"
+                        className="px-3 py-1.5 rounded-xl text-[10px] uppercase font-black bg-emerald-600 dark:bg-emerald-500 text-white hover:bg-emerald-700 shadow-sm transition-all flex items-center gap-1.5"
                       >
                         <Users size={12} />
                         Ver Integrantes ({grupoVidaMembers.length})
@@ -3874,7 +3874,7 @@ export const BrotherDetail = () => {
                 <div className="space-y-3">
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <div className="flex items-center gap-2">
-                      <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#c5a059]">
+                      <span className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-600 dark:text-emerald-400">
                         Seguimiento de altares
                       </span>
                       {isLiderCelulaApproved && (
@@ -3892,7 +3892,7 @@ export const BrotherDetail = () => {
                           setSelectedDiscipuloAltarBrotherId(null);
                           setIsDiscipuloAltarsModalOpen(true);
                         }}
-                        className="px-3.5 py-1.5 rounded-xl text-[10px] uppercase tracking-widest font-black border border-[#c5a059]/40 bg-[#c5a059]/15 text-[#c5a059] hover:bg-[#c5a059] hover:text-black transition-colors"
+                        className="px-3.5 py-1.5 rounded-xl text-[10px] uppercase tracking-widest font-black border border-emerald-500/40 dark:border-emerald-400/30 bg-emerald-500/15 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-600 hover:text-white transition-colors"
                       >
                         Ver
                       </button>
@@ -3907,12 +3907,12 @@ export const BrotherDetail = () => {
                         setSelectedDiscipuloAltarBrotherId(null);
                         setIsDiscipuloAltarsModalOpen(true);
                       }}
-                      className="rounded-xl border border-slate-200 dark:border-white/10 bg-[#f8fafc] dark:bg-black/45 p-3 cursor-pointer hover:border-[#c5a059]/40 transition-colors flex flex-col justify-between min-h-[86px]"
+                      className="rounded-xl border border-slate-200 dark:border-white/10 bg-[#f8fafc] dark:bg-black/45 p-3 cursor-pointer hover:border-emerald-500/40 transition-colors flex flex-col justify-between min-h-[86px]"
                     >
                       <div className="min-h-[28px] flex items-start">
                         <p className="text-[9px] sm:text-[10px] uppercase tracking-wider leading-tight font-black text-slate-500 dark:text-gray-400 break-normal">Altares abiertos</p>
                       </div>
-                      <p className="text-xl sm:text-2xl font-black text-[#a58345] dark:text-[#c5a059] mt-auto">{stage5Stats.opened}</p>
+                      <p className="text-xl sm:text-2xl font-black text-emerald-700 dark:text-emerald-300  mt-auto">{stage5Stats.opened}</p>
                     </div>
                     <div
                       onClick={() => {
@@ -3949,10 +3949,10 @@ export const BrotherDetail = () => {
                         setSelectedDiscipuloAltarBrotherId(null);
                         setIsDiscipuloAltarsModalOpen(true);
                       }}
-                      className="rounded-xl border border-[#c5a059]/40 bg-[#c5a059]/10 dark:bg-[#c5a059]/5 p-3 cursor-pointer hover:border-[#c5a059] transition-colors flex flex-col justify-between min-h-[86px]"
+                      className="rounded-xl border border-emerald-500/40 dark:border-emerald-400/30 bg-emerald-500/10 dark:bg-emerald-500/15 dark:bg-emerald-500/5 dark:bg-emerald-500/10 p-3 cursor-pointer hover:border-emerald-500 transition-colors flex flex-col justify-between min-h-[86px]"
                     >
                       <div className="min-h-[28px] flex items-start">
-                        <p className="text-[9px] sm:text-[10px] uppercase tracking-wider leading-tight font-black text-[#a58345] dark:text-[#c5a059] break-normal">
+                        <p className="text-[9px] sm:text-[10px] uppercase tracking-wider leading-tight font-black text-emerald-700 dark:text-emerald-300  break-normal">
                           Discípulos Conectores
                         </p>
                       </div>
@@ -4006,12 +4006,12 @@ export const BrotherDetail = () => {
             >
               <div className="space-y-3.5">
                 {editingStage === 6 ? (
-                  <div className="space-y-3 p-4 rounded-2xl bg-[#c5a059]/5 dark:bg-[#c5a059]/10 border border-[#c5a059]/30">
+                  <div className="space-y-3 p-4 rounded-2xl bg-emerald-500/5 dark:bg-emerald-500/10 dark:bg-emerald-500/15 border border-emerald-500/30 dark:border-emerald-400/20">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div className="space-y-1.5">
                         <div className="flex items-center justify-between">
                           <label className="text-[10px] uppercase font-black tracking-wider text-slate-600 dark:text-gray-400 flex items-center gap-1.5">
-                            <Shield size={13} className="text-[#c5a059]" /> Fecha Inicio Líder de Célula
+                            <Shield size={13} className="text-emerald-600 dark:text-emerald-400" /> Fecha Inicio Líder de Célula
                           </label>
                           {liderCelulaStartDateDraft && (
                             <button
@@ -4027,14 +4027,14 @@ export const BrotherDetail = () => {
                           type="date"
                           value={liderCelulaStartDateDraft}
                           onChange={(e) => setLiderCelulaStartDateDraft(e.target.value)}
-                          className="w-full bg-white dark:bg-black border border-slate-200 dark:border-white/10 rounded-xl p-2.5 text-xs text-slate-800 dark:text-gray-100 outline-none focus:border-[#c5a059] [color-scheme:dark]"
+                          className="w-full bg-white dark:bg-black border border-slate-200 dark:border-white/10 rounded-xl p-2.5 text-xs text-slate-800 dark:text-gray-100 outline-none focus:border-emerald-500 [color-scheme:dark]"
                         />
                       </div>
 
                       <div className="space-y-1.5">
                         <div className="flex items-center justify-between">
                           <label className="text-[10px] uppercase font-black tracking-wider text-slate-600 dark:text-gray-400 flex items-center gap-1.5">
-                            <Shield size={13} className="text-[#c5a059]" /> Fecha Fin Líder de Célula
+                            <Shield size={13} className="text-emerald-600 dark:text-emerald-400" /> Fecha Fin Líder de Célula
                           </label>
                           {liderCelulaEndDateDraft && (
                             <button
@@ -4050,7 +4050,7 @@ export const BrotherDetail = () => {
                           type="date"
                           value={liderCelulaEndDateDraft}
                           onChange={(e) => setLiderCelulaEndDateDraft(e.target.value)}
-                          className="w-full bg-white dark:bg-black border border-slate-200 dark:border-white/10 rounded-xl p-2.5 text-xs text-slate-800 dark:text-gray-100 outline-none focus:border-[#c5a059] [color-scheme:dark]"
+                          className="w-full bg-white dark:bg-black border border-slate-200 dark:border-white/10 rounded-xl p-2.5 text-xs text-slate-800 dark:text-gray-100 outline-none focus:border-emerald-500 [color-scheme:dark]"
                         />
                       </div>
                     </div>
@@ -4060,10 +4060,10 @@ export const BrotherDetail = () => {
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <div className="flex flex-wrap items-center gap-4 sm:gap-6">
                       <div className="space-y-1">
-                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#c5a059] flex items-center gap-1.5">
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
                           <Shield size={13} /> Fecha Inicio
                         </span>
-                        <p className="text-sm font-bold text-slate-800 dark:text-gray-200 bg-white dark:bg-black/55 px-4 py-2 rounded-xl inline-flex border border-slate-200 dark:border-[#c5a059]/25 shadow-inner">
+                        <p className="text-sm font-bold text-slate-800 dark:text-gray-200 bg-white dark:bg-black/55 px-4 py-2 rounded-xl inline-flex border border-slate-200 dark:border-emerald-500/25 dark:border-emerald-400/20 shadow-inner">
                           {displayDate(
                             stageDatesService.getBrotherStageDates(brother.id)?.liderCelulaFechaInicio ||
                             liderCelulaApproval.fechaAprobacion?.slice(0, 10)
@@ -4072,10 +4072,10 @@ export const BrotherDetail = () => {
                       </div>
 
                       <div className="space-y-1">
-                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#c5a059] flex items-center gap-1.5">
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
                           <Shield size={13} /> Fecha Fin
                         </span>
-                        <p className="text-sm font-bold text-slate-800 dark:text-gray-200 bg-white dark:bg-black/55 px-4 py-2 rounded-xl inline-flex border border-slate-200 dark:border-[#c5a059]/25 shadow-inner">
+                        <p className="text-sm font-bold text-slate-800 dark:text-gray-200 bg-white dark:bg-black/55 px-4 py-2 rounded-xl inline-flex border border-slate-200 dark:border-emerald-500/25 dark:border-emerald-400/20 shadow-inner">
                           {displayDate(stageDatesService.getBrotherStageDates(brother.id)?.liderCelulaFechaFin)}
                         </p>
                       </div>
@@ -4137,7 +4137,7 @@ export const BrotherDetail = () => {
                 {/* Subpanel Datos de Grupo de Vida en Etapa 6 */}
                 <div className="p-3 rounded-2xl bg-white/60 dark:bg-black/30 border border-slate-200 dark:border-white/10 space-y-2.5">
                   <div className="flex flex-wrap items-center justify-between gap-2">
-                    <span className="text-[10px] uppercase font-black tracking-[0.15em] text-[#c5a059] flex items-center gap-1.5">
+                    <span className="text-[10px] uppercase font-black tracking-[0.15em] text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
                       <Users size={14} /> {grupoVidaApproval.grupoVidaNombre || `Grupo de Vida de ${brother.name}`}
                     </span>
                     <button
@@ -4146,7 +4146,7 @@ export const BrotherDetail = () => {
                         setSelectedGrupoVidaMemberId(null);
                         setIsGrupoVidaMembersModalOpen(true);
                       }}
-                      className="px-3 py-1.5 rounded-xl text-[10px] uppercase font-black bg-[#c5a059] text-black hover:bg-[#d4af37] shadow-sm transition-all flex items-center gap-1.5"
+                      className="px-3 py-1.5 rounded-xl text-[10px] uppercase font-black bg-emerald-600 dark:bg-emerald-500 text-white hover:bg-emerald-700 shadow-sm transition-all flex items-center gap-1.5"
                     >
                       <Users size={12} />
                       Ver Grupo de Vida ({grupoVidaMembers.length})
@@ -4178,7 +4178,7 @@ export const BrotherDetail = () => {
                 {/* Seguimiento de Altares con Indicador de Discípulos Conectores */}
                 <div className="space-y-3">
                   <div className="flex flex-wrap items-center justify-between gap-3">
-                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#c5a059]">
+                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-600 dark:text-emerald-400">
                       Seguimiento de altares
                     </span>
                     <div className="flex items-center gap-2">
@@ -4198,7 +4198,7 @@ export const BrotherDetail = () => {
                           setSelectedDiscipuloAltarBrotherId(null);
                           setIsDiscipuloAltarsModalOpen(true);
                         }}
-                        className="px-4 py-2 rounded-xl text-[10px] uppercase tracking-widest font-black border border-[#c5a059]/40 bg-[#c5a059]/15 text-[#c5a059] hover:bg-[#c5a059] hover:text-black transition-colors"
+                        className="px-4 py-2 rounded-xl text-[10px] uppercase tracking-widest font-black border border-emerald-500/40 dark:border-emerald-400/30 bg-emerald-500/15 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-600 hover:text-white transition-colors"
                       >
                         Ver
                       </button>
@@ -4212,12 +4212,12 @@ export const BrotherDetail = () => {
                         setSelectedDiscipuloAltarBrotherId(null);
                         setIsDiscipuloAltarsModalOpen(true);
                       }}
-                      className="rounded-xl border border-slate-200 dark:border-white/10 bg-[#f8fafc] dark:bg-black/45 p-3 cursor-pointer hover:border-[#c5a059]/40 transition-colors flex flex-col justify-between min-h-[86px]"
+                      className="rounded-xl border border-slate-200 dark:border-white/10 bg-[#f8fafc] dark:bg-black/45 p-3 cursor-pointer hover:border-emerald-500/40 transition-colors flex flex-col justify-between min-h-[86px]"
                     >
                       <div className="min-h-[28px] flex items-start">
                         <p className="text-[9px] sm:text-[10px] uppercase tracking-wider leading-tight font-black text-slate-500 dark:text-gray-400 break-normal">Altares abiertos</p>
                       </div>
-                      <p className="text-xl sm:text-2xl font-black text-[#a58345] dark:text-[#c5a059] mt-auto">{altarTrackingSummary.opened}</p>
+                      <p className="text-xl sm:text-2xl font-black text-emerald-700 dark:text-emerald-300  mt-auto">{altarTrackingSummary.opened}</p>
                     </div>
                     <div
                       onClick={() => {
@@ -4251,10 +4251,10 @@ export const BrotherDetail = () => {
                         setSelectedDiscipuloAltarBrotherId(null);
                         setIsDiscipuloAltarsModalOpen(true);
                       }}
-                      className="rounded-xl border border-[#c5a059]/40 bg-[#c5a059]/10 dark:bg-[#c5a059]/5 p-3 cursor-pointer hover:border-[#c5a059] transition-colors flex flex-col justify-between min-h-[86px]"
+                      className="rounded-xl border border-emerald-500/40 dark:border-emerald-400/30 bg-emerald-500/10 dark:bg-emerald-500/15 dark:bg-emerald-500/5 dark:bg-emerald-500/10 p-3 cursor-pointer hover:border-emerald-500 transition-colors flex flex-col justify-between min-h-[86px]"
                     >
                       <div className="min-h-[28px] flex items-start">
-                        <p className="text-[9px] sm:text-[10px] uppercase tracking-wider leading-tight font-black text-[#a58345] dark:text-[#c5a059] break-normal">
+                        <p className="text-[9px] sm:text-[10px] uppercase tracking-wider leading-tight font-black text-emerald-700 dark:text-emerald-300  break-normal">
                           Discípulos Conectores
                         </p>
                       </div>
@@ -4458,11 +4458,11 @@ export const BrotherDetail = () => {
             >
               <div className="space-y-5">
                 {editingStage === 8 ? (
-                  <div className="space-y-4 p-4 rounded-2xl bg-[#c5a059]/5 dark:bg-[#c5a059]/10 border border-[#c5a059]/30">
+                  <div className="space-y-4 p-4 rounded-2xl bg-emerald-500/5 dark:bg-emerald-500/10 dark:bg-emerald-500/15 border border-emerald-500/30 dark:border-emerald-400/20">
                     <div className="space-y-1.5">
                       <div className="flex items-center justify-between">
                         <label className="text-[10px] uppercase font-black tracking-wider text-slate-600 dark:text-gray-400 flex items-center gap-1.5">
-                          <Compass size={13} className="text-[#c5a059]" /> Fecha de Ordenación / Conversión en Ministro
+                          <Compass size={13} className="text-emerald-600 dark:text-emerald-400" /> Fecha de Ordenación / Conversión en Ministro
                         </label>
                         {liderMinisterialStartDateDraft && (
                           <button
@@ -4478,13 +4478,13 @@ export const BrotherDetail = () => {
                         type="date"
                         value={liderMinisterialStartDateDraft}
                         onChange={(e) => setLiderMinisterialStartDateDraft(e.target.value)}
-                        className="w-full bg-white dark:bg-black border border-slate-200 dark:border-white/10 rounded-xl p-2.5 text-xs text-slate-800 dark:text-gray-100 outline-none focus:border-[#c5a059] [color-scheme:dark]"
+                        className="w-full bg-white dark:bg-black border border-slate-200 dark:border-white/10 rounded-xl p-2.5 text-xs text-slate-800 dark:text-gray-100 outline-none focus:border-emerald-500 [color-scheme:dark]"
                       />
                     </div>
 
                     <div className="space-y-2">
                       <label className="text-[10px] uppercase font-black tracking-wider text-slate-600 dark:text-gray-400 flex items-center gap-1.5">
-                        <Crown size={13} className="text-[#c5a059]" /> Asignación de los 5 Ministerios (Efesios 4:11)
+                        <Crown size={13} className="text-emerald-600 dark:text-emerald-400" /> Asignación de los 5 Ministerios (Efesios 4:11)
                       </label>
                       <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
                         {(['Pastor', 'Evangelista', 'Profeta', 'Maestro', 'Apóstol'] as CincoMinisterios[]).map((min) => (
@@ -4494,11 +4494,11 @@ export const BrotherDetail = () => {
                             onClick={() => setMinisterioAsignadoDraft(ministerioAsignadoDraft === min ? '' : min)}
                             className={`p-3 rounded-xl border text-center transition-all flex flex-col items-center justify-center gap-1.5 ${
                               ministerioAsignadoDraft === min
-                                ? 'border-[#c5a059] bg-[#c5a059]/20 text-[#a58345] dark:text-[#c5a059] font-black shadow-sm ring-1 ring-[#c5a059]'
-                                : 'border-slate-200 dark:border-white/10 bg-white dark:bg-black/40 text-slate-600 dark:text-gray-300 hover:border-[#c5a059]/40'
+                                ? 'border-emerald-500 dark:border-emerald-400 bg-emerald-500/20 dark:bg-emerald-500/25 text-emerald-700 dark:text-emerald-300  font-black shadow-sm ring-1 ring-emerald-500'
+                                : 'border-slate-200 dark:border-white/10 bg-white dark:bg-black/40 text-slate-600 dark:text-gray-300 hover:border-emerald-500/40'
                             }`}
                           >
-                            <Crown size={15} className={ministerioAsignadoDraft === min ? 'text-[#c5a059]' : 'text-slate-400'} />
+                            <Crown size={15} className={ministerioAsignadoDraft === min ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400'} />
                             <span className="text-xs font-bold">{min}</span>
                           </button>
                         ))}
@@ -4511,10 +4511,10 @@ export const BrotherDetail = () => {
                   <div className="space-y-4">
                     <div className="flex flex-wrap items-center justify-between gap-3">
                       <div className="space-y-1">
-                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#c5a059] flex items-center gap-1.5">
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
                           <Compass size={13} /> Fecha de Conversión en Ministro
                         </span>
-                        <p className="text-sm font-bold text-slate-800 dark:text-gray-200 bg-white dark:bg-black/55 px-4 py-2 rounded-xl inline-flex border border-slate-200 dark:border-[#c5a059]/25 shadow-inner">
+                        <p className="text-sm font-bold text-slate-800 dark:text-gray-200 bg-white dark:bg-black/55 px-4 py-2 rounded-xl inline-flex border border-slate-200 dark:border-emerald-500/25 dark:border-emerald-400/20 shadow-inner">
                           {displayDate(stageDatesService.getBrotherStageDates(brother.id)?.liderMinisterialFechaInicio)}
                         </p>
                       </div>
@@ -4531,7 +4531,7 @@ export const BrotherDetail = () => {
                     {/* Subpanel de Los 5 Ministerios */}
                     <div className="p-4 rounded-2xl bg-white/60 dark:bg-black/30 border border-slate-200 dark:border-white/10 space-y-3">
                       <div className="flex items-center justify-between">
-                        <span className="text-[10px] uppercase font-black tracking-[0.15em] text-[#c5a059] flex items-center gap-1.5">
+                        <span className="text-[10px] uppercase font-black tracking-[0.15em] text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
                           <Crown size={14} /> Los 5 Ministerios Congregacionales
                         </span>
                         {stageDatesService.getBrotherStageDates(brother.id)?.ministerioAsignado ? (
@@ -4553,14 +4553,14 @@ export const BrotherDetail = () => {
                               key={`stage7-min-${min}`}
                               className={`p-3 rounded-xl border text-center transition-all flex flex-col items-center justify-center gap-1 ${
                                 isCurrentMin
-                                  ? 'border-[#c5a059] bg-gradient-to-b from-[#c5a059]/20 to-[#c5a059]/10 text-slate-900 dark:text-white font-black shadow-md ring-2 ring-[#c5a059]'
+                                  ? 'border-emerald-500 dark:border-emerald-400 bg-gradient-to-b from-emerald-500/20 to-teal-500/10 text-slate-900 dark:text-white font-black shadow-md ring-2 ring-emerald-500'
                                   : 'border-slate-200 dark:border-white/5 bg-slate-50 dark:bg-black/30 text-slate-500 dark:text-gray-400 opacity-60'
                               }`}
                             >
-                              <Crown size={16} className={isCurrentMin ? 'text-[#c5a059]' : 'text-slate-400'} />
+                              <Crown size={16} className={isCurrentMin ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400'} />
                               <span className="text-xs font-black">{min}</span>
                               {isCurrentMin && (
-                                <span className="text-[8px] uppercase tracking-wider font-black px-1.5 py-0.5 rounded bg-[#c5a059] text-black mt-0.5">
+                                <span className="text-[8px] uppercase tracking-wider font-black px-1.5 py-0.5 rounded bg-emerald-600 dark:bg-emerald-500 text-white mt-0.5">
                                   Activo
                                 </span>
                               )}
@@ -4597,7 +4597,7 @@ export const BrotherDetail = () => {
               <button
                 type="button"
                 onClick={() => setSelectedDiscipuloAltarBrotherId(null)}
-                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-[10px] uppercase tracking-widest font-black border border-slate-300 dark:border-white/15 bg-white dark:bg-white/5 text-slate-700 dark:text-gray-200 hover:text-[#c5a059] hover:border-[#c5a059]/40 transition-colors active:scale-95"
+                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-[10px] uppercase tracking-widest font-black border border-slate-300 dark:border-white/15 bg-white dark:bg-white/5 text-slate-700 dark:text-gray-200 hover:text-emerald-600 dark:hover:text-emerald-400 hover:border-emerald-500/40 transition-colors active:scale-95"
               >
                 <ArrowLeft size={14} />
                 <span>Volver a la lista de altares</span>
@@ -4613,7 +4613,7 @@ export const BrotherDetail = () => {
                     disabled={!prevAltarBrother}
                     onClick={() => prevAltarBrother && setSelectedDiscipuloAltarBrotherId(prevAltarBrother.id)}
                     title={prevAltarBrother ? `Ver altar anterior (${prevAltarBrother.name})` : 'No hay altar anterior'}
-                    className="p-1.5 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 text-slate-600 dark:text-gray-300 hover:text-[#c5a059] disabled:opacity-30 disabled:cursor-not-allowed transition-all active:scale-95"
+                    className="p-1.5 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 text-slate-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 disabled:opacity-30 disabled:cursor-not-allowed transition-all active:scale-95"
                   >
                     <ChevronLeft size={15} />
                   </button>
@@ -4622,7 +4622,7 @@ export const BrotherDetail = () => {
                     disabled={!nextAltarBrother}
                     onClick={() => nextAltarBrother && setSelectedDiscipuloAltarBrotherId(nextAltarBrother.id)}
                     title={nextAltarBrother ? `Ver altar siguiente (${nextAltarBrother.name})` : 'No hay altar siguiente'}
-                    className="p-1.5 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 text-slate-600 dark:text-gray-300 hover:text-[#c5a059] disabled:opacity-30 disabled:cursor-not-allowed transition-all active:scale-95"
+                    className="p-1.5 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 text-slate-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 disabled:opacity-30 disabled:cursor-not-allowed transition-all active:scale-95"
                   >
                     <ChevronRight size={15} />
                   </button>
@@ -4632,7 +4632,7 @@ export const BrotherDetail = () => {
                   type="button"
                   onClick={() => window.open(`/hermanos/${selectedDiscipuloAltarBrother.id}`, '_blank')}
                   title="Abrir ficha completa del hermano en una nueva ventana"
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] uppercase tracking-wider font-black border border-[#c5a059]/40 bg-[#c5a059]/10 text-[#c5a059] hover:bg-[#c5a059] hover:text-black transition-all active:scale-95 shadow-sm ml-1"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] uppercase tracking-wider font-black border border-emerald-500/40 dark:border-emerald-400/30 bg-emerald-500/10 dark:bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-600 hover:text-white transition-all active:scale-95 shadow-sm ml-1"
                 >
                   <ExternalLink size={13} />
                   <span>Ver Ficha Completa</span>
@@ -4642,7 +4642,7 @@ export const BrotherDetail = () => {
 
             {/* Tarjeta Principal de Identidad */}
             <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#151515] p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center gap-4 shadow-sm relative overflow-hidden">
-              <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden border-2 border-[#c5a059]/40 bg-slate-100 dark:bg-black/50 flex items-center justify-center text-2xl sm:text-3xl font-black text-[#c5a059] shrink-0 shadow-inner">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden border-2 border-emerald-500/40 dark:border-emerald-400/30 bg-slate-100 dark:bg-black/50 flex items-center justify-center text-2xl sm:text-3xl font-black text-emerald-600 dark:text-emerald-400 shrink-0 shadow-inner">
                 {selectedDiscipuloAltarBrother.fotoUrl ? (
                   <img
                     src={selectedDiscipuloAltarBrother.fotoUrl}
@@ -4655,8 +4655,8 @@ export const BrotherDetail = () => {
               </div>
               <div className="min-w-0 flex-1 space-y-1">
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="text-[9px] uppercase tracking-[0.2em] font-black text-[#c5a059]">Ficha del Hermano</span>
-                  <span className="bg-[#c5a059] text-black px-2.5 py-0.5 rounded-full text-[8px] uppercase tracking-wider font-black">
+                  <span className="text-[9px] uppercase tracking-[0.2em] font-black text-emerald-600 dark:text-emerald-400">Ficha del Hermano</span>
+                  <span className="bg-emerald-600 dark:bg-emerald-500 text-white px-2.5 py-0.5 rounded-full text-[8px] uppercase tracking-wider font-black">
                     {processBadgeLabelMap[selectedDiscipuloAltarBrother.procesoActual] || 'Altar'}
                   </span>
                 </div>
@@ -4681,7 +4681,7 @@ export const BrotherDetail = () => {
                   type="button"
                   onClick={() => window.open(`/hermanos/${selectedDiscipuloAltarBrother.id}`, '_blank')}
                   title="Abrir ficha completa en una nueva ventana"
-                  className="p-2 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-600 dark:text-gray-300 hover:text-[#c5a059] hover:border-[#c5a059]/40 transition-all active:scale-95"
+                  className="p-2 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 hover:border-emerald-500/40 transition-all active:scale-95"
                 >
                   <ExternalLink size={15} />
                 </button>
@@ -4712,7 +4712,7 @@ export const BrotherDetail = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
               <div className="p-3 rounded-xl bg-slate-50 dark:bg-black/35 border border-slate-200 dark:border-white/10 space-y-1">
                 <span className="text-[9px] uppercase tracking-wider font-black text-slate-400 dark:text-gray-500 flex items-center gap-1.5">
-                  <MapPin size={12} className="text-[#c5a059]" /> Célula
+                  <MapPin size={12} className="text-emerald-600 dark:text-emerald-400" /> Célula
                 </span>
                 <p className="text-xs font-bold text-slate-800 dark:text-gray-100 truncate">
                   {selectedDiscipuloAltarBrother.acompanamiento?.celulaName || 'Sin asignar'}
@@ -4721,7 +4721,7 @@ export const BrotherDetail = () => {
 
               <div className="p-3 rounded-xl bg-slate-50 dark:bg-black/35 border border-slate-200 dark:border-white/10 space-y-1">
                 <span className="text-[9px] uppercase tracking-wider font-black text-slate-400 dark:text-gray-500 flex items-center gap-1.5">
-                  <Users size={12} className="text-[#c5a059]" /> Líder de Célula
+                  <Users size={12} className="text-emerald-600 dark:text-emerald-400" /> Líder de Célula
                 </span>
                 <p className="text-xs font-bold text-slate-800 dark:text-gray-100 truncate">
                   {selectedDiscipuloAltarBrother.acompanamiento?.liderCelulaName || 'No asignado'}
@@ -4730,7 +4730,7 @@ export const BrotherDetail = () => {
 
               <div className="p-3 rounded-xl bg-slate-50 dark:bg-black/35 border border-slate-200 dark:border-white/10 space-y-1">
                 <span className="text-[9px] uppercase tracking-wider font-black text-slate-400 dark:text-gray-500 flex items-center gap-1.5">
-                  <ShieldCheck size={12} className="text-[#c5a059]" /> Hermano Mayor
+                  <ShieldCheck size={12} className="text-emerald-600 dark:text-emerald-400" /> Hermano Mayor
                 </span>
                 <p className="text-xs font-bold text-slate-800 dark:text-gray-100 truncate">
                   {selectedDiscipuloAltarBrother.acompanamiento?.acompananteName || selectedAltarInfo?.hermanoMayorName || 'No asignado'}
@@ -4739,7 +4739,7 @@ export const BrotherDetail = () => {
 
               <div className="p-3 rounded-xl bg-slate-50 dark:bg-black/35 border border-slate-200 dark:border-white/10 space-y-1">
                 <span className="text-[9px] uppercase tracking-wider font-black text-slate-400 dark:text-gray-500 flex items-center gap-1.5">
-                  <Phone size={12} className="text-[#c5a059]" /> Teléfono / Contacto
+                  <Phone size={12} className="text-emerald-600 dark:text-emerald-400" /> Teléfono / Contacto
                 </span>
                 <p className="text-xs font-bold text-slate-800 dark:text-gray-100 truncate">
                   {selectedDiscipuloAltarBrother.telefono || 'No registrado'}
@@ -4748,7 +4748,7 @@ export const BrotherDetail = () => {
 
               <div className="p-3 rounded-xl bg-slate-50 dark:bg-black/35 border border-slate-200 dark:border-white/10 space-y-1">
                 <span className="text-[9px] uppercase tracking-wider font-black text-slate-400 dark:text-gray-500 flex items-center gap-1.5">
-                  <Calendar size={12} className="text-[#c5a059]" /> Edad / Nacimiento
+                  <Calendar size={12} className="text-emerald-600 dark:text-emerald-400" /> Edad / Nacimiento
                 </span>
                 <p className="text-xs font-bold text-slate-800 dark:text-gray-100 truncate">
                   {selectedDiscipuloAltarBrother.edad ? `${selectedDiscipuloAltarBrother.edad} años` : ''}
@@ -4758,7 +4758,7 @@ export const BrotherDetail = () => {
 
               <div className="p-3 rounded-xl bg-slate-50 dark:bg-black/35 border border-slate-200 dark:border-white/10 space-y-1">
                 <span className="text-[9px] uppercase tracking-wider font-black text-slate-400 dark:text-gray-500 flex items-center gap-1.5">
-                  <Calendar size={12} className="text-[#c5a059]" /> Fecha de Ingreso
+                  <Calendar size={12} className="text-emerald-600 dark:text-emerald-400" /> Fecha de Ingreso
                 </span>
                 <p className="text-xs font-bold text-slate-800 dark:text-gray-100 truncate">
                   {displayDate(selectedDiscipuloAltarBrother.fechaIngreso || selectedAltarInfo?.fechaInicio || selectedDiscipuloAltarBrother.altar?.fechaInicio)}
@@ -4769,7 +4769,7 @@ export const BrotherDetail = () => {
             {/* Detalle específico del Altar */}
             <div className="p-4 rounded-2xl bg-white dark:bg-black/35 border border-slate-200 dark:border-white/10 space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-[10px] uppercase tracking-[0.2em] font-black text-[#c5a059] flex items-center gap-1.5">
+                <span className="text-[10px] uppercase tracking-[0.2em] font-black text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
                   <Flame size={13} /> Información del Altar
                 </span>
                 <span className={`text-[9px] px-2.5 py-0.5 rounded-full border font-black uppercase tracking-wider ${altarTrackingStatusStyle[getAltarTrackingStatus(selectedDiscipuloAltarBrother)]}`}>
@@ -4802,7 +4802,7 @@ export const BrotherDetail = () => {
             {/* Talentos y Dones (si existen) */}
             {selectedTalentsText && (
               <div className="p-4 rounded-2xl bg-white dark:bg-black/35 border border-slate-200 dark:border-white/10 space-y-1.5">
-                <span className="text-[10px] uppercase tracking-[0.2em] font-black text-[#c5a059] flex items-center gap-1.5">
+                <span className="text-[10px] uppercase tracking-[0.2em] font-black text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
                   <Music2 size={13} /> Talentos y Dones de Servicio
                 </span>
                 <p className="text-xs text-slate-700 dark:text-gray-300 whitespace-pre-wrap">{selectedTalentsText}</p>
@@ -4811,7 +4811,7 @@ export const BrotherDetail = () => {
 
             {/* Procesos y Etapas Realizadas */}
             <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-black/35 p-4 space-y-3">
-              <p className="text-[10px] uppercase tracking-[0.2em] font-black text-[#c5a059]">Procesos y Etapas Realizadas</p>
+              <p className="text-[10px] uppercase tracking-[0.2em] font-black text-emerald-600 dark:text-emerald-400">Procesos y Etapas Realizadas</p>
               {selectedBrotherProcessSummary.length === 0 ? (
                 <p className="text-sm text-slate-500 dark:text-gray-400">Este hermano aún no tiene etapas completadas o registradas.</p>
               ) : (
@@ -4855,7 +4855,7 @@ export const BrotherDetail = () => {
                             {processEntry.grades.map((grade) => (
                               <div key={grade.id} className="rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-black/45 px-3 py-2 flex items-center justify-between gap-3">
                                 <span className="text-xs text-slate-700 dark:text-gray-300">{grade.materia}</span>
-                                <span className="text-xs font-black text-[#a58345] dark:text-[#c5a059]">{grade.nota}</span>
+                                <span className="text-xs font-black text-emerald-700 dark:text-emerald-300 ">{grade.nota}</span>
                               </div>
                             ))}
                           </div>
@@ -4872,7 +4872,7 @@ export const BrotherDetail = () => {
               <button
                 type="button"
                 onClick={() => setSelectedDiscipuloAltarBrotherId(null)}
-                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-[10px] uppercase tracking-widest font-black border border-slate-300 dark:border-white/15 bg-white dark:bg-white/5 text-slate-700 dark:text-gray-200 hover:text-[#c5a059] hover:border-[#c5a059]/40 transition-colors active:scale-95"
+                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-[10px] uppercase tracking-widest font-black border border-slate-300 dark:border-white/15 bg-white dark:bg-white/5 text-slate-700 dark:text-gray-200 hover:text-emerald-600 dark:hover:text-emerald-400 hover:border-emerald-500/40 transition-colors active:scale-95"
               >
                 <ArrowLeft size={14} />
                 <span>Volver a la lista de altares</span>
@@ -4882,7 +4882,7 @@ export const BrotherDetail = () => {
                 <button
                   type="button"
                   onClick={() => setSelectedDiscipuloAltarBrotherId(nextAltarBrother.id)}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-[10px] uppercase tracking-widest font-black bg-[#c5a059] text-black hover:bg-[#d4af37] transition-all shadow-md active:scale-95 ml-auto"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-[10px] uppercase tracking-widest font-black bg-emerald-600 dark:bg-emerald-500 text-white hover:bg-emerald-700 transition-all shadow-md active:scale-95 ml-auto"
                 >
                   <span>Siguiente Altar ({nextAltarBrother.name})</span>
                   <ChevronRight size={14} />
@@ -4898,14 +4898,14 @@ export const BrotherDetail = () => {
                 onClick={() => setDiscipuloAltarsFilter('TODOS')}
                 className={`rounded-xl border p-3 text-left transition-all flex flex-col justify-between min-h-[86px] ${
                   discipuloAltarsFilter === 'TODOS'
-                    ? 'border-[#c5a059] bg-[#c5a059]/10'
-                    : 'border-slate-200 dark:border-white/10 bg-[#f8fafc] dark:bg-black/40 hover:border-[#c5a059]/40'
+                    ? 'border-emerald-500 dark:border-emerald-400 bg-emerald-500/10 dark:bg-emerald-500/15'
+                    : 'border-slate-200 dark:border-white/10 bg-[#f8fafc] dark:bg-black/40 hover:border-emerald-500/40'
                 }`}
               >
                 <div className="min-h-[28px] flex items-start">
                   <p className="text-[9px] sm:text-[10px] uppercase tracking-wider leading-tight font-black text-slate-500 dark:text-gray-400 break-normal">Total Altares</p>
                 </div>
-                <p className="text-xl sm:text-2xl font-black text-[#a58345] dark:text-[#c5a059] mt-auto">{altarTrackingSummary.opened}</p>
+                <p className="text-xl sm:text-2xl font-black text-emerald-700 dark:text-emerald-300  mt-auto">{altarTrackingSummary.opened}</p>
               </button>
               <button
                 type="button"
@@ -4986,10 +4986,10 @@ export const BrotherDetail = () => {
                   return (
                     <article
                       key={entry.id}
-                      className="rounded-xl border border-slate-200 dark:border-white/10 bg-[#f8fafc] dark:bg-black/35 p-4 flex flex-col sm:flex-row sm:items-center gap-3 hover:border-[#c5a059]/40 transition-colors"
+                      className="rounded-xl border border-slate-200 dark:border-white/10 bg-[#f8fafc] dark:bg-black/35 p-4 flex flex-col sm:flex-row sm:items-center gap-3 hover:border-emerald-500/40 transition-colors"
                     >
                       <div className="flex items-center gap-3 min-w-0 flex-1">
-                        <div className="w-10 h-10 rounded-xl overflow-hidden bg-slate-100 dark:bg-black/60 border border-[#c5a059]/30 flex items-center justify-center text-sm font-black text-[#c5a059] shrink-0">
+                        <div className="w-10 h-10 rounded-xl overflow-hidden bg-slate-100 dark:bg-black/60 border border-emerald-500/30 dark:border-emerald-400/20 flex items-center justify-center text-sm font-black text-emerald-600 dark:text-emerald-400 shrink-0">
                           {entry.fotoUrl ? (
                             <img src={entry.fotoUrl} alt={entry.name} className="w-full h-full object-cover" />
                           ) : (
@@ -5023,7 +5023,7 @@ export const BrotherDetail = () => {
                         <button
                           type="button"
                           onClick={() => setSelectedDiscipuloAltarBrotherId(entry.id)}
-                          className="px-3 py-1.5 rounded-lg text-[10px] uppercase tracking-widest font-black border border-[#c5a059]/40 bg-[#c5a059]/15 text-[#c5a059] hover:bg-[#c5a059] hover:text-black transition-colors"
+                          className="px-3 py-1.5 rounded-lg text-[10px] uppercase tracking-widest font-black border border-emerald-500/40 dark:border-emerald-400/30 bg-emerald-500/15 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-600 hover:text-white transition-colors"
                         >
                           Ver
                         </button>
@@ -5044,7 +5044,7 @@ export const BrotherDetail = () => {
             className="space-y-8"
           >
             <div className="space-y-5 bg-white/[0.02] p-6 rounded-[2rem] border border-white/5">
-              <h4 className="text-[#c5a059] font-black uppercase tracking-[0.2em] text-sm flex items-center gap-2">
+              <h4 className="text-emerald-600 dark:text-emerald-400 font-black uppercase tracking-[0.2em] text-sm flex items-center gap-2">
                 <Edit2 size={18} /> Datos personales
               </h4>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
@@ -5054,7 +5054,7 @@ export const BrotherDetail = () => {
                     type="text"
                     name="nombres"
                     defaultValue={profileNameParts.nombres}
-                    className="w-full bg-black/60 border border-white/10 rounded-[1.2rem] p-4 text-sm text-white focus:border-[#c5a059] outline-none shadow-inner transition-colors"
+                    className="w-full bg-black/60 border border-white/10 rounded-[1.2rem] p-4 text-sm text-white focus:border-emerald-500 outline-none shadow-inner transition-colors"
                   />
                 </div>
                 <div className="space-y-2">
@@ -5063,7 +5063,7 @@ export const BrotherDetail = () => {
                     type="text"
                     name="apellidos"
                     defaultValue={profileNameParts.apellidos}
-                    className="w-full bg-black/60 border border-white/10 rounded-[1.2rem] p-4 text-sm text-white focus:border-[#c5a059] outline-none shadow-inner transition-colors"
+                    className="w-full bg-black/60 border border-white/10 rounded-[1.2rem] p-4 text-sm text-white focus:border-emerald-500 outline-none shadow-inner transition-colors"
                   />
                 </div>
                 <div className="space-y-2">
@@ -5072,7 +5072,7 @@ export const BrotherDetail = () => {
                     type="date"
                     name="fecha_nacimiento"
                     defaultValue={brother.fechaNacimiento ?? ''}
-                    className="w-full bg-black/60 border border-white/10 rounded-[1.2rem] p-4 text-sm text-white focus:border-[#c5a059] outline-none [color-scheme:dark]"
+                    className="w-full bg-black/60 border border-white/10 rounded-[1.2rem] p-4 text-sm text-white focus:border-emerald-500 outline-none [color-scheme:dark]"
                   />
                 </div>
                 <div className="space-y-2">
@@ -5081,14 +5081,14 @@ export const BrotherDetail = () => {
                     type="tel"
                     name="telefono"
                     defaultValue={brother.telefono ?? ''}
-                    className="w-full bg-black/60 border border-white/10 rounded-[1.2rem] p-4 text-sm text-white focus:border-[#c5a059] outline-none shadow-inner transition-colors"
+                    className="w-full bg-black/60 border border-white/10 rounded-[1.2rem] p-4 text-sm text-white focus:border-emerald-500 outline-none shadow-inner transition-colors"
                   />
                 </div>
               </div>
             </div>
 
             <div className="space-y-5 bg-white/[0.02] p-6 rounded-[2rem] border border-white/5">
-              <h4 className="text-[#c5a059] font-black uppercase tracking-[0.2em] text-sm flex items-center gap-2">
+              <h4 className="text-emerald-600 dark:text-emerald-400 font-black uppercase tracking-[0.2em] text-sm flex items-center gap-2">
                 <Users size={18} /> Red y Estructura
               </h4>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
@@ -5100,7 +5100,7 @@ export const BrotherDetail = () => {
                   <select
                     value={editLiderChoice}
                     onChange={(e) => setEditLiderChoice(e.target.value)}
-                    className="w-full bg-black/60 border border-white/10 rounded-[1.2rem] p-4 text-sm text-white focus:border-[#c5a059] outline-none shadow-inner transition-colors"
+                    className="w-full bg-black/60 border border-white/10 rounded-[1.2rem] p-4 text-sm text-white focus:border-emerald-500 outline-none shadow-inner transition-colors"
                   >
                     <option value="">-- Sin asignar --</option>
                     {marriages.length > 0 && (
@@ -5129,7 +5129,7 @@ export const BrotherDetail = () => {
                       placeholder="Nombre del líder o matrimonio..."
                       value={editLiderCustom}
                       onChange={(e) => setEditLiderCustom(e.target.value)}
-                      className="w-full bg-black/60 border border-white/10 rounded-[1.2rem] p-3 text-xs text-white focus:border-[#c5a059] outline-none mt-1 shadow-inner"
+                      className="w-full bg-black/60 border border-white/10 rounded-[1.2rem] p-3 text-xs text-white focus:border-emerald-500 outline-none mt-1 shadow-inner"
                     />
                   )}
                 </div>
@@ -5142,7 +5142,7 @@ export const BrotherDetail = () => {
                   <select
                     value={editHermanoMayorChoice}
                     onChange={(e) => setEditHermanoMayorChoice(e.target.value)}
-                    className="w-full bg-black/60 border border-white/10 rounded-[1.2rem] p-4 text-sm text-white focus:border-[#c5a059] outline-none shadow-inner transition-colors"
+                    className="w-full bg-black/60 border border-white/10 rounded-[1.2rem] p-4 text-sm text-white focus:border-emerald-500 outline-none shadow-inner transition-colors"
                   >
                     <option value="">-- Sin asignar --</option>
                     {marriages.length > 0 && (
@@ -5171,7 +5171,7 @@ export const BrotherDetail = () => {
                       placeholder="Nombre del hermano mayor o matrimonio..."
                       value={editHermanoMayorCustom}
                       onChange={(e) => setEditHermanoMayorCustom(e.target.value)}
-                      className="w-full bg-black/60 border border-white/10 rounded-[1.2rem] p-3 text-xs text-white focus:border-[#c5a059] outline-none mt-1 shadow-inner"
+                      className="w-full bg-black/60 border border-white/10 rounded-[1.2rem] p-3 text-xs text-white focus:border-emerald-500 outline-none mt-1 shadow-inner"
                     />
                   )}
                 </div>
@@ -5182,7 +5182,7 @@ export const BrotherDetail = () => {
               <button
                 type="submit"
                 disabled={isSavingProfile}
-                className="bg-gradient-to-r from-[#c5a059] to-[#d4b375] text-black font-black uppercase tracking-[0.15em] px-6 py-3 text-sm rounded-[1.1rem] hover:scale-[1.02] active:scale-95 transition-all shadow-xl"
+                className="btn-3d-emerald text-white font-black uppercase tracking-[0.15em] px-6 py-3 text-sm rounded-[1.1rem] hover:scale-[1.02] active:scale-95 transition-all shadow-xl"
               >
                 {isSavingProfile ? 'Guardando...' : 'Guardar'}
               </button>
@@ -5329,7 +5329,7 @@ export const BrotherDetail = () => {
               value={grupoVidaNombreDraft}
               onChange={(e) => setGrupoVidaNombreDraft(e.target.value)}
               placeholder={`Grupo de Vida de ${brother.name}`}
-              className="w-full bg-slate-50 dark:bg-black/60 border border-slate-200 dark:border-white/10 rounded-xl p-3 text-xs text-slate-900 dark:text-white outline-none focus:border-[#c5a059]"
+              className="w-full bg-slate-50 dark:bg-black/60 border border-slate-200 dark:border-white/10 rounded-xl p-3 text-xs text-slate-900 dark:text-white outline-none focus:border-emerald-500"
             />
           </div>
 
@@ -5380,7 +5380,7 @@ export const BrotherDetail = () => {
               <button
                 type="button"
                 onClick={() => setSelectedGrupoVidaMemberId(null)}
-                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-[10px] uppercase tracking-widest font-black border border-slate-300 dark:border-white/15 bg-white dark:bg-white/5 text-slate-700 dark:text-gray-200 hover:text-[#c5a059] hover:border-[#c5a059]/40 transition-colors active:scale-95"
+                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-[10px] uppercase tracking-widest font-black border border-slate-300 dark:border-white/15 bg-white dark:bg-white/5 text-slate-700 dark:text-gray-200 hover:text-emerald-600 dark:hover:text-emerald-400 hover:border-emerald-500/40 transition-colors active:scale-95"
               >
                 <ArrowLeft size={14} />
                 <span>Volver a la lista de integrantes</span>
@@ -5396,7 +5396,7 @@ export const BrotherDetail = () => {
                     disabled={!prevGrupoVidaMember}
                     onClick={() => prevGrupoVidaMember && setSelectedGrupoVidaMemberId(prevGrupoVidaMember.id)}
                     title={prevGrupoVidaMember ? `Ver integrante anterior (${prevGrupoVidaMember.name})` : 'No hay integrante anterior'}
-                    className="p-1.5 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 text-slate-600 dark:text-gray-300 hover:text-[#c5a059] disabled:opacity-30 disabled:cursor-not-allowed transition-all active:scale-95"
+                    className="p-1.5 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 text-slate-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 disabled:opacity-30 disabled:cursor-not-allowed transition-all active:scale-95"
                   >
                     <ChevronLeft size={15} />
                   </button>
@@ -5405,7 +5405,7 @@ export const BrotherDetail = () => {
                     disabled={!nextGrupoVidaMember}
                     onClick={() => nextGrupoVidaMember && setSelectedGrupoVidaMemberId(nextGrupoVidaMember.id)}
                     title={nextGrupoVidaMember ? `Ver integrante siguiente (${nextGrupoVidaMember.name})` : 'No hay integrante siguiente'}
-                    className="p-1.5 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 text-slate-600 dark:text-gray-300 hover:text-[#c5a059] disabled:opacity-30 disabled:cursor-not-allowed transition-all active:scale-95"
+                    className="p-1.5 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 text-slate-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 disabled:opacity-30 disabled:cursor-not-allowed transition-all active:scale-95"
                   >
                     <ChevronRight size={15} />
                   </button>
@@ -5421,7 +5421,7 @@ export const BrotherDetail = () => {
                     });
                   }}
                   title="Abrir ficha completa del hermano"
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] uppercase tracking-wider font-black border border-[#c5a059]/40 bg-[#c5a059]/10 text-[#c5a059] hover:bg-[#c5a059] hover:text-black transition-all active:scale-95 shadow-sm ml-1"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] uppercase tracking-wider font-black border border-emerald-500/40 dark:border-emerald-400/30 bg-emerald-500/10 dark:bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-600 hover:text-white transition-all active:scale-95 shadow-sm ml-1"
                 >
                   <ExternalLink size={13} />
                   <span>Ver Ficha Completa</span>
@@ -5431,7 +5431,7 @@ export const BrotherDetail = () => {
 
             {/* Tarjeta Principal de Identidad */}
             <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#151515] p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center gap-4 shadow-sm relative overflow-hidden">
-              <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden border-2 border-[#c5a059]/40 bg-slate-100 dark:bg-black/50 flex items-center justify-center text-2xl sm:text-3xl font-black text-[#c5a059] shrink-0 shadow-inner">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden border-2 border-emerald-500/40 dark:border-emerald-400/30 bg-slate-100 dark:bg-black/50 flex items-center justify-center text-2xl sm:text-3xl font-black text-emerald-600 dark:text-emerald-400 shrink-0 shadow-inner">
                 {selectedGrupoVidaMember.fotoUrl ? (
                   <img
                     src={selectedGrupoVidaMember.fotoUrl}
@@ -5444,8 +5444,8 @@ export const BrotherDetail = () => {
               </div>
               <div className="min-w-0 flex-1 space-y-1">
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="text-[9px] uppercase tracking-[0.2em] font-black text-[#c5a059]">Integrante de Grupo de Vida</span>
-                  <span className="bg-[#c5a059] text-black px-2.5 py-0.5 rounded-full text-[8px] uppercase tracking-wider font-black">
+                  <span className="text-[9px] uppercase tracking-[0.2em] font-black text-emerald-600 dark:text-emerald-400">Integrante de Grupo de Vida</span>
+                  <span className="bg-emerald-600 dark:bg-emerald-500 text-white px-2.5 py-0.5 rounded-full text-[8px] uppercase tracking-wider font-black">
                     {processBadgeLabelMap[selectedGrupoVidaMember.procesoActual] || 'Altar'}
                   </span>
                 </div>
@@ -5476,7 +5476,7 @@ export const BrotherDetail = () => {
                     });
                   }}
                   title="Abrir ficha completa"
-                  className="p-2 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-600 dark:text-gray-300 hover:text-[#c5a059] hover:border-[#c5a059]/40 transition-all active:scale-95"
+                  className="p-2 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 hover:border-emerald-500/40 transition-all active:scale-95"
                 >
                   <ExternalLink size={15} />
                 </button>
@@ -5487,7 +5487,7 @@ export const BrotherDetail = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
               <div className="p-3 rounded-xl bg-slate-50 dark:bg-black/35 border border-slate-200 dark:border-white/10 space-y-1">
                 <span className="text-[9px] uppercase tracking-wider font-black text-slate-400 dark:text-gray-500 flex items-center gap-1.5">
-                  <MapPin size={12} className="text-[#c5a059]" /> Célula
+                  <MapPin size={12} className="text-emerald-600 dark:text-emerald-400" /> Célula
                 </span>
                 <p className="text-xs font-bold text-slate-800 dark:text-gray-100 truncate">
                   {selectedGrupoVidaMember.acompanamiento?.celulaName || 'Sin asignar'}
@@ -5496,7 +5496,7 @@ export const BrotherDetail = () => {
 
               <div className="p-3 rounded-xl bg-slate-50 dark:bg-black/35 border border-slate-200 dark:border-white/10 space-y-1">
                 <span className="text-[9px] uppercase tracking-wider font-black text-slate-400 dark:text-gray-500 flex items-center gap-1.5">
-                  <Users size={12} className="text-[#c5a059]" /> Líder de Célula
+                  <Users size={12} className="text-emerald-600 dark:text-emerald-400" /> Líder de Célula
                 </span>
                 <p className="text-xs font-bold text-slate-800 dark:text-gray-100 truncate">
                   {selectedGrupoVidaMember.acompanamiento?.liderCelulaName || 'No asignado'}
@@ -5505,7 +5505,7 @@ export const BrotherDetail = () => {
 
               <div className="p-3 rounded-xl bg-slate-50 dark:bg-black/35 border border-slate-200 dark:border-white/10 space-y-1">
                 <span className="text-[9px] uppercase tracking-wider font-black text-slate-400 dark:text-gray-500 flex items-center gap-1.5">
-                  <ShieldCheck size={12} className="text-[#c5a059]" /> Hermano Mayor
+                  <ShieldCheck size={12} className="text-emerald-600 dark:text-emerald-400" /> Hermano Mayor
                 </span>
                 <p className="text-xs font-bold text-slate-800 dark:text-gray-100 truncate">
                   {selectedGrupoVidaMember.acompanamiento?.acompananteName || selectedGrupoVidaAltarInfo?.hermanoMayorName || brother.name}
@@ -5514,7 +5514,7 @@ export const BrotherDetail = () => {
 
               <div className="p-3 rounded-xl bg-slate-50 dark:bg-black/35 border border-slate-200 dark:border-white/10 space-y-1">
                 <span className="text-[9px] uppercase tracking-wider font-black text-slate-400 dark:text-gray-500 flex items-center gap-1.5">
-                  <Phone size={12} className="text-[#c5a059]" /> Teléfono / Contacto
+                  <Phone size={12} className="text-emerald-600 dark:text-emerald-400" /> Teléfono / Contacto
                 </span>
                 <p className="text-xs font-bold text-slate-800 dark:text-gray-100 truncate">
                   {selectedGrupoVidaMember.telefono || 'No registrado'}
@@ -5523,7 +5523,7 @@ export const BrotherDetail = () => {
 
               <div className="p-3 rounded-xl bg-slate-50 dark:bg-black/35 border border-slate-200 dark:border-white/10 space-y-1">
                 <span className="text-[9px] uppercase tracking-wider font-black text-slate-400 dark:text-gray-500 flex items-center gap-1.5">
-                  <Calendar size={12} className="text-[#c5a059]" /> Edad / Nacimiento
+                  <Calendar size={12} className="text-emerald-600 dark:text-emerald-400" /> Edad / Nacimiento
                 </span>
                 <p className="text-xs font-bold text-slate-800 dark:text-gray-100 truncate">
                   {selectedGrupoVidaMember.edad ? `${selectedGrupoVidaMember.edad} años` : ''}
@@ -5533,7 +5533,7 @@ export const BrotherDetail = () => {
 
               <div className="p-3 rounded-xl bg-slate-50 dark:bg-black/35 border border-slate-200 dark:border-white/10 space-y-1">
                 <span className="text-[9px] uppercase tracking-wider font-black text-slate-400 dark:text-gray-500 flex items-center gap-1.5">
-                  <Calendar size={12} className="text-[#c5a059]" /> Fecha de Ingreso
+                  <Calendar size={12} className="text-emerald-600 dark:text-emerald-400" /> Fecha de Ingreso
                 </span>
                 <p className="text-xs font-bold text-slate-800 dark:text-gray-100 truncate">
                   {displayDate(selectedGrupoVidaMember.fechaIngreso || selectedGrupoVidaAltarInfo?.fechaInicio || selectedGrupoVidaMember.altar?.fechaInicio)}
@@ -5544,7 +5544,7 @@ export const BrotherDetail = () => {
             {/* Detalle específico del Altar */}
             <div className="p-4 rounded-2xl bg-white dark:bg-black/35 border border-slate-200 dark:border-white/10 space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-[10px] uppercase tracking-[0.2em] font-black text-[#c5a059] flex items-center gap-1.5">
+                <span className="text-[10px] uppercase tracking-[0.2em] font-black text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
                   <Flame size={13} /> Información del Altar
                 </span>
                 <span className={`text-[9px] px-2.5 py-0.5 rounded-full border font-black uppercase tracking-wider ${altarTrackingStatusStyle[getAltarTrackingStatus(selectedGrupoVidaMember)]}`}>
@@ -5577,7 +5577,7 @@ export const BrotherDetail = () => {
             {/* Talentos y Dones (si existen) */}
             {selectedGrupoVidaTalentsText && (
               <div className="p-4 rounded-2xl bg-white dark:bg-black/35 border border-slate-200 dark:border-white/10 space-y-1.5">
-                <span className="text-[10px] uppercase tracking-[0.2em] font-black text-[#c5a059] flex items-center gap-1.5">
+                <span className="text-[10px] uppercase tracking-[0.2em] font-black text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
                   <Music2 size={13} /> Talentos y Dones de Servicio
                 </span>
                 <p className="text-xs text-slate-700 dark:text-gray-300 whitespace-pre-wrap">{selectedGrupoVidaTalentsText}</p>
@@ -5586,7 +5586,7 @@ export const BrotherDetail = () => {
 
             {/* Procesos y Etapas Realizadas */}
             <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-black/35 p-4 space-y-3">
-              <p className="text-[10px] uppercase tracking-[0.2em] font-black text-[#c5a059]">Procesos y Etapas Realizadas</p>
+              <p className="text-[10px] uppercase tracking-[0.2em] font-black text-emerald-600 dark:text-emerald-400">Procesos y Etapas Realizadas</p>
               {selectedGrupoVidaProcessSummary.length === 0 ? (
                 <p className="text-sm text-slate-500 dark:text-gray-400">Este hermano aún no tiene etapas completadas o registradas.</p>
               ) : (
@@ -5630,7 +5630,7 @@ export const BrotherDetail = () => {
                             {processEntry.grades.map((grade) => (
                               <div key={grade.id} className="rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-black/45 px-3 py-2 flex items-center justify-between gap-3">
                                 <span className="text-xs text-slate-700 dark:text-gray-300">{grade.materia}</span>
-                                <span className="text-xs font-black text-[#a58345] dark:text-[#c5a059]">{grade.nota}</span>
+                                <span className="text-xs font-black text-emerald-700 dark:text-emerald-300 ">{grade.nota}</span>
                               </div>
                             ))}
                           </div>
@@ -5647,7 +5647,7 @@ export const BrotherDetail = () => {
               <button
                 type="button"
                 onClick={() => setSelectedGrupoVidaMemberId(null)}
-                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-[10px] uppercase tracking-widest font-black border border-slate-300 dark:border-white/15 bg-white dark:bg-white/5 text-slate-700 dark:text-gray-200 hover:text-[#c5a059] hover:border-[#c5a059]/40 transition-colors active:scale-95"
+                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-[10px] uppercase tracking-widest font-black border border-slate-300 dark:border-white/15 bg-white dark:bg-white/5 text-slate-700 dark:text-gray-200 hover:text-emerald-600 dark:hover:text-emerald-400 hover:border-emerald-500/40 transition-colors active:scale-95"
               >
                 <ArrowLeft size={14} />
                 <span>Volver a la lista de integrantes</span>
@@ -5657,7 +5657,7 @@ export const BrotherDetail = () => {
                 <button
                   type="button"
                   onClick={() => setSelectedGrupoVidaMemberId(nextGrupoVidaMember.id)}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-[10px] uppercase tracking-widest font-black bg-[#c5a059] text-black hover:bg-[#d4af37] transition-all shadow-md active:scale-95 ml-auto"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-[10px] uppercase tracking-widest font-black bg-emerald-600 dark:bg-emerald-500 text-white hover:bg-emerald-700 transition-all shadow-md active:scale-95 ml-auto"
                 >
                   <span>Siguiente Integrante ({nextGrupoVidaMember.name})</span>
                   <ChevronRight size={14} />
@@ -5690,15 +5690,15 @@ export const BrotherDetail = () => {
                 Aún no hay hermanos con altar finalizado asociados a este discípulo.
               </div>
             ) : (
-              <div className="space-y-2 max-h-[380px] overflow-y-auto pr-1 [scrollbar-width:thin] [scrollbar-color:#c5a05944_transparent]">
+              <div className="space-y-2 max-h-[380px] overflow-y-auto pr-1 [scrollbar-width:thin] [scrollbar-color:#10b98144_transparent]">
                 {grupoVidaMembers.map((member) => (
                   <div
                     key={`gv-member-${member.id}`}
                     onClick={() => setSelectedGrupoVidaMemberId(member.id)}
-                    className="p-3 rounded-xl bg-white dark:bg-black/50 border border-slate-200 dark:border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:border-[#c5a059]/40 cursor-pointer transition-colors"
+                    className="p-3 rounded-xl bg-white dark:bg-black/50 border border-slate-200 dark:border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:border-emerald-500/40 cursor-pointer transition-colors"
                   >
                     <div className="flex items-center gap-3 min-w-0">
-                      <div className="w-10 h-10 rounded-xl overflow-hidden bg-slate-100 dark:bg-black/60 border border-[#c5a059]/30 flex items-center justify-center text-sm font-black text-[#c5a059] shrink-0">
+                      <div className="w-10 h-10 rounded-xl overflow-hidden bg-slate-100 dark:bg-black/60 border border-emerald-500/30 dark:border-emerald-400/20 flex items-center justify-center text-sm font-black text-emerald-600 dark:text-emerald-400 shrink-0">
                         {member.fotoUrl ? (
                           <img src={member.fotoUrl} alt={member.name} className="w-full h-full object-cover" />
                         ) : (
@@ -5721,7 +5721,7 @@ export const BrotherDetail = () => {
                         e.stopPropagation();
                         setSelectedGrupoVidaMemberId(member.id);
                       }}
-                      className="self-start sm:self-auto px-3 py-1.5 rounded-lg text-[10px] uppercase font-bold text-[#c5a059] border border-[#c5a059]/30 hover:bg-[#c5a059] hover:text-black transition-colors shrink-0"
+                      className="self-start sm:self-auto px-3 py-1.5 rounded-lg text-[10px] uppercase font-bold text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 dark:border-emerald-400/20 hover:bg-emerald-600 hover:text-white transition-colors shrink-0"
                     >
                       Ver ficha
                     </button>
@@ -5820,7 +5820,7 @@ export const BrotherDetail = () => {
               No hay hermanos menores en proceso acompañados por este hermano actualmente.
             </div>
           ) : (
-            <div className="space-y-2 max-h-[380px] overflow-y-auto pr-1 [scrollbar-width:thin] [scrollbar-color:#c5a05944_transparent]">
+            <div className="space-y-2 max-h-[380px] overflow-y-auto pr-1 [scrollbar-width:thin] [scrollbar-color:#10b98144_transparent]">
               {hermanosMenoresList.map((member) => (
                 <div
                   key={`menor-member-${member.id}`}
