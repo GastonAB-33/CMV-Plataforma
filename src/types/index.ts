@@ -20,7 +20,8 @@ export enum Proceso {
   GRUPO = 'Grupo',
   EXPERIENCIA = 'Experiencia',
   EDDI = 'EDDI',
-  DISCIPULO = 'Discípulo'
+  DISCIPULO = 'Discípulo',
+  EDEM = 'EDEM',
 }
 
 export type Cell = 'Vida' | 'Nissi' | 'Zaeta' | 'Sion' | 'Maranata' | 'Alpha y Omega' | 'Red Apostólica';
@@ -73,6 +74,23 @@ export interface EDDIStage {
 export interface DiscipuloStage {
   fechaInicio?: string;
   observaciones?: ProcessObservation[];
+}
+
+export interface EDEMExamGrade {
+  id: string;
+  materia: string;
+  modulo?: string;
+  fecha?: string;
+  nota: number;
+  estado?: 'APROBADO' | 'REPROBADO' | 'EN_CURSO';
+  observacion?: string;
+}
+
+export interface EDEMStage {
+  fechaInicio?: string;
+  fechaFin?: string;
+  observaciones?: ProcessObservation[];
+  notasExamenes?: EDEMExamGrade[];
 }
 
 export interface Acompanamiento {

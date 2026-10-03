@@ -7,6 +7,7 @@ export const SEGUIMIENTO_STAGE_ORDER: Proceso[] = [
   Proceso.EXPERIENCIA,
   Proceso.EDDI,
   Proceso.DISCIPULO,
+  Proceso.EDEM,
 ];
 
 export type StageStatus = 'completed' | 'in-progress' | 'pending';

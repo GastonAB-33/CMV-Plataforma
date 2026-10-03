@@ -1,5 +1,5 @@
 import { ReactNode, useMemo, useState } from 'react';
-import { Home, Users, LineChart, Calendar, GraduationCap, Music, MonitorPlay, HandHelping, Menu, X, MoreHorizontal, Settings, FileSpreadsheet } from 'lucide-react';
+import { Users, LineChart, Menu, X, MoreHorizontal, Settings, FileSpreadsheet, GraduationCap, Award, Home, Layers } from 'lucide-react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { Role, User } from '../types';
 import { ThemeToggle } from '../components/ui/ThemeToggle';
@@ -22,24 +22,22 @@ export const MainLayout = ({ children, user }: MainLayoutProps) => {
   const canManageUsers = role === Role.APOSTOL || role === Role.SUPERADMIN;
   const canUseImporter = role === Role.SUPERADMIN;
   const navItems = [
-    { id: 'dashboard', feature: 'dashboard' as AppFeatureKey, path: '/', icon: <Home size={22} />, label: 'Inicio', shortLabel: 'Inicio', primaryMobile: true },
+    { id: 'home', feature: 'dashboard' as AppFeatureKey, path: '/', icon: <Home size={22} />, label: 'Inicio', shortLabel: 'Inicio', primaryMobile: true },
     { id: 'brothers', feature: 'hermanos' as AppFeatureKey, path: '/hermanos', icon: <Users size={22} />, label: 'Hermanos', shortLabel: 'Hermanos', primaryMobile: true },
+    { id: 'celulas', feature: 'hermanos' as AppFeatureKey, path: '/celulas', icon: <Layers size={22} />, label: 'Células', shortLabel: 'Células', primaryMobile: true },
     { id: 'tracking', feature: 'seguimiento' as AppFeatureKey, path: '/tracking', icon: <LineChart size={22} />, label: 'Seguimiento', shortLabel: 'Seguimiento', primaryMobile: true },
-    { id: 'events', feature: 'eventos' as AppFeatureKey, path: '/events', icon: <Calendar size={22} />, label: 'Eventos/Noticias', shortLabel: 'Eventos', primaryMobile: true },
-    { id: 'eddi-school', feature: 'escuela_eddi' as AppFeatureKey, path: '/escuela-eddi', icon: <GraduationCap size={22} />, label: 'Escuela EDDI', shortLabel: 'EDDI' },
-    { id: 'worship', feature: 'ministerio_adoracion' as AppFeatureKey, path: '/ministerio-adoracion', icon: <Music size={22} />, label: 'Adoracion', shortLabel: 'Adoracion' },
-    { id: 'multimedia', feature: 'ministerio_multimedia' as AppFeatureKey, path: '/ministerio-multimedia', icon: <MonitorPlay size={22} />, label: 'Multimedia', shortLabel: 'Multimedia' },
-    { id: 'misericordia', feature: 'ministerio_misericordia' as AppFeatureKey, path: '/ministerio-misericordia', icon: <HandHelping size={22} />, label: 'Misericordia', shortLabel: 'Misericordia' },
+    { id: 'eddi', feature: 'escuela_eddi' as AppFeatureKey, path: '/escuela-eddi', icon: <GraduationCap size={22} />, label: 'Escuela EDDI', shortLabel: 'EDDI', primaryMobile: false },
+    { id: 'edem', feature: 'escuela_edem' as AppFeatureKey, path: '/escuela-edem', icon: <Award size={22} />, label: 'Escuela EDEM', shortLabel: 'EDEM', primaryMobile: false },
     ...(canManageUsers
-      ? [{ id: 'config-users', feature: 'dashboard' as AppFeatureKey, path: '/configuracion/usuarios', icon: <Settings size={22} />, label: 'Configuracion', shortLabel: 'Config' }]
+      ? [{ id: 'config-users', feature: 'dashboard' as AppFeatureKey, path: '/configuracion/usuarios', icon: <Settings size={22} />, label: 'Configuracion', shortLabel: 'Config', primaryMobile: true }]
       : []),
     ...(canUseImporter
-      ? [{ id: 'importador', feature: 'hermanos' as AppFeatureKey, path: '/importador', icon: <FileSpreadsheet size={22} />, label: 'Importador', shortLabel: 'Importar' }]
+      ? [{ id: 'importador', feature: 'hermanos' as AppFeatureKey, path: '/importador', icon: <FileSpreadsheet size={22} />, label: 'Importador', shortLabel: 'Importar', primaryMobile: true }]
       : []),
   ].filter((item) => hasPermissionAtLeastForUser(user, item.feature, 'view'));
 
-  const activeClass = 'bg-[#c5a059]/10 text-[#c5a059] border border-[#c5a059]/30';
-  const inactiveClass = 'text-slate-700 dark:text-gray-300 hover:bg-[#c5a059]/5 hover:text-[#c5a059]';
+  const activeClass = 'bg-emerald-500/10 text-emerald-600 dark:text-[#00e599] border border-emerald-500/80 dark:border-[#00c988] shadow-sm font-bold rounded-2xl';
+  const inactiveClass = 'text-slate-700 dark:text-white hover:bg-slate-100 dark:hover:bg-white/5 hover:text-emerald-600 dark:hover:text-[#00e599] font-semibold rounded-2xl transition-colors';
   const primaryMobileItems = navItems.filter((item) => item.primaryMobile);
   const secondaryMobileItems = navItems.filter((item) => !item.primaryMobile);
   const isSecondaryRouteActive = useMemo(
@@ -60,38 +58,63 @@ export const MainLayout = ({ children, user }: MainLayoutProps) => {
         <ThemeToggle />
       </div>
 
-      <aside className="hidden md:flex w-72 bg-slate-100 dark:bg-[#1a1a1a] flex-col border-r border-slate-200 dark:border-white/5 shadow-2xl relative z-20 transition-colors">
-        <div className="p-8 pb-10">
-          <div className="flex items-center gap-3 group cursor-pointer">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#c5a059] to-[#8a6d3b] flex items-center justify-center shadow-[0_0_20px_rgba(197,160,89,0.3)]">
-              <span className="text-black font-black text-xl italic">C</span>
+      <aside className="hidden md:flex w-80 bg-white dark:bg-black backdrop-blur-2xl flex-col border-r border-slate-200/90 dark:border-white/10 shadow-2xl relative z-20 transition-colors">
+        {/* Recuadro CMV más ancho, compacto y cercano a la navegación */}
+        <div className="p-4 pb-2">
+          {/* Cuadrado CMV Seguimiento Oficial Pastoral más grande, cuadrado y con logo prominente */}
+          <div
+            className="w-full aspect-[1/0.95] sm:aspect-square rounded-2xl bg-gradient-to-br from-[#059669] via-[#047857] to-[#065f46] text-white p-4 flex flex-col items-center justify-between text-center shadow-xl shadow-emerald-950/25 cursor-pointer group hover:brightness-105 transition-all relative overflow-hidden border border-white/20"
+            onClick={() => navigate('/')}
+          >
+            <div className="w-full flex items-center justify-between gap-1">
+              <span className="text-[9px] uppercase tracking-widest font-black px-2 py-0.5 rounded bg-black/30 text-white/95 border border-white/20">
+                Oficial
+              </span>
+              <span className="text-[9px] uppercase tracking-widest font-black px-2 py-0.5 rounded bg-black/30 text-emerald-200 border border-white/20">
+                Pastoral
+              </span>
             </div>
-            <h2 className="text-slate-900 dark:text-white text-xl font-black tracking-tighter uppercase leading-none group-hover:text-[#c5a059] transition-colors">
-              CMV<br/><span className="text-[#c5a059] text-[10px] tracking-[0.4em]">Seguimiento</span>
-            </h2>
+
+            <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-black/25 p-2 flex items-center justify-center shrink-0 border border-white/25 shadow-inner my-1 group-hover:scale-105 transition-transform duration-300">
+              <img
+                src="/logo-cmv.png"
+                alt="CMV Logo"
+                className="w-full h-full object-contain filter drop-shadow-lg"
+              />
+            </div>
+
+            <div className="w-full text-center">
+              <h2 className="text-2xl sm:text-3xl font-black tracking-[0.2em] uppercase text-white drop-shadow-md leading-none">
+                CMV
+              </h2>
+              <p className="text-[10px] sm:text-[11px] tracking-[0.28em] font-black uppercase text-emerald-100 mt-0.5">
+                Seguimiento
+              </p>
+            </div>
           </div>
         </div>
-        <nav className="flex-1 px-4 space-y-2">
+
+        <nav className="flex-1 px-4 space-y-1.5 mt-1">
           {navItems.map((item) => (
             <NavLink
               key={item.id}
               to={item.path}
               className={({ isActive }) =>
-                `flex items-center gap-4 w-full p-3 rounded-lg transition-all duration-300 ${isActive ? activeClass : inactiveClass}`
+                `flex items-center gap-3.5 w-full p-2.5 rounded-2xl transition-all duration-200 ${isActive ? activeClass : inactiveClass}`
               }
             >
               {item.icon}
-              <span className="font-medium">{item.label}</span>
+              <span className="font-semibold text-sm">{item.label}</span>
             </NavLink>
           ))}
         </nav>
-        <div className="p-4 border-t border-slate-200 dark:border-[#c5a059]/10 mt-auto transition-colors relative">
+        <div className="p-4 border-t border-slate-200 dark:border-white/10 mt-auto transition-colors relative">
           <button
             type="button"
             onClick={() => setIsProfileMenuOpen((previous) => !previous)}
-            className="w-full flex items-center gap-3 p-2 rounded-xl hover:bg-[#c5a059]/10 transition-colors text-left"
+            className="w-full flex items-center gap-3 p-2 rounded-xl hover:bg-emerald-500/10 transition-colors text-left"
           >
-            <div className="w-8 h-8 rounded-full bg-[#c5a059] flex items-center justify-center text-black font-bold text-xs">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center text-white font-bold text-xs shadow-sm">
               {String(role).charAt(0)}
             </div>
             <div className="flex flex-col">
@@ -104,7 +127,7 @@ export const MainLayout = ({ children, user }: MainLayoutProps) => {
               <button
                 type="button"
                 onClick={() => void handleLogout()}
-                className="w-full rounded-lg px-3 py-2 text-xs uppercase tracking-wider font-black text-left text-rose-600 dark:text-rose-300 hover:bg-rose-500/10"
+                className="w-full rounded-lg px-3 py-2 text-xs uppercase tracking-wider font-black text-left text-rose-600 dark:text-rose-400 hover:bg-rose-500/10 transition-colors"
               >
                 Cerrar sesion
               </button>
@@ -116,9 +139,14 @@ export const MainLayout = ({ children, user }: MainLayoutProps) => {
       <div className="flex-1 flex flex-col relative min-h-screen md:h-full">
         <header className="md:hidden sticky top-0 z-40 border-b border-slate-200 dark:border-white/10 bg-white/95 dark:bg-[#0a0a0a]/95 backdrop-blur px-4 py-3">
           <div className="flex items-center justify-between gap-3">
-            <div className="min-w-0">
-              <p className="text-[10px] uppercase tracking-[0.2em] font-black text-[#c5a059]">CMV</p>
-              <p className="text-sm font-bold text-slate-900 dark:text-white truncate">Seguimiento congregacional</p>
+            <div className="flex items-center gap-2.5 min-w-0">
+              <div className="w-10 h-10 rounded-xl bg-[#059669] p-1 flex items-center justify-center shrink-0 shadow-sm">
+                <img src="/logo-cmv.png" alt="CMV" className="w-full h-full object-contain filter drop-shadow" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-[10px] uppercase tracking-[0.2em] font-black text-emerald-600 dark:text-emerald-400">CMV</p>
+                <p className="text-sm font-bold text-slate-900 dark:text-white truncate">Seguimiento congregacional</p>
+              </div>
             </div>
             <button
               type="button"
@@ -131,10 +159,14 @@ export const MainLayout = ({ children, user }: MainLayoutProps) => {
           </div>
         </header>
 
-        <main className="flex-1 overflow-y-auto p-3 sm:p-4 md:p-8 pb-32 md:pb-8 bg-white dark:bg-[#0a0a0a] transition-colors">
-          <div className="max-w-7xl mx-auto">
-            {children}
-          </div>
+        <main className="flex-1 overflow-y-auto pb-32 md:pb-8 bg-transparent transition-colors">
+          {location.pathname === '/' || location.pathname === '/hermanos' || location.pathname === '/celulas' ? (
+            children
+          ) : (
+            <div className="max-w-7xl mx-auto p-3 sm:p-4 md:p-8">
+              {children}
+            </div>
+          )}
         </main>
 
         <nav className="md:hidden fixed bottom-3 left-1/2 -translate-x-1/2 w-[94%] bg-white/95 dark:bg-[#181818]/95 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-3xl flex justify-between items-center px-2 pt-2 pb-[calc(env(safe-area-inset-bottom)+0.5rem)] z-50 shadow-[0_20px_50px_rgba(0,0,0,0.2)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.6)] transition-colors">
@@ -144,7 +176,7 @@ export const MainLayout = ({ children, user }: MainLayoutProps) => {
               to={item.path}
               onClick={() => setIsMobileMenuOpen(false)}
               className={({ isActive }) =>
-                `flex flex-col items-center gap-1 transition-all duration-300 px-1.5 py-1 ${isActive ? 'text-[#c5a059]' : 'text-slate-500 dark:text-gray-300'}`
+                `flex flex-col items-center gap-1 transition-all duration-300 px-1.5 py-1 ${isActive ? 'text-emerald-600 dark:text-emerald-400 font-extrabold' : 'text-slate-500 dark:text-gray-300'}`
               }
             >
               <div className="p-1 rounded-full transition-colors group">
@@ -156,7 +188,7 @@ export const MainLayout = ({ children, user }: MainLayoutProps) => {
           <button
             type="button"
             onClick={() => setIsMobileMenuOpen((prev) => !prev)}
-            className={`flex flex-col items-center gap-1 px-1.5 py-1 transition-all duration-300 ${isMobileMenuOpen || isSecondaryRouteActive ? 'text-[#c5a059]' : 'text-slate-500 dark:text-gray-300'}`}
+            className={`flex flex-col items-center gap-1 px-1.5 py-1 transition-all duration-300 ${isMobileMenuOpen || isSecondaryRouteActive ? 'text-emerald-600 dark:text-emerald-400 font-extrabold' : 'text-slate-500 dark:text-gray-300'}`}
             aria-label="Abrir menu completo"
           >
             <div className="p-1 rounded-full">
@@ -174,7 +206,7 @@ export const MainLayout = ({ children, user }: MainLayoutProps) => {
             onClick={(event) => event.stopPropagation()}
           >
             <div className="mb-4 pb-4 border-b border-slate-200 dark:border-white/10">
-              <p className="text-[10px] uppercase tracking-[0.2em] font-black text-[#c5a059]">Sesion</p>
+              <p className="text-[10px] uppercase tracking-[0.2em] font-black text-emerald-600 dark:text-emerald-400">Sesion</p>
               <p className="text-sm font-semibold text-slate-900 dark:text-white capitalize mt-1">{roleLabel}</p>
             </div>
             <nav className="space-y-2">

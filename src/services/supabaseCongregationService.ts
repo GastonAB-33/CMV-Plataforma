@@ -1,13 +1,17 @@
 import { BrotherListItem, BrotherProfile } from '../modules/hermanos/types';
 import { Cell, Proceso, Role } from '../types';
+import { canonicalizeCellName, normalizeCellKey } from './cellNormalization';
 import { supabaseAuditService, type AuditActor } from './supabaseAuditService';
 import { getSupabaseClient, isSupabaseConfigured } from './supabaseClient';
+import { parseLeaderIds } from './supabaseCellsService';
+import { marriagesService } from './marriagesService';
 
 interface SupabaseCelulaRow {
   id: string;
   nombre: string;
   activa: boolean | null;
   lider_id: string | null;
+  descripcion: string | null;
 }
 
 interface SupabaseHermanoRow {
@@ -81,7 +85,7 @@ const toProceso = (value?: string): Proceso => {
 };
 
 const coerceCellName = (value?: string): Cell => {
-  const raw = (value ?? '').trim();
+  const raw = canonicalizeCellName(value);
   if (!raw) {
     return FALLBACK_CELL;
   }
@@ -118,11 +122,13 @@ const toBrotherProfile = (
   row: SupabaseHermanoRow,
   cellNameById: Map<string, string>,
   processByBrotherId: Map<string, SupabaseProcesoRow>,
+  cellLeadersById?: Map<string, string>,
 ): BrotherProfile => {
   const cellName = coerceCellName(
     row.celula_id ? cellNameById.get(row.celula_id) : undefined,
   );
   const process = processByBrotherId.get(row.id);
+  const liderCelulaName = row.celula_id && cellLeadersById ? cellLeadersById.get(row.celula_id) : undefined;
 
   return {
     id: row.id,
@@ -135,6 +141,7 @@ const toBrotherProfile = (
     procesoActual: toProceso(process?.tipo ?? row.estado ?? undefined),
     acompanamiento: {
       celulaName: cellName,
+      liderCelulaName,
     },
     observations: [],
     disciples: [],
@@ -171,7 +178,17 @@ export const supabaseCongregationService = {
       return [];
     }
 
-    return data.map((row) => coerceCellName(row.nombre));
+    const seen = new Set<string>();
+    return data
+      .map((row) => coerceCellName(row.nombre))
+      .filter((cell) => {
+        const key = normalizeCellKey(cell);
+        if (seen.has(key)) {
+          return false;
+        }
+        seen.add(key);
+        return true;
+      });
   },
 
   async listBrothers(): Promise<BrotherProfile[]> {
@@ -182,7 +199,7 @@ export const supabaseCongregationService = {
 
     const [{ data: cells, error: cellsError }, { data: brothers, error: brothersError }, { data: processes, error: processError }] =
       await Promise.all([
-        client.from('celulas').select('id,nombre,activa,lider_id'),
+        client.from('celulas').select('id,nombre,activa,lider_id,descripcion'),
         client
           .from('hermanos')
           .select('id,nombres,apellidos,telefono,direccion,fecha_nacimiento,celula_id,estado,fecha_ingreso,foto_url')
@@ -206,6 +223,43 @@ export const supabaseCongregationService = {
       cellNameById.set(cell.id, cell.nombre);
     }
 
+    // Map brother names
+    const brotherNameById = new Map<string, string>();
+    for (const b of brotherRows) {
+      brotherNameById.set(b.id, buildName(b));
+    }
+
+    // Resolve leaders for each cell
+    const cellLeadersById = new Map<string, string>();
+    const allMarriages = marriagesService.list();
+
+    for (const cell of cellRows) {
+      const leaderIds = parseLeaderIds(cell.descripcion);
+      const effectiveIds = leaderIds.length > 0 ? leaderIds : (cell.lider_id ? [cell.lider_id] : []);
+      const leaderNames = effectiveIds
+        .map((id) => brotherNameById.get(id))
+        .filter((name): name is string => Boolean(name));
+
+      if (leaderNames.length === 0) {
+        continue;
+      }
+
+      // Check if these leaders match a configured marriage
+      const matchingMarriage = allMarriages.find(
+        (m) =>
+          effectiveIds.includes(m.spouse1Id) && effectiveIds.includes(m.spouse2Id),
+      );
+
+      if (matchingMarriage) {
+        cellLeadersById.set(
+          cell.id,
+          `${matchingMarriage.label} (${leaderNames.join(' y ')})`,
+        );
+      } else {
+        cellLeadersById.set(cell.id, leaderNames.join(' y '));
+      }
+    }
+
     const processByBrotherId = new Map<string, SupabaseProcesoRow>();
     for (const process of processRows) {
       if (!processByBrotherId.has(process.hermano_id)) {
@@ -213,7 +267,9 @@ export const supabaseCongregationService = {
       }
     }
 
-    return brotherRows.map((row) => toBrotherProfile(row, cellNameById, processByBrotherId));
+    return brotherRows.map((row) =>
+      toBrotherProfile(row, cellNameById, processByBrotherId, cellLeadersById),
+    );
   },
 
   async listBrotherItems(): Promise<BrotherListItem[]> {
@@ -304,17 +360,19 @@ export const supabaseCongregationService = {
       return { ok: false, error: 'Supabase no configurado.' };
     }
 
-    const cellName = input.nombre.trim();
+    const cellName = canonicalizeCellName(input.nombre);
 
-    const { data: existingCell, error: existingCellError } = await client
+    const { data: existingCells, error: existingCellError } = await client
       .from('celulas')
-      .select('id')
-      .eq('nombre', cellName)
-      .maybeSingle();
+      .select('id,nombre,activa');
 
     if (existingCellError) {
       return { ok: false, error: existingCellError.message ?? 'No se pudo buscar la célula.' };
     }
+
+    const existingCell = (existingCells ?? []).find((cell) =>
+      normalizeCellKey(canonicalizeCellName(cell.nombre)) === normalizeCellKey(cellName) && cell.activa !== false
+    );
 
     if (existingCell?.id) {
       return { ok: true, id: existingCell.id };

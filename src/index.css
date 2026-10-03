@@ -24,7 +24,7 @@
     margin: 0;
     min-width: 320px;
     min-height: 100dvh;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     background-color: inherit;
     color: inherit;
     transition: background-color 200ms ease, color 200ms ease;
@@ -46,3 +46,106 @@
     display: none;
   }
 }
+
+
+  /* Soft Telemedicine Card Gradient Surfaces */
+  .card-telemed-light {
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.96) 0%, rgba(241, 248, 253, 0.9) 100%);
+    box-shadow: 0 10px 25px -5px rgba(2, 132, 199, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
+  }
+
+  .card-telemed-dark {
+    background: linear-gradient(145deg, rgba(13, 25, 45, 0.95) 0%, rgba(8, 16, 30, 0.92) 100%);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+  }
+
+  /* Banner Mask Fade */
+  .banner-fade-mask {
+    mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0.95) 45%, rgba(0,0,0,0.3) 80%, rgba(0,0,0,0) 100%);
+    -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0.95) 45%, rgba(0,0,0,0.3) 80%, rgba(0,0,0,0) 100%);
+  }
+
+  /* 3D Tactile Buttons - Rectangular, Soft Elevation, No Hard Cutoff Lines */
+  .btn-3d-emerald {
+    position: relative;
+    border-radius: 0.75rem;
+    background: linear-gradient(135deg, #10b981 0%, #059669 50%, #0284c7 100%);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 6px 18px -2px rgba(5, 150, 105, 0.4), 0 2px 4px rgba(0, 0, 0, 0.06);
+    transition: transform 140ms ease, box-shadow 140ms ease, filter 140ms ease;
+  }
+  .btn-3d-emerald:hover {
+    filter: brightness(1.06);
+    transform: translateY(-1.5px);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 9px 24px -2px rgba(5, 150, 105, 0.48), 0 3px 6px rgba(0, 0, 0, 0.08);
+  }
+  .btn-3d-emerald:active {
+    transform: translateY(1.5px);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 2px 6px rgba(5, 150, 105, 0.3);
+  }
+
+  .btn-3d-gold {
+    position: relative;
+    border-radius: 0.75rem;
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 60%, #b45309 100%);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 6px 18px -2px rgba(217, 119, 6, 0.35), 0 2px 4px rgba(0, 0, 0, 0.06);
+    transition: transform 140ms ease, box-shadow 140ms ease, filter 140ms ease;
+  }
+  .btn-3d-gold:hover {
+    filter: brightness(1.06);
+    transform: translateY(-1.5px);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 9px 24px -2px rgba(217, 119, 6, 0.42), 0 3px 6px rgba(0, 0, 0, 0.08);
+  }
+  .btn-3d-gold:active {
+    transform: translateY(1.5px);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 2px 6px rgba(217, 119, 6, 0.25);
+  }
+
+  .btn-3d-pill-active {
+    position: relative;
+    border-radius: 0.75rem;
+    background: linear-gradient(135deg, #059669 0%, #0284c7 100%) !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 6px 16px -2px rgba(2, 132, 199, 0.4), 0 2px 4px rgba(0, 0, 0, 0.06);
+    transform: translateY(-1px);
+    transition: transform 140ms ease, box-shadow 140ms ease;
+  }
+  .btn-3d-pill-active:hover {
+    transform: translateY(-1.5px);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 8px 20px -2px rgba(2, 132, 199, 0.45);
+  }
+  .btn-3d-pill-active:active {
+    transform: translateY(1.5px);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 2px 6px rgba(2, 132, 199, 0.3);
+  }
+
+  .btn-3d-pill-inactive {
+    position: relative;
+    border-radius: 0.75rem;
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.95) 0%, rgba(241, 248, 253, 0.88) 100%);
+    border: 1px solid rgba(203, 213, 225, 0.75);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8), 0 4px 10px -2px rgba(0, 0, 0, 0.05);
+    transition: transform 140ms ease, box-shadow 140ms ease, border-color 140ms ease, background 140ms ease;
+  }
+  .dark .btn-3d-pill-inactive {
+    background: linear-gradient(145deg, rgba(15, 28, 50, 0.88) 0%, rgba(9, 18, 33, 0.88) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 4px 10px -2px rgba(0, 0, 0, 0.35);
+  }
+  .btn-3d-pill-inactive:hover {
+    transform: translateY(-1.5px);
+    border-color: rgba(16, 185, 129, 0.45);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 6px 14px -2px rgba(16, 185, 129, 0.15);
+  }
+  .dark .btn-3d-pill-inactive:hover {
+    border-color: rgba(16, 185, 129, 0.5);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 6px 14px -2px rgba(16, 185, 129, 0.25);
+  }
+  .btn-3d-pill-inactive:active {
+    transform: translateY(1.5px);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 1px 3px rgba(0, 0, 0, 0.08);
+  }
+  .dark .btn-3d-pill-inactive:active {
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 1px 3px rgba(0, 0, 0, 0.3);
+  }
+

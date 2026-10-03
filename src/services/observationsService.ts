@@ -58,6 +58,9 @@ const normalizeProcess = (process?: string): Proceso => {
   if (normalized === 'discipulo') {
     return Proceso.DISCIPULO;
   }
+  if (normalized === 'edem') {
+    return Proceso.EDEM;
+  }
   return Proceso.ALTAR;
 };
 

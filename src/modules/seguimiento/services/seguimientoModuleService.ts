@@ -18,6 +18,7 @@ const toStageStatusByProcess = (snapshot: BrotherProcessSnapshot): StageStatusBy
   [Proceso.EXPERIENCIA]: getStageStatusByOrder(snapshot.currentProcess, Proceso.EXPERIENCIA),
   [Proceso.EDDI]: getStageStatusByOrder(snapshot.currentProcess, Proceso.EDDI),
   [Proceso.DISCIPULO]: getStageStatusByOrder(snapshot.currentProcess, Proceso.DISCIPULO),
+  [Proceso.EDEM]: getStageStatusByOrder(snapshot.currentProcess, Proceso.EDEM),
 });
 
 const toMatrixRow = (snapshot: BrotherProcessSnapshot): SeguimientoMatrixRow => ({

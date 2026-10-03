@@ -1,0 +1,143 @@
+/* Telemedicine App Gradient Backdrops with Fractal Glass Texture & Ambient Mesh */
+.bg-telemed {
+  background-color: #fcf5f2;
+  background-image: 
+    /* Durazno / apricot cálido intensificado y claramente perceptible en la zona superior */
+    radial-gradient(ellipse 80% 65% at 22% 4%, rgba(251, 146, 120, 0.62) 0%, rgba(254, 178, 155, 0.44) 30%, rgba(254, 215, 202, 0.22) 58%, transparent 78%),
+    /* Cian / menta / turquesa luminoso en lateral derecho y centro */
+    radial-gradient(ellipse 65% 55% at 85% 26%, rgba(77, 208, 197, 0.35) 0%, rgba(132, 225, 216, 0.20) 35%, transparent 68%),
+    /* Tono pizarra petróleo / slate-teal suave en la parte inferior izquierda */
+    radial-gradient(circle 50% at 12% 80%, rgba(68, 107, 115, 0.20) 0%, transparent 52%),
+    /* Destello cielo en la parte inferior derecha */
+    radial-gradient(circle 45% at 82% 88%, rgba(56, 189, 248, 0.20) 0%, transparent 50%),
+    /* Velo de base en degradé cálido-fresco que resalta el durazno superior hacia el cian */
+    linear-gradient(145deg, rgba(255, 237, 230, 0.72) 0%, rgba(240, 250, 248, 0.50) 42%, rgba(225, 245, 252, 0.58) 100%),
+    url('/fractal-glass-bg.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+}
+
+.dark .bg-telemed,
+html.dark .bg-telemed,
+body.dark .bg-telemed,
+.dark body {
+  background-color: #050a14 !important;
+  background-image: 
+    /* Brasa durazno/cobre intensificada en la parte superior izquierda en tono oscuro */
+    radial-gradient(ellipse 80% 65% at 22% 6%, rgba(244, 114, 82, 0.48) 0%, rgba(217, 95, 62, 0.30) 32%, rgba(180, 75, 50, 0.14) 58%, transparent 80%),
+    /* Cian y turquesa boreal vibrante en el lateral derecho */
+    radial-gradient(ellipse 65% 55% at 85% 28%, rgba(45, 212, 191, 0.30) 0%, rgba(20, 184, 166, 0.16) 40%, transparent 68%),
+    /* Pizarra petróleo oscura en el cuadrante inferior izquierdo */
+    radial-gradient(circle 50% at 12% 80%, rgba(18, 64, 76, 0.55) 0%, transparent 55%),
+    /* Azul zafiro nocturno en el cuadrante inferior derecho */
+    radial-gradient(circle 45% at 82% 88%, rgba(2, 132, 199, 0.24) 0%, transparent 50%),
+    /* Base nocturna zafiro oscuro translúcido que preserva la calidez superior y el relieve acanalado */
+    linear-gradient(155deg, rgba(28, 18, 24, 0.78) 0%, rgba(8, 18, 28, 0.80) 38%, rgba(3, 8, 16, 0.88) 100%),
+    url('/fractal-glass-bg.jpg') !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-attachment: fixed !important;
+  background-repeat: no-repeat !important;
+}
+
+/* Floating Glass Dashboard Panels */
+.glass-floating-panel {
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 20px 45px -15px rgba(2, 132, 199, 0.12), 0 0 0 1px rgba(255, 255, 255, 0.6);
+}
+.dark .glass-floating-panel {
+  box-shadow: 0 25px 55px -12px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+/* Banner Mask Fade */
+.banner-fade-mask {
+  mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0.95) 45%, rgba(0,0,0,0.3) 80%, rgba(0,0,0,0) 100%);
+  -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0.95) 45%, rgba(0,0,0,0.3) 80%, rgba(0,0,0,0) 100%);
+}
+
+/* 3D Tactile Buttons - Rectangular, Soft Elevation, No Hard Cutoff Lines */
+.btn-3d-emerald {
+  position: relative;
+  border-radius: 0.75rem;
+  background: linear-gradient(135deg, #10b981 0%, #059669 50%, #0284c7 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 6px 18px -2px rgba(5, 150, 105, 0.4), 0 2px 4px rgba(0, 0, 0, 0.06);
+  transition: transform 140ms ease, box-shadow 140ms ease, filter 140ms ease;
+}
+.btn-3d-emerald:hover {
+  filter: brightness(1.06);
+  transform: translateY(-1.5px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 9px 24px -2px rgba(5, 150, 105, 0.48), 0 3px 6px rgba(0, 0, 0, 0.08);
+}
+.btn-3d-emerald:active {
+  transform: translateY(1.5px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 2px 6px rgba(5, 150, 105, 0.3);
+}
+
+.btn-3d-gold {
+  position: relative;
+  border-radius: 0.75rem;
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 60%, #b45309 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 6px 18px -2px rgba(217, 119, 6, 0.35), 0 2px 4px rgba(0, 0, 0, 0.06);
+  transition: transform 140ms ease, box-shadow 140ms ease, filter 140ms ease;
+}
+.btn-3d-gold:hover {
+  filter: brightness(1.06);
+  transform: translateY(-1.5px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 9px 24px -2px rgba(217, 119, 6, 0.42), 0 3px 6px rgba(0, 0, 0, 0.08);
+}
+.btn-3d-gold:active {
+  transform: translateY(1.5px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 2px 6px rgba(217, 119, 6, 0.25);
+}
+
+.btn-3d-pill-active {
+  position: relative;
+  border-radius: 0.75rem;
+  background: linear-gradient(135deg, #059669 0%, #0284c7 100%) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 6px 16px -2px rgba(2, 132, 199, 0.4), 0 2px 4px rgba(0, 0, 0, 0.06);
+  transform: translateY(-1px);
+  transition: transform 140ms ease, box-shadow 140ms ease;
+}
+.btn-3d-pill-active:hover {
+  transform: translateY(-1.5px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 8px 20px -2px rgba(2, 132, 199, 0.45);
+}
+.btn-3d-pill-active:active {
+  transform: translateY(1.5px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 2px 6px rgba(2, 132, 199, 0.3);
+}
+
+.btn-3d-pill-inactive {
+  position: relative;
+  border-radius: 0.75rem;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.95) 0%, rgba(241, 248, 253, 0.88) 100%);
+  border: 1px solid rgba(203, 213, 225, 0.75);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8), 0 4px 10px -2px rgba(0, 0, 0, 0.05);
+  transition: transform 140ms ease, box-shadow 140ms ease, border-color 140ms ease, background 140ms ease;
+}
+.dark .btn-3d-pill-inactive {
+  background: linear-gradient(145deg, rgba(15, 28, 50, 0.88) 0%, rgba(9, 18, 33, 0.88) 100%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 4px 10px -2px rgba(0, 0, 0, 0.35) !important;
+}
+.btn-3d-pill-inactive:hover {
+  transform: translateY(-1.5px);
+  border-color: rgba(16, 185, 129, 0.45);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 6px 14px -2px rgba(16, 185, 129, 0.15);
+}
+.dark .btn-3d-pill-inactive:hover {
+  border-color: rgba(16, 185, 129, 0.5) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 6px 14px -2px rgba(16, 185, 129, 0.25) !important;
+}
+.btn-3d-pill-inactive:active {
+  transform: translateY(1.5px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+.dark .btn-3d-pill-inactive:active {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 1px 3px rgba(0, 0, 0, 0.3) !important;
+}

@@ -17,7 +17,7 @@ export const Modal = ({ isOpen, onClose, title, children, size = 'default' }: Mo
   return (
     <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-2 sm:p-4 bg-black/50 dark:bg-black/80 animate-in fade-in duration-300">
       <div
-        className={`bg-white dark:bg-[#0a0a0a] w-full overflow-hidden rounded-t-[2rem] sm:rounded-[2.5rem] border border-[#c5a059]/20 p-4 sm:p-6 md:p-8 relative isolate shadow-[0_30px_60px_rgba(0,0,0,0.2)] dark:shadow-[0_30px_60px_rgba(0,0,0,0.8)] animate-in zoom-in-95 duration-300 flex flex-col [transform:translateZ(0)] [backface-visibility:hidden] ${
+        className={`bg-white dark:bg-[#0a0a0a] w-full overflow-hidden rounded-t-[2rem] sm:rounded-[2.5rem] border border-white/70 dark:border-white/15 backdrop-blur-2xl p-4 sm:p-6 md:p-8 relative isolate shadow-[0_30px_60px_rgba(0,0,0,0.2)] dark:shadow-[0_30px_60px_rgba(0,0,0,0.8)] animate-in zoom-in-95 duration-300 flex flex-col [transform:translateZ(0)] [backface-visibility:hidden] ${
           isSmall ? 'max-w-xl max-h-[82dvh] sm:max-h-[70vh]' : 'max-w-3xl h-[90dvh] sm:h-[82vh]'
         }`}
         onClick={(e) => e.stopPropagation()}

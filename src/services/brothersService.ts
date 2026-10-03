@@ -2,6 +2,7 @@ import { hermanosModuleService } from '../modules/hermanos/services/hermanosModu
 import { BrotherDataAudit, BrotherId, BrotherListItem, BrotherPersistenceSnapshot, BrotherProfile } from '../modules/hermanos/types';
 import { AuditActor } from './supabaseAuditService';
 import { supabaseCongregationService } from './supabaseCongregationService';
+import { stageProgressionService } from './stageProgressionService';
 
 let brothersCache: BrotherProfile[] = hermanosModuleService.list();
 let cellsCache = hermanosModuleService.listCells();
@@ -10,7 +11,7 @@ const toBrotherListItem = (brother: BrotherProfile): BrotherListItem => ({
   id: brother.id,
   name: brother.name,
   fotoUrl: brother.fotoUrl,
-  procesoActual: brother.procesoActual,
+  procesoActual: stageProgressionService.resolveProcess(brother),
   cellName: brother.acompanamiento.celulaName,
   acompananteName: brother.acompanamiento.acompananteName,
 });
@@ -35,6 +36,28 @@ export const brothersService = {
 
   listCells() {
     return cellsCache;
+  },
+
+  addBrother(brother: BrotherProfile): void {
+    hermanosModuleService.addBrother(brother);
+    refreshCachesFromBrothers(hermanosModuleService.list());
+  },
+
+  removeBrother(id: BrotherId): void {
+    hermanosModuleService.removeBrother(id);
+    refreshCachesFromBrothers(hermanosModuleService.list());
+  },
+
+  
+  updateBrotherPhoto(id: BrotherId, photoUrl: string): void {
+    const brother = this.findById(id);
+    if (brother) {
+      this.addBrother({ ...brother, fotoUrl: photoUrl });
+    }
+  },
+clearMockBrothers(): void {
+    hermanosModuleService.clearMockBrothers();
+    refreshCachesFromBrothers(hermanosModuleService.list());
   },
 
   listForListing(): BrotherListItem[] {
