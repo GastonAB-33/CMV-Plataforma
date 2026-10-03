@@ -21,10 +21,14 @@ import { DiscipuladoConfigPage } from './modules/configuracion/DiscipuladoConfig
 import { ImportadorPage } from './modules/importador/ImportadorPage';
 import { User } from './types';
 
+import { HomePage } from './modules/nCMV-Plataforma/HomePage';
+import { CelulasDirectoryPage } from './modules/celulas/CelulasDirectoryPage';
+
 const ProtectedAppRoutes = ({ user }: { user: User }) => (
   <MainLayout user={user}>
     <Routes>
-      <Route path="/" element={<Navigate to="/hermanos" replace />} />
+      <Route path="/" element={<HomePage />} />
+      <Route path="/celulas" element={<CelulasDirectoryPage />} />
       <Route path="/dashboard" element={<DashboardPage />} />
       <Route path="/hermanos" element={<BrotherList />} />
       <Route path="/hermanos/:id" element={<BrotherDetail />} />
@@ -40,7 +44,7 @@ const ProtectedAppRoutes = ({ user }: { user: User }) => (
       <Route path="/configuracion/matrimonios" element={<MarriagesConfigPage />} />
       <Route path="/configuracion/discipulado" element={<DiscipuladoConfigPage />} />
       <Route path="/importador" element={<ImportadorPage />} />
-      <Route path="*" element={<Navigate to="/hermanos" replace />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   </MainLayout>
 );

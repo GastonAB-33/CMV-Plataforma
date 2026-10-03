@@ -198,51 +198,53 @@ export const BrotherList = () => {
 
   return (
     <div className="w-full space-y-6 md:space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-700">
-      {/* Banner Principal Recto de Extremo a Extremo con Imagen, Gradiente y Textura Fractal */}
-      <div className="relative w-full overflow-hidden rounded-none border-b border-slate-200/80 dark:border-white/10 shadow-xl bg-[#06122d]">
-        {/* Imagen de fondo de personas */}
-        <div className="absolute inset-0 -z-0 overflow-hidden">
-          <img
-            src="/banner-hermanos.jpg"
-            alt="Comunidad CMV"
-            className="w-full h-full object-cover object-[center_35%] filter brightness-95 contrast-105"
-          />
-          {/* Capa de textura fractal glass para una refracción luminosa integrada */}
-          <div 
-            className="absolute inset-0 opacity-20 mix-blend-overlay bg-cover bg-center pointer-events-none"
-            style={{ backgroundImage: "url('/fractal-glass-bg.jpg')" }}
-          />
-          {/* Gradiente vibrante inspirado en la referencia Telemedicine */}
-          <div className="absolute inset-0 bg-gradient-to-r from-[#06122d]/95 via-[#0284c7]/85 to-[#059669]/80 dark:from-[#050b1a]/95 dark:via-[#0369a1]/85 dark:to-[#047857]/80" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(245,158,11,0.35)_0%,transparent_60%)]" />
-          {/* Desvanecimiento gradual hacia abajo donde comienza el sistema */}
-          <div className="absolute inset-0 banner-fade-mask bg-gradient-to-b from-transparent via-transparent to-black/50" />
-        </div>
+      {/* Banner Principal bajado sutilmente y redondeado en cada esquina */}
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 md:px-8 mt-2 sm:mt-3">
+        <div className="relative w-full overflow-hidden rounded-2xl border border-slate-200/80 dark:border-white/10 shadow-xl bg-[#06122d]">
+          {/* Imagen de fondo de personas */}
+          <div className="absolute inset-0 -z-0 overflow-hidden">
+            <img
+              src="/banner-hermanos.jpg"
+              alt="Comunidad CMV"
+              className="w-full h-full object-cover object-[center_35%] filter brightness-95 contrast-105"
+            />
+            {/* Capa de textura fractal glass para una refracción luminosa integrada */}
+            <div 
+              className="absolute inset-0 opacity-20 mix-blend-overlay bg-cover bg-center pointer-events-none"
+              style={{ backgroundImage: "url('/fractal-glass-bg.jpg')" }}
+            />
+            {/* Gradiente vibrante inspirado en la referencia Telemedicine */}
+            <div className="absolute inset-0 bg-gradient-to-r from-[#06122d]/95 via-[#0284c7]/85 to-[#059669]/80 dark:from-[#050b1a]/95 dark:via-[#0369a1]/85 dark:to-[#047857]/80" />
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(245,158,11,0.35)_0%,transparent_60%)]" />
+            {/* Desvanecimiento gradual hacia abajo donde comienza el sistema */}
+            <div className="absolute inset-0 banner-fade-mask bg-gradient-to-b from-transparent via-transparent to-black/50" />
+          </div>
 
-        {/* Contenido más amplio y espacioso, con padding generoso para evitar superposiciones */}
-        <header className="relative z-10 max-w-7xl mx-auto px-6 sm:px-10 md:px-12 pt-16 sm:pt-20 md:pt-24 pb-14 sm:pb-16 md:pb-20 flex flex-col md:flex-row md:items-end justify-between gap-8 md:gap-12">
-          <div className="space-y-4 max-w-2xl">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-black/30 dark:bg-white/15 backdrop-blur-md border border-white/25 text-white text-[11px] font-extrabold uppercase tracking-widest shadow-sm">
-              <Sparkles className="text-amber-300" size={14} />
-              <span>Plataforma Pastoral CMV</span>
+          {/* Contenido con padding optimizado */}
+          <header className="relative z-10 w-full px-6 sm:px-10 md:px-12 pt-12 sm:pt-16 md:pt-18 pb-10 sm:pb-12 md:pb-14 flex flex-col md:flex-row md:items-end justify-between gap-6 md:gap-8">
+            <div className="space-y-3 max-w-2xl">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-black/30 dark:bg-white/15 backdrop-blur-md border border-white/25 text-white text-[11px] font-extrabold uppercase tracking-widest shadow-sm">
+                <Sparkles className="text-amber-300" size={13} />
+                <span>Plataforma Pastoral CMV</span>
+              </div>
+              <h1 className="text-3xl sm:text-5xl md:text-6xl font-black text-white tracking-tight drop-shadow-lg leading-none">
+                Hermanos
+              </h1>
+              <p className="text-sm sm:text-base text-emerald-50 dark:text-cyan-100 font-medium drop-shadow-sm leading-relaxed">
+                Seguimiento y gestión espiritual de la congregación.
+              </p>
             </div>
-            <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white tracking-tight drop-shadow-lg leading-none">
-              Hermanos
-            </h1>
-            <p className="text-base sm:text-lg text-emerald-50 dark:text-cyan-100 font-medium drop-shadow-sm leading-relaxed">
-              Seguimiento y gestión espiritual de la congregación.
-            </p>
-          </div>
-          <div className="shrink-0 pt-2 md:pt-0">
-            <button
-              onClick={() => setIsModalOpen(true)}
-              className="w-full sm:w-auto justify-center btn-3d-emerald text-white px-9 md:px-11 py-4 md:py-4.5 rounded-xl font-extrabold flex items-center gap-3 uppercase tracking-wider text-sm md:text-base shadow-2xl"
-            >
-              <UserPlus size={20} />
-              <span>NUEVO HERMANO</span>
-            </button>
-          </div>
-        </header>
+            <div className="shrink-0 pt-2 md:pt-0">
+              <button
+                onClick={() => setIsModalOpen(true)}
+                className="w-full sm:w-auto justify-center btn-3d-emerald text-white px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl font-black flex items-center gap-2 uppercase tracking-wider text-xs shadow-xl"
+              >
+                <UserPlus size={18} />
+                <span>NUEVO HERMANO</span>
+              </button>
+            </div>
+          </header>
+        </div>
       </div>
 
       {/* Contenedor centralizado para los controles inferiores y tabla */}

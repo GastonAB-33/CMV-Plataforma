@@ -1,5 +1,5 @@
 import { ReactNode, useMemo, useState } from 'react';
-import { Users, LineChart, Menu, X, MoreHorizontal, Settings, FileSpreadsheet, GraduationCap, Award } from 'lucide-react';
+import { Users, LineChart, Menu, X, MoreHorizontal, Settings, FileSpreadsheet, GraduationCap, Award, Home, Layers } from 'lucide-react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { Role, User } from '../types';
 import { ThemeToggle } from '../components/ui/ThemeToggle';
@@ -22,7 +22,9 @@ export const MainLayout = ({ children, user }: MainLayoutProps) => {
   const canManageUsers = role === Role.APOSTOL || role === Role.SUPERADMIN;
   const canUseImporter = role === Role.SUPERADMIN;
   const navItems = [
+    { id: 'home', feature: 'dashboard' as AppFeatureKey, path: '/', icon: <Home size={22} />, label: 'Inicio', shortLabel: 'Inicio', primaryMobile: true },
     { id: 'brothers', feature: 'hermanos' as AppFeatureKey, path: '/hermanos', icon: <Users size={22} />, label: 'Hermanos', shortLabel: 'Hermanos', primaryMobile: true },
+    { id: 'celulas', feature: 'hermanos' as AppFeatureKey, path: '/celulas', icon: <Layers size={22} />, label: 'Células', shortLabel: 'Células', primaryMobile: true },
     { id: 'tracking', feature: 'seguimiento' as AppFeatureKey, path: '/tracking', icon: <LineChart size={22} />, label: 'Seguimiento', shortLabel: 'Seguimiento', primaryMobile: true },
     { id: 'eddi', feature: 'escuela_eddi' as AppFeatureKey, path: '/escuela-eddi', icon: <GraduationCap size={22} />, label: 'Escuela EDDI', shortLabel: 'EDDI', primaryMobile: false },
     { id: 'edem', feature: 'escuela_edem' as AppFeatureKey, path: '/escuela-edem', icon: <Award size={22} />, label: 'Escuela EDEM', shortLabel: 'EDEM', primaryMobile: false },
@@ -34,8 +36,8 @@ export const MainLayout = ({ children, user }: MainLayoutProps) => {
       : []),
   ].filter((item) => hasPermissionAtLeastForUser(user, item.feature, 'view'));
 
-  const activeClass = 'bg-gradient-to-r from-emerald-500/15 via-teal-500/10 to-sky-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 shadow-sm font-bold';
-  const inactiveClass = 'text-slate-700 dark:text-gray-300 hover:bg-emerald-500/10 hover:text-emerald-600 dark:hover:text-emerald-400';
+  const activeClass = 'bg-emerald-500/10 text-emerald-600 dark:text-[#00e599] border border-emerald-500/80 dark:border-[#00c988] shadow-sm font-bold rounded-2xl';
+  const inactiveClass = 'text-slate-700 dark:text-white hover:bg-slate-100 dark:hover:bg-white/5 hover:text-emerald-600 dark:hover:text-[#00e599] font-semibold rounded-2xl transition-colors';
   const primaryMobileItems = navItems.filter((item) => item.primaryMobile);
   const secondaryMobileItems = navItems.filter((item) => !item.primaryMobile);
   const isSecondaryRouteActive = useMemo(
@@ -51,55 +53,54 @@ export const MainLayout = ({ children, user }: MainLayoutProps) => {
   };
 
   return (
-    <div className="flex min-h-screen md:h-screen bg-telemed text-black dark:text-white overflow-hidden transition-colors">
+    <div className="flex min-h-screen md:h-screen bg-white dark:bg-black text-black dark:text-white overflow-hidden transition-colors">
       <div className="hidden md:block fixed top-4 right-4 z-[60]">
         <ThemeToggle />
       </div>
 
-      <aside className="hidden md:flex w-72 bg-white/80 dark:bg-[#070f1d]/85 backdrop-blur-2xl flex-col border-r border-white/30 dark:border-white/10 shadow-2xl relative z-20 transition-colors">
-        {/* Recuadro Verde Cuadrado con Logo CMV Grande */}
-        <div className="p-4 pb-4">
+      <aside className="hidden md:flex w-80 bg-white dark:bg-black backdrop-blur-2xl flex-col border-r border-slate-200/90 dark:border-white/10 shadow-2xl relative z-20 transition-colors">
+        {/* Recuadro CMV más ancho, compacto y cercano a la navegación */}
+        <div className="p-4 pb-2">
+          {/* Cuadrado CMV Seguimiento Oficial Pastoral más grande, cuadrado y con logo prominente */}
           <div
-            className="w-full aspect-square rounded-2xl bg-[#059669] text-white p-4 flex flex-col items-center justify-between text-center shadow-xl shadow-emerald-900/35 cursor-pointer group hover:brightness-105 transition-all relative overflow-hidden"
-            onClick={() => navigate('/hermanos')}
+            className="w-full aspect-[1/0.95] sm:aspect-square rounded-2xl bg-gradient-to-br from-[#059669] via-[#047857] to-[#065f46] text-white p-4 flex flex-col items-center justify-between text-center shadow-xl shadow-emerald-950/25 cursor-pointer group hover:brightness-105 transition-all relative overflow-hidden border border-white/20"
+            onClick={() => navigate('/')}
           >
-            <div className="w-full flex items-center justify-between z-10">
-              <span className="text-[9px] uppercase tracking-widest font-black px-2 py-0.5 rounded-md bg-black/25 text-white/95 border border-white/20">
+            <div className="w-full flex items-center justify-between gap-1">
+              <span className="text-[9px] uppercase tracking-widest font-black px-2 py-0.5 rounded bg-black/30 text-white/95 border border-white/20">
                 Oficial
               </span>
-              <span className="text-[9px] tracking-[0.2em] font-extrabold uppercase text-emerald-100/90">
+              <span className="text-[9px] uppercase tracking-widest font-black px-2 py-0.5 rounded bg-black/30 text-emerald-200 border border-white/20">
                 Pastoral
               </span>
             </div>
 
-            {/* Logo CMV Grande centrado */}
-            <div className="my-auto flex flex-col items-center justify-center py-1">
+            <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-black/25 p-2 flex items-center justify-center shrink-0 border border-white/25 shadow-inner my-1 group-hover:scale-105 transition-transform duration-300">
               <img
                 src="/logo-cmv.png"
                 alt="CMV Logo"
-                className="w-36 h-36 sm:w-40 sm:h-40 md:w-44 md:h-44 object-contain filter drop-shadow-2xl group-hover:scale-105 transition-transform duration-300"
+                className="w-full h-full object-contain filter drop-shadow-lg"
               />
             </div>
 
-            {/* Títulos inferiores */}
-            <div className="w-full pt-1.5 border-t border-white/25 z-10">
-              <h2 className="text-2xl font-black tracking-widest uppercase leading-none text-white drop-shadow-md">
+            <div className="w-full text-center">
+              <h2 className="text-2xl sm:text-3xl font-black tracking-[0.2em] uppercase text-white drop-shadow-md leading-none">
                 CMV
               </h2>
-              <p className="text-[10px] tracking-[0.3em] font-extrabold uppercase text-emerald-100 mt-1">
+              <p className="text-[10px] sm:text-[11px] tracking-[0.28em] font-black uppercase text-emerald-100 mt-0.5">
                 Seguimiento
               </p>
             </div>
           </div>
         </div>
 
-        <nav className="flex-1 px-4 space-y-2">
+        <nav className="flex-1 px-4 space-y-1.5 mt-1">
           {navItems.map((item) => (
             <NavLink
               key={item.id}
               to={item.path}
               className={({ isActive }) =>
-                `flex items-center gap-4 w-full p-3 rounded-xl transition-all duration-200 ${isActive ? activeClass : inactiveClass}`
+                `flex items-center gap-3.5 w-full p-2.5 rounded-2xl transition-all duration-200 ${isActive ? activeClass : inactiveClass}`
               }
             >
               {item.icon}
@@ -126,7 +127,7 @@ export const MainLayout = ({ children, user }: MainLayoutProps) => {
               <button
                 type="button"
                 onClick={() => void handleLogout()}
-                className="w-full rounded-lg px-3 py-2 text-xs uppercase tracking-wider font-black text-left text-rose-600 dark:text-rose-300 hover:bg-rose-500/10"
+                className="w-full rounded-lg px-3 py-2 text-xs uppercase tracking-wider font-black text-left text-rose-600 dark:text-rose-400 hover:bg-rose-500/10 transition-colors"
               >
                 Cerrar sesion
               </button>
@@ -159,7 +160,7 @@ export const MainLayout = ({ children, user }: MainLayoutProps) => {
         </header>
 
         <main className="flex-1 overflow-y-auto pb-32 md:pb-8 bg-transparent transition-colors">
-          {location.pathname === '/hermanos' ? (
+          {location.pathname === '/' || location.pathname === '/hermanos' || location.pathname === '/celulas' ? (
             children
           ) : (
             <div className="max-w-7xl mx-auto p-3 sm:p-4 md:p-8">
