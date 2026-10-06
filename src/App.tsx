@@ -23,11 +23,13 @@ import { User } from './types';
 
 import { HomePage } from './modules/nCMV-Plataforma/HomePage';
 import { CelulasDirectoryPage } from './modules/celulas/CelulasDirectoryPage';
+import { CulturaCongregacionalPage } from './modules/nCMV-Plataforma/CulturaCongregacionalPage';
 
 const ProtectedAppRoutes = ({ user }: { user: User }) => (
   <MainLayout user={user}>
     <Routes>
       <Route path="/" element={<HomePage />} />
+      <Route path="/cultura" element={<CulturaCongregacionalPage />} />
       <Route path="/celulas" element={<CelulasDirectoryPage />} />
       <Route path="/dashboard" element={<DashboardPage />} />
       <Route path="/hermanos" element={<BrotherList />} />
@@ -63,6 +65,7 @@ const App = () => {
             </RedirectIfAuthenticated>
           }
         />
+        <Route path="/cultura" element={<CulturaCongregacionalPage />} />
         <Route
           path="/*"
           element={

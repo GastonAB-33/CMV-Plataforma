@@ -1,88 +1,98 @@
 import React, { useState } from 'react';
-import { Sparkles, ArrowRight, Heart, BookOpen } from 'lucide-react';
-import { Modal } from '../../../components/ui/Modal';
+import { Play, Sparkles, Clock, Compass, ArrowRight } from 'lucide-react';
+import { CulturaCongregacionalModal } from './CulturaCongregacionalModal';
 
 export const BentoCardCulture: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
     <>
-      <div className="w-full flex justify-center pt-1 sm:pt-2">
-        <button
-          type="button"
-          onClick={() => setIsOpen(true)}
-          className="w-full sm:w-auto min-w-[280px] sm:min-w-[360px] p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-slate-900 via-[#0c1e38] to-[#04332f] text-white border border-cyan-500/30 shadow-lg hover:shadow-2xl hover:-translate-y-0.5 active:scale-[0.99] transition-all flex items-center justify-between gap-4 group"
-        >
-          <div className="w-12 h-12 rounded-xl bg-cyan-500/20 border border-cyan-400/30 flex items-center justify-center shrink-0 text-cyan-300 group-hover:bg-cyan-500 group-hover:text-white transition-all shadow-inner">
-            <Sparkles size={22} className="text-cyan-300 group-hover:text-white" />
+      <div
+        onClick={() => setIsOpen(true)}
+        className="relative group cursor-pointer overflow-hidden rounded-3xl bg-[#091a28] border border-cyan-500/25 dark:border-cyan-400/20 p-5 shadow-lg hover:shadow-2xl hover:border-cyan-400/50 transition-all duration-500 flex flex-col justify-between min-h-[300px] text-white"
+      >
+        {/* Resplandor ambiental de fondo */}
+        <div className="absolute -top-12 -right-12 w-36 h-36 bg-cyan-500/15 rounded-full blur-2xl pointer-events-none group-hover:scale-125 transition-transform duration-700" />
+        <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none" />
+
+        {/* Encabezado informativo */}
+        <div className="relative z-10 flex items-center justify-between">
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-cyan-950/60 border border-cyan-400/30 text-cyan-300 text-[10px] font-black uppercase tracking-wider">
+            <Sparkles size={11} className="text-amber-300" />
+            <span>ADN & Doctrina CMV</span>
           </div>
-          <div className="text-left min-w-0 flex-1 pr-2">
-            <span className="text-[10px] font-black uppercase tracking-[0.25em] text-cyan-400">
-              Cultura Congregacional
+          <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+            Horarios & Visión
+          </span>
+        </div>
+
+        {/* Insignia Circular con Texto Curvo Rotativo y Botón de Inicio */}
+        <div className="relative z-10 my-auto py-2 flex flex-col items-center justify-center">
+          <div className="relative w-36 h-36 flex items-center justify-center">
+            {/* Texto circular SVG rotando suavemente */}
+            <svg
+              viewBox="0 0 200 200"
+              className="absolute inset-0 w-full h-full animate-[spin_24s_linear_infinite] group-hover:animate-[spin_10s_linear_infinite] transition-all pointer-events-none"
+            >
+              <defs>
+                <path
+                  id="circlePathCulture"
+                  d="M 100, 100 m -68, 0 a 68,68 0 1,1 136,0 a 68,68 0 1,1 -136,0"
+                />
+              </defs>
+              <text className="text-[13px] font-black uppercase tracking-[0.22em] fill-cyan-300/90 dark:fill-cyan-200">
+                <textPath href="#circlePathCulture" startOffset="0%">
+                  CONOCE MÁS SOBRE NUESTRA CULTURA • ADN •
+                </textPath>
+              </text>
+            </svg>
+
+            {/* Botón central interactivo con icono intuitivo de play/brújula */}
+            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#00dfa2] to-[#0284c7] p-0.5 shadow-xl group-hover:scale-110 group-hover:shadow-cyan-400/40 transition-all duration-300 flex items-center justify-center">
+              <div className="w-full h-full rounded-full bg-[#051f2d] flex items-center justify-center text-cyan-300 group-hover:text-white transition-colors">
+                <Play size={22} className="fill-cyan-400 group-hover:fill-white ml-0.5 transition-colors" />
+              </div>
+            </div>
+          </div>
+
+          <h3 className="text-sm font-black uppercase tracking-wider text-white text-center mt-2">
+            Identidad & Misión
+          </h3>
+          <p className="text-[11px] text-cyan-200/80 text-center font-medium">
+            Pulsa para abrir guía de visión y ADN pastoral
+          </p>
+        </div>
+
+        {/* Sección de Horarios Oficiales clara e intuitiva */}
+        <div className="relative z-10 pt-3 border-t border-cyan-900/50 space-y-1.5 text-xs">
+          <div className="flex items-center justify-between text-[11px] text-slate-300 bg-black/30 px-2.5 py-1.5 rounded-lg border border-white/5">
+            <span className="flex items-center gap-1.5 font-bold text-white">
+              <Clock size={12} className="text-cyan-400" />
+              <span>Miércoles 20:00 hs</span>
             </span>
-            <h3 className="text-base sm:text-lg font-black uppercase tracking-wider text-white leading-tight mt-0.5">
-              Identidad y Misión CMV
-            </h3>
-            <p className="text-xs text-slate-300 font-medium line-clamp-1">
-              Visión de células, discipulado y ADN pastoral.
-            </p>
+            <span className="text-[10px] text-cyan-300 font-extrabold uppercase">Altar & Oración</span>
           </div>
-          <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-cyan-300 group-hover:bg-cyan-500 group-hover:text-white transition-colors shrink-0">
-            <ArrowRight size={16} />
+
+          <div className="flex items-center justify-between text-[11px] text-slate-300 bg-black/30 px-2.5 py-1.5 rounded-lg border border-white/5">
+            <span className="flex items-center gap-1.5 font-bold text-white">
+              <Compass size={12} className="text-emerald-400" />
+              <span>Domingos 10 & 19 hs</span>
+            </span>
+            <span className="text-[10px] text-emerald-300 font-extrabold uppercase">Celebración</span>
           </div>
-        </button>
+
+          <div className="pt-1 flex items-center justify-between text-[11px] font-extrabold text-cyan-300 group-hover:text-cyan-200">
+            <span>Ver Visión Completa</span>
+            <ArrowRight size={13} className="group-hover:translate-x-1 transition-transform" />
+          </div>
+        </div>
       </div>
 
-      {isOpen && (
-        <Modal
-          isOpen={isOpen}
-          onClose={() => setIsOpen(false)}
-          title="Identidad y Misión CMV"
-        >
-          <div className="space-y-4 text-slate-800 dark:text-gray-200">
-            <div className="p-4 rounded-2xl bg-gradient-to-br from-slate-900 via-[#0c1e38] to-[#04332f] text-white border border-cyan-500/30">
-              <h3 className="text-base font-extrabold text-white flex items-center gap-2">
-                <Sparkles size={18} className="text-cyan-400" />
-                <span>Cristo Manantial de Vida</span>
-              </h3>
-              <p className="text-xs sm:text-sm mt-1.5 text-slate-200 leading-relaxed">
-                Somos una congregación comprometida con el evangelismo relacional, el cuidado pastoral a través de grupos de vida, la formación continua y el servicio abnegado a la comunidad.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs font-semibold">
-              <div className="p-3.5 rounded-xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10">
-                <p className="font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
-                  <Heart size={14} />
-                  <span>Grupos de Vida</span>
-                </p>
-                <p className="text-slate-600 dark:text-gray-400 mt-1 leading-snug">
-                  Células familiares donde se experimenta la fe, comunión, atención y oración constante.
-                </p>
-              </div>
-              <div className="p-3.5 rounded-xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10">
-                <p className="font-black text-cyan-600 dark:text-cyan-400 uppercase tracking-wider flex items-center gap-1.5">
-                  <BookOpen size={14} />
-                  <span>Escuela de Discipulado</span>
-                </p>
-                <p className="text-slate-600 dark:text-gray-400 mt-1 leading-snug">
-                  Crecimiento en la Palabra con cimientos doctrinales sólidos para cada miembro.
-                </p>
-              </div>
-            </div>
-
-            <div className="pt-2 flex justify-end">
-              <button
-                type="button"
-                onClick={() => setIsOpen(false)}
-                className="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200 text-xs font-black uppercase tracking-wider transition-colors"
-              >
-                Cerrar
-              </button>
-            </div>
-          </div>
-        </Modal>
-      )}
+      {/* Modal interactivo de Cultura Congregacional */}
+      <CulturaCongregacionalModal
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+      />
     </>
   );
 };

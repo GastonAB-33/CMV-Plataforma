@@ -16,15 +16,15 @@ import { ThemeToggle } from '../../components/ui/ThemeToggle';
 import { Modal } from '../../components/ui/Modal';
 import { Toast } from '../../components/ui/Toast';
 import { brothersService } from '../../services/brothersService';
-import { BentoNovedades } from './components/BentoNovedades';
-import { BentoLetterC } from './components/BentoLetterC';
+import { BentoCardBienvenido } from './components/BentoCardBienvenido';
+import { BentoCardCulture } from './components/BentoCardCulture';
 import { BentoCardGeneral } from './components/BentoCardGeneral';
-import { BentoCardHermanos } from './components/BentoCardHermanos';
 import { BentoCardSeguimiento } from './components/BentoCardSeguimiento';
 import { BentoCardEddi } from './components/BentoCardEddi';
 import { BentoCardMisericordia } from './components/BentoCardMisericordia';
-import { BentoCardEdem } from './components/BentoCardEdem';
-import { BentoCardCulture } from './components/BentoCardCulture';
+import { BentoCardHermanosTablePreview } from './components/BentoCardHermanosTablePreview';
+import { BentoCardLiderazgo } from './components/BentoCardLiderazgo';
+import { BentoCardJesusDevocional } from './components/BentoCardJesusDevocional';
 
 export const HomePage: React.FC = () => {
   const navigate = useNavigate();
@@ -209,35 +209,47 @@ export const HomePage: React.FC = () => {
           </header>
         </div>
 
-        {/* BENTO GRID MULTIDIMENSIONAL */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-3.5">
-          {/* 1. Tarjeta Grande Destacada: NOVEDADES (col-span-1 md:col-span-2) */}
-          <BentoNovedades onOpenEvents={() => navigate('/events')} />
+        {/* BENTO GRID ASIMÉTRICO MULTIDIMENSIONAL IDÉNTICO A LA REFERENCIA */}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-3.5 sm:gap-4 items-stretch">
+          {/* COLUMNA 1 (IZQUIERDA): BIENVENIDO A CASA & CULTURA / HORARIOS */}
+          <div className="lg:col-span-1 flex flex-col gap-3.5 sm:gap-4">
+            {/* 1. Tarjeta Fotográfica Bienvenido a Casa con Contexto Pastoral de Células */}
+            <BentoCardBienvenido onOpenEvents={() => navigate('/events')} />
 
-          {/* 2. Tarjeta Letra C: Recorte fotográfico de comunión */}
-          <BentoLetterC />
+            {/* 2. Tarjeta Circular de Cultura, Identidad, Visión y Horarios Oficiales */}
+            <BentoCardCulture />
+          </div>
 
-          {/* 3. Tarjeta GENERAL: Padrón con 3 liñitas en amarillo */}
-          <BentoCardGeneral />
+          {/* COLUMNA 2 & 3 (CENTRO): MÓDULOS DE GESTIÓN & VISTA PREVIA EN VIVO DE HERMANOS */}
+          <div className="lg:col-span-2 flex flex-col gap-3.5 sm:gap-4">
+            {/* Fila Superior: Módulos Funcionales Clave */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+              {/* Tarjeta GENERAL: Padrón con 3 liñitas en amarillo */}
+              <BentoCardGeneral />
 
-          {/* 4. Tarjeta HERMANOS: Células y miembros */}
-          <BentoCardHermanos />
+              {/* Tarjeta SEGUIMIENTO: Pipeline pastoral */}
+              <BentoCardSeguimiento />
 
-          {/* 5. Tarjeta SEGUIMIENTO: Pipeline pastoral */}
-          <BentoCardSeguimiento />
+              {/* Tarjeta ESCUELA EDDI: Discipulado */}
+              <BentoCardEddi />
 
-          {/* 6. Tarjeta ESCUELA EDDI: Discipulado */}
-          <BentoCardEddi />
+              {/* Tarjeta MISERICORDIA: Ayuda social */}
+              <BentoCardMisericordia />
+            </div>
 
-          {/* 7. Tarjeta ESCUELA EDEM: Entrenamiento ministerial */}
-          <BentoCardEdem />
+            {/* Fila Inferior Ancha: Tabla en Vivo de Hermanos con Filtros de Etapas */}
+            <BentoCardHermanosTablePreview onOpenNewBrother={() => setIsModalOpen(true)} />
+          </div>
 
-          {/* 8. Tarjeta MISERICORDIA: Ayuda social */}
-          <BentoCardMisericordia />
+          {/* COLUMNA 4 (DERECHA): LIDERAZGO & ALTAR JESÚS DEVOCIONAL */}
+          <div className="lg:col-span-1 flex flex-col gap-3.5 sm:gap-4">
+            {/* 1. Tarjeta Tipográfica Geométrica LI-DER-AZGO (EDEM) */}
+            <BentoCardLiderazgo />
+
+            {/* 2. Tarjeta Devocional Silueta con Cruz Brillante y JESÚS */}
+            <BentoCardJesusDevocional />
+          </div>
         </div>
-
-        {/* Botón Cuadrado por Debajo: Identidad y Misión CMV */}
-        <BentoCardCulture />
       </main>
 
       {/* Modal para Nuevo Hermano Rápido */}
