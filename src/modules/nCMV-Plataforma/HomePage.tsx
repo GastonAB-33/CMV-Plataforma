@@ -163,50 +163,50 @@ export const HomePage: React.FC = () => {
 
       {/* Contenedor Principal expandido más cerca hacia los cuadros generales */}
       <main className="max-w-7xl mx-auto px-2 sm:px-4 md:px-6 py-2 sm:py-3 space-y-3 sm:space-y-3.5">
-        {/* Banner Superior Ancho con Foto de Iglesia Evangélica y Luz, Difuminado y Tipografía Amplia */}
-        <div className="relative w-full overflow-hidden rounded-2xl border border-slate-200/80 dark:border-white/10 shadow-xl bg-slate-950">
-          {/* Foto de reunión de iglesia evangélica con luz visible en su totalidad */}
+        {/* Banner Principal con Imagen y Degradé idéntico a la referencia */}
+        <div className="relative w-full overflow-hidden rounded-2xl border border-slate-200/80 dark:border-white/10 shadow-xl bg-[#06122d]">
+          {/* Imagen de fondo de personas */}
           <div className="absolute inset-0 -z-0 overflow-hidden">
             <img
-              src="/church-gathering.jpg"
-              alt="Reunión de Iglesia CMV"
+              src="/banner-hermanos.jpg"
+              alt="Comunidad CMV"
               className="w-full h-full object-cover object-[center_35%] filter brightness-95 contrast-105"
             />
-            {/* Difuminado suave: la foto se ve completa sin partes blancas tapándola */}
-            <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/55 to-black/30 dark:from-black/90 dark:via-black/65 dark:to-black/40 pointer-events-none" />
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(2,132,199,0.3)_0%,transparent_65%)] pointer-events-none" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-transparent pointer-events-none" />
+            {/* Capa de textura fractal glass para una refracción luminosa integrada */}
+            <div 
+              className="absolute inset-0 opacity-20 mix-blend-overlay bg-cover bg-center pointer-events-none"
+              style={{ backgroundImage: "url('/fractal-glass-bg.jpg')" }}
+            />
+            {/* Gradiente vibrante exacto: azul marino oscuro a la izquierda, cian en el centro y esmeralda a la derecha */}
+            <div className="absolute inset-0 bg-gradient-to-r from-[#06122d]/90 via-[#0284c7]/75 to-[#059669]/75 dark:from-[#050b1a]/95 dark:via-[#0369a1]/85 dark:to-[#047857]/80" />
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(245,158,11,0.25)_0%,transparent_60%)]" />
           </div>
 
-          {/* Contenido con Letra Más Ancha, Más Grande y Botones Cuadrados */}
-          <div className="relative z-10 w-full px-5 sm:px-8 md:px-10 pt-10 sm:pt-14 md:pt-16 pb-8 sm:pb-10 md:pb-12 flex flex-col md:flex-row md:items-end justify-between gap-5 md:gap-8">
-            <div className="space-y-2 max-w-2xl">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-black/40 dark:bg-white/15 backdrop-blur-md border border-white/25 text-white text-[11px] font-black uppercase tracking-[0.25em] shadow-sm">
-                <Sparkles className="text-cyan-300" size={13} />
-                <span>Plataforma Congregacional</span>
+          {/* Contenido exactamente como en la imagen de referencia */}
+          <header className="relative z-10 w-full px-6 sm:px-10 md:px-12 pt-10 sm:pt-14 md:pt-16 pb-9 sm:pb-11 md:pb-13 flex flex-col md:flex-row md:items-end justify-between gap-6 md:gap-8">
+            <div className="space-y-2.5 max-w-2xl">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/40 backdrop-blur-md border border-white/20 text-white text-[11px] font-black uppercase tracking-wider shadow-sm">
+                <Sparkles className="text-amber-300" size={13} />
+                <span>PLATAFORMA PASTORAL CMV</span>
               </div>
-              <h1 className="text-4xl sm:text-6xl md:text-7xl font-black text-white tracking-[0.14em] uppercase drop-shadow-xl leading-none">
-                CMV
+              <h1 className="text-3xl sm:text-5xl md:text-6xl font-black text-white tracking-tight drop-shadow-md leading-none">
+                Hermanos
               </h1>
-              <p className="text-base sm:text-xl font-black uppercase tracking-wider text-sky-100 drop-shadow-md">
-                Cristo Manantial de Vida
-              </p>
-              <p className="text-xs sm:text-sm text-cyan-100 font-medium max-w-xl drop-shadow-sm leading-relaxed">
-                Acceso a la vida comunitaria, redes de células, discipulado y seguimiento pastoral.
+              <p className="text-xs sm:text-sm md:text-base text-cyan-100 font-medium drop-shadow-sm leading-relaxed mt-1.5">
+                Seguimiento y gestión espiritual de la congregación.
               </p>
             </div>
-
-            <div className="shrink-0 flex items-center gap-2.5">
+            <div className="shrink-0 pt-2 md:pt-0">
               <button
                 type="button"
                 onClick={() => setIsModalOpen(true)}
-                className="w-full sm:w-auto justify-center btn-3d-emerald text-white px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl font-black flex items-center gap-2 uppercase tracking-wider text-xs shadow-xl active:scale-95 transition-all"
+                className="w-full sm:w-auto justify-center btn-3d-emerald text-white px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl font-black flex items-center gap-2 uppercase tracking-wider text-xs sm:text-sm shadow-xl active:scale-95 transition-all"
               >
-                <UserPlus size={15} />
-                <span>Nuevo Hermano</span>
+                <UserPlus size={16} />
+                <span>NUEVO HERMANO</span>
               </button>
             </div>
-          </div>
+          </header>
         </div>
 
         {/* BENTO GRID MULTIDIMENSIONAL */}

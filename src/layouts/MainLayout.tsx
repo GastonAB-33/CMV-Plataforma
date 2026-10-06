@@ -59,38 +59,35 @@ export const MainLayout = ({ children, user }: MainLayoutProps) => {
       </div>
 
       <aside className="hidden md:flex w-80 bg-white dark:bg-black backdrop-blur-2xl flex-col border-r border-slate-200/90 dark:border-white/10 shadow-2xl relative z-20 transition-colors">
-        {/* Recuadro CMV más ancho, compacto y cercano a la navegación */}
+        {/* Recuadro CMV Verde con logo gigante exactamente como en la imagen de referencia */}
         <div className="p-4 pb-2">
-          {/* Cuadrado CMV Seguimiento Oficial Pastoral más grande, cuadrado y con logo prominente */}
           <div
-            className="w-full aspect-[1/0.95] sm:aspect-square rounded-2xl bg-gradient-to-br from-[#059669] via-[#047857] to-[#065f46] text-white p-4 flex flex-col items-center justify-between text-center shadow-xl shadow-emerald-950/25 cursor-pointer group hover:brightness-105 transition-all relative overflow-hidden border border-white/20"
+            className="w-full aspect-square rounded-2xl bg-[#059669] text-white p-4 flex flex-col items-center justify-between text-center shadow-lg shadow-emerald-950/20 cursor-pointer group hover:brightness-105 transition-all relative overflow-hidden"
             onClick={() => navigate('/')}
           >
-            <div className="w-full flex items-center justify-between gap-1">
-              <span className="text-[9px] uppercase tracking-widest font-black px-2 py-0.5 rounded bg-black/30 text-white/95 border border-white/20">
-                Oficial
+            {/* Fila superior: OFICIAL a la izquierda y PASTORAL a la derecha */}
+            <div className="w-full flex items-center justify-between">
+              <span className="text-[9px] uppercase tracking-wider font-extrabold px-2.5 py-0.5 rounded-full bg-black/40 text-white border border-white/10">
+                OFICIAL
               </span>
-              <span className="text-[9px] uppercase tracking-widest font-black px-2 py-0.5 rounded bg-black/30 text-emerald-200 border border-white/20">
-                Pastoral
+              <span className="text-[9.5px] uppercase tracking-widest font-black text-white/90">
+                PASTORAL
               </span>
             </div>
 
-            <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-black/25 p-2 flex items-center justify-center shrink-0 border border-white/25 shadow-inner my-1 group-hover:scale-105 transition-transform duration-300">
+            {/* Isotipo circular CMV BIEN GRANDE en el centro */}
+            <div className="w-36 h-36 sm:w-40 sm:h-40 flex items-center justify-center my-auto py-1 group-hover:scale-105 transition-transform duration-300">
               <img
                 src="/logo-cmv.png"
                 alt="CMV Logo"
-                className="w-full h-full object-contain filter drop-shadow-lg"
+                className="w-full h-full object-contain filter drop-shadow-md"
               />
             </div>
 
-            <div className="w-full text-center">
-              <h2 className="text-2xl sm:text-3xl font-black tracking-[0.2em] uppercase text-white drop-shadow-md leading-none">
-                CMV
-              </h2>
-              <p className="text-[10px] sm:text-[11px] tracking-[0.28em] font-black uppercase text-emerald-100 mt-0.5">
-                Seguimiento
-              </p>
-            </div>
+            {/* Texto CMV centrado en blanco bien visible abajo */}
+            <h2 className="text-xl sm:text-2xl font-black tracking-[0.2em] uppercase text-white leading-none mb-0.5">
+              CMV
+            </h2>
           </div>
         </div>
 
