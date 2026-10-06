@@ -54,9 +54,11 @@ export const MainLayout = ({ children, user }: MainLayoutProps) => {
 
   return (
     <div className="flex min-h-screen md:h-screen bg-white dark:bg-black text-black dark:text-white overflow-hidden transition-colors">
-      <div className="hidden md:block fixed top-4 right-4 z-[60]">
-        <ThemeToggle />
-      </div>
+      {location.pathname !== '/' && (
+        <div className="hidden md:block fixed top-4 right-4 z-[60]">
+          <ThemeToggle />
+        </div>
+      )}
 
       <aside className="hidden md:flex w-80 bg-white dark:bg-black backdrop-blur-2xl flex-col border-r border-slate-200/90 dark:border-white/10 shadow-2xl relative z-20 transition-colors">
         {/* Recuadro CMV Verde con logo gigante exactamente como en la imagen de referencia */}

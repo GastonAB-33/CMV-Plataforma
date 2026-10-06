@@ -20,6 +20,8 @@ const CELL_ALIASES: Record<string, string> = {
   redapostolicas: 'Red Apostólica',
   saeta: 'Saeta',
   saetas: 'Saeta',
+  zaeta: 'Saeta',
+  zaetas: 'Saeta',
   sion: 'Sion',
   zion: 'Sion',
   vida: 'Vida',

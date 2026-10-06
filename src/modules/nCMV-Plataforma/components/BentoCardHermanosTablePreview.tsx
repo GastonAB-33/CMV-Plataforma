@@ -86,15 +86,16 @@ export const BentoCardHermanosTablePreview: React.FC<BentoCardHermanosTablePrevi
   });
 
   return (
-    <div className="relative overflow-hidden rounded-3xl bg-[#0c1322] border border-cyan-500/20 dark:border-white/10 p-5 sm:p-6 shadow-xl flex flex-col justify-between text-white col-span-1 md:col-span-2">
+    <div className="relative overflow-hidden rounded-3xl bg-[#0c1322] border border-cyan-500/25 dark:border-cyan-400/20 p-5 sm:p-6 shadow-xl hover:shadow-2xl hover:shadow-cyan-500/15 hover:-translate-y-1.5 transition-all duration-500 flex flex-col justify-between text-white col-span-1 md:col-span-2">
       {/* Resplandor decorativo de fondo */}
-      <div className="absolute top-0 right-1/4 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-0 right-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-br from-[#00dfa2]/5 via-transparent to-transparent pointer-events-none" />
 
       {/* 1. Encabezado idéntico al recuadro de la imagen de referencia */}
       <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
         <div>
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-black/40 border border-white/10 text-cyan-300 text-[10px] font-black uppercase tracking-wider mb-1.5">
-            <Sparkles size={11} className="text-amber-300" />
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/40 border border-cyan-400/30 text-cyan-300 text-xs font-black uppercase tracking-wider mb-1.5 shadow-2xs">
+            <Sparkles size={12} className="text-[#00dfa2]" />
             <span>PLATAFORMA PASTORAL CMV</span>
           </div>
           <h3 className="text-2xl sm:text-3xl font-black text-white tracking-tight leading-none">

@@ -8,7 +8,7 @@ export const BentoCardJesusDevocional: React.FC = () => {
   return (
     <div
       onClick={() => navigate('/tracking')}
-      className="relative group cursor-pointer overflow-hidden rounded-3xl border border-cyan-500/25 dark:border-cyan-400/20 p-5 shadow-lg hover:shadow-2xl transition-all duration-500 flex flex-col justify-between min-h-[300px] bg-[#071622] text-white"
+      className="relative group cursor-pointer overflow-hidden rounded-3xl border border-cyan-500/25 dark:border-cyan-400/25 p-5 sm:p-6 shadow-xl hover:shadow-2xl hover:shadow-cyan-500/25 hover:-translate-y-2 transition-all duration-500 flex flex-col justify-between min-h-[300px] bg-[#071622] text-white"
     >
       {/* 1. Fotografía de fondo nítida con silueta de oración y cruz de Jesús */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">

@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { LineChart, ArrowRight, GitCommit } from 'lucide-react';
 
@@ -8,9 +8,10 @@ export const BentoCardSeguimiento: React.FC = () => {
   return (
     <div
       onClick={() => navigate('/tracking')}
-      className="relative group cursor-pointer overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-[#0c1e38] to-[#04332f] text-white p-4 sm:p-5 shadow-md hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 flex flex-col justify-between min-h-[175px] border border-cyan-500/20"
+      className="relative group cursor-pointer overflow-hidden rounded-3xl bg-gradient-to-br from-[#061524] via-[#092235] to-[#042825] text-white p-5 sm:p-6 shadow-xl hover:shadow-2xl hover:shadow-cyan-500/20 hover:-translate-y-2 transition-all duration-500 flex flex-col justify-between min-h-[185px] border border-cyan-500/25 dark:border-cyan-400/30"
     >
-      <div className="absolute top-0 right-0 w-28 h-28 bg-cyan-400/10 rounded-full blur-xl pointer-events-none group-hover:scale-125 transition-transform duration-500" />
+      <div className="absolute inset-0 bg-gradient-to-br from-[#00dfa2]/10 via-[#06b6d4]/5 to-transparent pointer-events-none opacity-60 group-hover:opacity-100 transition-opacity" />
+      <div className="absolute top-0 right-0 w-36 h-36 bg-cyan-400/15 rounded-full blur-2xl pointer-events-none group-hover:scale-125 transition-transform duration-500" />
 
       {/* Etiqueta superior */}
       <div className="flex items-center justify-between z-10">

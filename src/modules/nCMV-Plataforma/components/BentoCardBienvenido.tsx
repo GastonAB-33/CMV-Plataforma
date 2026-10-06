@@ -10,12 +10,12 @@ export const BentoCardBienvenido: React.FC<BentoCardBienvenidoProps> = ({ onOpen
   const navigate = useNavigate();
 
   return (
-    <div className="relative group overflow-hidden rounded-3xl border border-slate-200/90 dark:border-white/10 shadow-lg hover:shadow-2xl transition-all duration-500 flex flex-col justify-between min-h-[360px] sm:min-h-[380px] bg-slate-950">
+    <div className="relative group overflow-hidden rounded-3xl border border-cyan-500/25 dark:border-cyan-400/25 shadow-xl hover:shadow-2xl hover:shadow-cyan-500/25 hover:-translate-y-2 transition-all duration-500 flex flex-col justify-between min-h-[360px] sm:min-h-[380px] bg-slate-950">
       {/* 1. Fotografía de fondo de alabanza con encuadre óptimo */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <img
           src="/cmv-bienvenido-casa.jpg"
-          alt="Bienvenido a Casa CMV"
+          alt="Bienvenido a tu comunidad CMV"
           className="w-full h-full object-cover object-center filter brightness-90 contrast-105 group-hover:scale-105 transition-transform duration-700"
         />
         {/* Degradé envolvente superior e inferior para legibilidad extrema */}
@@ -38,19 +38,19 @@ export const BentoCardBienvenido: React.FC<BentoCardBienvenidoProps> = ({ onOpen
       {/* 3. Contenido tipográfico y acción pastoral */}
       <div className="relative z-10 p-5 sm:p-6 mt-auto space-y-3">
         <div>
-          <span className="inline-block text-[11px] sm:text-xs font-black uppercase tracking-[0.25em] text-cyan-300 drop-shadow-sm">
-            ¡Nos encantaría conocerte!
+          <span className="inline-block text-[11px] sm:text-xs font-black uppercase tracking-[0.2em] text-cyan-300 drop-shadow-sm">
+            Comunidad CMV
           </span>
-          <h2 className="text-3xl sm:text-4xl font-black uppercase tracking-tight text-white leading-[0.95] mt-1 drop-shadow-md">
-            BIENVENIDO <br />
+          <h2 className="text-2xl sm:text-3xl font-black uppercase tracking-tight text-white leading-[1.05] mt-1 drop-shadow-md">
+            ¡Bienvenido a <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00dfa2] to-[#38bdf8]">
-              A CASA
+              tu comunidad!
             </span>
           </h2>
         </div>
 
-        <p className="text-xs text-slate-200/90 font-medium leading-relaxed drop-shadow-sm line-clamp-2">
-          Conoce lo que Dios está haciendo en cada célula: testimonios, reuniones en los hogares y nuevos creyentes integrados.
+        <p className="text-xs sm:text-sm text-cyan-100/90 font-medium leading-relaxed drop-shadow-sm">
+          Conoce la actividad actual de la congregación.
         </p>
 
         <div className="pt-2 flex items-center gap-2">

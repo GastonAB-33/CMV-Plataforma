@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Sparkles, Users, ArrowRight } from 'lucide-react';
 
@@ -10,7 +10,7 @@ export const BentoLetterC: React.FC = () => {
       onClick={() => navigate('/celulas')}
       role="button"
       tabIndex={0}
-      className="relative group cursor-pointer overflow-hidden rounded-3xl bg-slate-900 border border-slate-200/90 dark:border-white/10 shadow-md hover:shadow-2xl hover:-translate-y-1 active:scale-[0.99] transition-all duration-300 flex flex-col justify-between p-4 sm:p-5 min-h-[260px]"
+      className="relative group cursor-pointer overflow-hidden rounded-3xl bg-slate-900 border border-slate-200/90 dark:border-cyan-400/20 shadow-xl hover:shadow-2xl hover:shadow-cyan-500/20 hover:-translate-y-2 active:scale-[0.99] transition-all duration-500 flex flex-col justify-between p-4 sm:p-5 min-h-[260px]"
     >
       {/* 1. Fotografía de fondo nítida y visible con alta claridad (sin difuminación opaca) */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -26,7 +26,7 @@ export const BentoLetterC: React.FC = () => {
       {/* 2. Encabezado de la tarjeta con estilo vidrio translúcido */}
       <div className="flex items-center justify-between z-10">
         <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/20 dark:bg-black/40 backdrop-blur-md border border-white/30 text-white text-[10.5px] font-black tracking-wider uppercase shadow-xs">
-          <Sparkles size={12} className="text-amber-300" />
+          <Sparkles size={12} className="text-cyan-300" />
           <span>Comunidad CMV</span>
         </div>
         <span className="text-[10px] font-black uppercase tracking-widest text-white/90 drop-shadow-md">

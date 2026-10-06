@@ -3829,7 +3829,7 @@ export const BrotherDetail = () => {
 
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-0.5">
                       <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-black/40 border border-slate-100 dark:border-white/5">
-                        <p className="text-[9px] uppercase font-black tracking-wider text-slate-400 dark:text-gray-500">Célula Madre</p>
+                        <p className="text-[9px] uppercase font-black tracking-wider text-slate-400 dark:text-gray-500">Célula Asignada</p>
                         <p className="text-xs font-bold text-slate-800 dark:text-gray-200 truncate mt-0.5">
                           {brother.acompanamiento.celulaName || 'Sin asignar'}
                         </p>

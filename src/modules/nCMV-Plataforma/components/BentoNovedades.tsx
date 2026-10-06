@@ -55,12 +55,15 @@ export const BentoNovedades: React.FC<BentoNovedadesProps> = ({ onOpenEvents }) 
   };
 
   return (
-    <div className="relative group overflow-hidden rounded-3xl bg-white dark:bg-[#0c0c0e] border border-slate-200/90 dark:border-white/10 shadow-md hover:shadow-xl transition-all duration-300 flex flex-col justify-between p-4 sm:p-5 col-span-1 md:col-span-2 lg:col-span-2">
+    <div className="relative group overflow-hidden rounded-3xl bg-white dark:bg-[#091522] border border-cyan-500/25 dark:border-cyan-400/20 shadow-xl hover:shadow-2xl hover:shadow-cyan-500/15 hover:-translate-y-2 transition-all duration-500 flex flex-col justify-between p-5 sm:p-6 col-span-1 md:col-span-2 lg:col-span-2">
+      {/* Degradé sutil de fondo */}
+      <div className="absolute inset-0 bg-gradient-to-br from-[#00dfa2]/10 via-[#06b6d4]/5 to-transparent pointer-events-none opacity-60 group-hover:opacity-100 transition-opacity" />
+
       {/* Etiqueta superior y navegación compacta */}
       <div className="flex items-center justify-between z-10 mb-3">
         <div className="flex items-center gap-2">
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-cyan-50 dark:bg-cyan-950/40 border border-cyan-200 dark:border-cyan-800/40 text-cyan-700 dark:text-cyan-300 text-[10.5px] font-bold uppercase tracking-wider">
-            <Sparkles size={12} className="text-amber-500" />
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-cyan-50 dark:bg-cyan-950/60 border border-cyan-200 dark:border-cyan-800/60 text-cyan-700 dark:text-cyan-300 text-xs font-black uppercase tracking-wider shadow-2xs">
+            <Sparkles size={13} className="text-[#00dfa2]" />
             <span>Actividades de Grupos</span>
           </span>
           <span className="hidden sm:inline-flex items-center gap-1 text-[11px] font-semibold text-slate-500 dark:text-gray-400">

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Play, Sparkles, Clock, Compass, ArrowRight } from 'lucide-react';
+import { Play, Sparkles, Compass, ArrowRight } from 'lucide-react';
 import { CulturaCongregacionalModal } from './CulturaCongregacionalModal';
 
 export const BentoCardCulture: React.FC = () => {
@@ -9,20 +9,20 @@ export const BentoCardCulture: React.FC = () => {
     <>
       <div
         onClick={() => setIsOpen(true)}
-        className="relative group cursor-pointer overflow-hidden rounded-3xl bg-[#091a28] border border-cyan-500/25 dark:border-cyan-400/20 p-5 shadow-lg hover:shadow-2xl hover:border-cyan-400/50 transition-all duration-500 flex flex-col justify-between min-h-[300px] text-white"
+        className="relative group cursor-pointer overflow-hidden rounded-3xl bg-[#091a28] border border-cyan-500/25 dark:border-cyan-400/25 p-5 sm:p-6 shadow-xl hover:shadow-2xl hover:shadow-cyan-500/20 hover:border-cyan-400/60 hover:-translate-y-2 transition-all duration-500 flex flex-col justify-between min-h-[300px] text-white"
       >
         {/* Resplandor ambiental de fondo */}
-        <div className="absolute -top-12 -right-12 w-36 h-36 bg-cyan-500/15 rounded-full blur-2xl pointer-events-none group-hover:scale-125 transition-transform duration-700" />
-        <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none" />
+        <div className="absolute -top-12 -right-12 w-44 h-44 bg-cyan-500/20 rounded-full blur-2xl pointer-events-none group-hover:scale-125 transition-transform duration-700" />
+        <div className="absolute -bottom-10 -left-10 w-36 h-36 bg-[#00dfa2]/15 rounded-full blur-2xl pointer-events-none" />
 
         {/* Encabezado informativo */}
         <div className="relative z-10 flex items-center justify-between">
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-cyan-950/60 border border-cyan-400/30 text-cyan-300 text-[10px] font-black uppercase tracking-wider">
-            <Sparkles size={11} className="text-amber-300" />
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-cyan-950/70 border border-cyan-400/40 text-cyan-300 text-xs font-black uppercase tracking-wider shadow-sm">
+            <Sparkles size={12} className="text-cyan-300" />
             <span>ADN & Doctrina CMV</span>
           </div>
           <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
-            Horarios & Visión
+            Cultura & Visión
           </span>
         </div>
 
@@ -47,7 +47,7 @@ export const BentoCardCulture: React.FC = () => {
               </text>
             </svg>
 
-            {/* Botón central interactivo con icono intuitivo de play/brújula */}
+            {/* Botón central interactivo con icono intuitivo de play */}
             <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#00dfa2] to-[#0284c7] p-0.5 shadow-xl group-hover:scale-110 group-hover:shadow-cyan-400/40 transition-all duration-300 flex items-center justify-center">
               <div className="w-full h-full rounded-full bg-[#051f2d] flex items-center justify-center text-cyan-300 group-hover:text-white transition-colors">
                 <Play size={22} className="fill-cyan-400 group-hover:fill-white ml-0.5 transition-colors" />
@@ -63,26 +63,14 @@ export const BentoCardCulture: React.FC = () => {
           </p>
         </div>
 
-        {/* Sección de Horarios Oficiales clara e intuitiva */}
-        <div className="relative z-10 pt-3 border-t border-cyan-900/50 space-y-1.5 text-xs">
-          <div className="flex items-center justify-between text-[11px] text-slate-300 bg-black/30 px-2.5 py-1.5 rounded-lg border border-white/5">
-            <span className="flex items-center gap-1.5 font-bold text-white">
-              <Clock size={12} className="text-cyan-400" />
-              <span>Miércoles 20:00 hs</span>
-            </span>
-            <span className="text-[10px] text-cyan-300 font-extrabold uppercase">Altar & Oración</span>
+        {/* Pie intuitivo de Cultura y Visión */}
+        <div className="relative z-10 pt-3 border-t border-cyan-900/50 flex items-center justify-between text-xs">
+          <div className="flex items-center gap-1.5 text-cyan-300 font-bold">
+            <Compass size={14} className="text-emerald-400" />
+            <span>Principios, Fe y Visión</span>
           </div>
-
-          <div className="flex items-center justify-between text-[11px] text-slate-300 bg-black/30 px-2.5 py-1.5 rounded-lg border border-white/5">
-            <span className="flex items-center gap-1.5 font-bold text-white">
-              <Compass size={12} className="text-emerald-400" />
-              <span>Domingos 10 & 19 hs</span>
-            </span>
-            <span className="text-[10px] text-emerald-300 font-extrabold uppercase">Celebración</span>
-          </div>
-
-          <div className="pt-1 flex items-center justify-between text-[11px] font-extrabold text-cyan-300 group-hover:text-cyan-200">
-            <span>Ver Visión Completa</span>
+          <div className="flex items-center gap-1 text-[11px] font-extrabold text-cyan-300 group-hover:text-cyan-200">
+            <span>Ver Visión</span>
             <ArrowRight size={13} className="group-hover:translate-x-1 transition-transform" />
           </div>
         </div>

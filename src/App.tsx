@@ -24,11 +24,13 @@ import { User } from './types';
 import { HomePage } from './modules/nCMV-Plataforma/HomePage';
 import { CelulasDirectoryPage } from './modules/celulas/CelulasDirectoryPage';
 import { CulturaCongregacionalPage } from './modules/nCMV-Plataforma/CulturaCongregacionalPage';
+import { ComunidadSocialPage } from './modules/comunidad/ComunidadSocialPage';
 
 const ProtectedAppRoutes = ({ user }: { user: User }) => (
   <MainLayout user={user}>
     <Routes>
       <Route path="/" element={<HomePage />} />
+      <Route path="/comunidad" element={<ComunidadSocialPage />} />
       <Route path="/cultura" element={<CulturaCongregacionalPage />} />
       <Route path="/celulas" element={<CelulasDirectoryPage />} />
       <Route path="/dashboard" element={<DashboardPage />} />
@@ -66,6 +68,7 @@ const App = () => {
           }
         />
         <Route path="/cultura" element={<CulturaCongregacionalPage />} />
+        <Route path="/comunidad" element={<ComunidadSocialPage />} />
         <Route
           path="/*"
           element={

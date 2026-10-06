@@ -4,24 +4,20 @@ import {
   UserPlus,
   Sparkles,
   LogOut,
-  Users,
-  Home,
-  LineChart,
-  GraduationCap,
-  HeartHandshake,
-  Award,
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { ThemeToggle } from '../../components/ui/ThemeToggle';
 import { Modal } from '../../components/ui/Modal';
 import { Toast } from '../../components/ui/Toast';
 import { brothersService } from '../../services/brothersService';
+import { BentoNovedades } from './components/BentoNovedades';
+import { BentoLetterC } from './components/BentoLetterC';
 import { BentoCardBienvenido } from './components/BentoCardBienvenido';
 import { BentoCardCulture } from './components/BentoCardCulture';
 import { BentoCardGeneral } from './components/BentoCardGeneral';
 import { BentoCardSeguimiento } from './components/BentoCardSeguimiento';
 import { BentoCardEddi } from './components/BentoCardEddi';
-import { BentoCardMisericordia } from './components/BentoCardMisericordia';
+import { BentoCardCelulas } from './components/BentoCardCelulas';
 import { BentoCardHermanosTablePreview } from './components/BentoCardHermanosTablePreview';
 import { BentoCardLiderazgo } from './components/BentoCardLiderazgo';
 import { BentoCardJesusDevocional } from './components/BentoCardJesusDevocional';
@@ -92,7 +88,7 @@ export const HomePage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-white dark:bg-black text-slate-900 dark:text-white transition-colors">
-            {/* Barra de navegación superior compacta, pegada y luminosa */}
+      {/* Barra de navegación superior compacta y luminosa */}
       <header className="sticky top-0 z-40 bg-white/95 dark:bg-black/95 backdrop-blur-xl border-b border-slate-200/80 dark:border-white/10 px-3 sm:px-6 md:px-8 py-2 shadow-2xs">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-3">
           {/* Logo y título de marca */}
@@ -161,9 +157,9 @@ export const HomePage: React.FC = () => {
         </div>
       </header>
 
-      {/* Contenedor Principal expandido más cerca hacia los cuadros generales */}
-      <main className="max-w-7xl mx-auto px-2 sm:px-4 md:px-6 py-2 sm:py-3 space-y-3 sm:space-y-3.5">
-        {/* Banner Principal con Imagen y Degradé idéntico a la referencia */}
+      {/* Contenedor Principal expandido hacia los cuadros generales */}
+      <main className="max-w-7xl mx-auto px-2 sm:px-4 md:px-6 py-2 sm:py-3 space-y-3.5 sm:space-y-4">
+        {/* Banner Principal con Imagen y Degradé */}
         <div className="relative w-full overflow-hidden rounded-2xl border border-slate-200/80 dark:border-white/10 shadow-xl bg-[#06122d]">
           {/* Imagen de fondo de personas */}
           <div className="absolute inset-0 -z-0 overflow-hidden">
@@ -179,14 +175,14 @@ export const HomePage: React.FC = () => {
             />
             {/* Gradiente vibrante exacto: azul marino oscuro a la izquierda, cian en el centro y esmeralda a la derecha */}
             <div className="absolute inset-0 bg-gradient-to-r from-[#06122d]/90 via-[#0284c7]/75 to-[#059669]/75 dark:from-[#050b1a]/95 dark:via-[#0369a1]/85 dark:to-[#047857]/80" />
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(245,158,11,0.25)_0%,transparent_60%)]" />
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(6,182,212,0.25)_0%,transparent_60%)]" />
           </div>
 
           {/* Contenido exactamente como en la imagen de referencia */}
           <header className="relative z-10 w-full px-6 sm:px-10 md:px-12 pt-10 sm:pt-14 md:pt-16 pb-9 sm:pb-11 md:pb-13 flex flex-col md:flex-row md:items-end justify-between gap-6 md:gap-8">
             <div className="space-y-2.5 max-w-2xl">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/40 backdrop-blur-md border border-white/20 text-white text-[11px] font-black uppercase tracking-wider shadow-sm">
-                <Sparkles className="text-amber-300" size={13} />
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/40 backdrop-blur-md border border-cyan-400/30 text-white text-[11px] font-black uppercase tracking-wider shadow-sm">
+                <Sparkles className="text-[#00dfa2]" size={13} />
                 <span>PLATAFORMA PASTORAL CMV</span>
               </div>
               <h1 className="text-3xl sm:text-5xl md:text-6xl font-black text-white tracking-tight drop-shadow-md leading-none">
@@ -209,14 +205,23 @@ export const HomePage: React.FC = () => {
           </header>
         </div>
 
-        {/* BENTO GRID ASIMÉTRICO MULTIDIMENSIONAL IDÉNTICO A LA REFERENCIA */}
+        {/* 1. SECCIÓN COMUNITARIA DESTACADA: NOVEDADES Y COMUNIDAD CMV (LETRA C) */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-3.5 sm:gap-4 items-stretch">
+          {/* Novedades de Grupos y Boletín Comunitario (2 columnas) */}
+          <BentoNovedades onOpenEvents={() => navigate('/events')} />
+
+          {/* Comunidad CMV con Recorte Nítido de la Letra C (1 columna) */}
+          <BentoLetterC />
+        </div>
+
+        {/* 2. BENTO GRID ASIMÉTRICO MULTIDIMENSIONAL IDÉNTICO A LA REFERENCIA */}
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-3.5 sm:gap-4 items-stretch">
-          {/* COLUMNA 1 (IZQUIERDA): BIENVENIDO A CASA & CULTURA / HORARIOS */}
+          {/* COLUMNA 1 (IZQUIERDA): BIENVENIDO A TU COMUNIDAD & CULTURA / HORARIOS */}
           <div className="lg:col-span-1 flex flex-col gap-3.5 sm:gap-4">
-            {/* 1. Tarjeta Fotográfica Bienvenido a Casa con Contexto Pastoral de Células */}
+            {/* Tarjeta Fotográfica de Bienvenida Pastoral */}
             <BentoCardBienvenido onOpenEvents={() => navigate('/events')} />
 
-            {/* 2. Tarjeta Circular de Cultura, Identidad, Visión y Horarios Oficiales */}
+            {/* Tarjeta Circular de Cultura, Identidad, Visión y Horarios Oficiales */}
             <BentoCardCulture />
           </div>
 
@@ -224,7 +229,7 @@ export const HomePage: React.FC = () => {
           <div className="lg:col-span-2 flex flex-col gap-3.5 sm:gap-4">
             {/* Fila Superior: Módulos Funcionales Clave */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-              {/* Tarjeta GENERAL: Padrón con 3 liñitas en amarillo */}
+              {/* Tarjeta CONGREGACIÓN: Padrón de Miembros Activos */}
               <BentoCardGeneral />
 
               {/* Tarjeta SEGUIMIENTO: Pipeline pastoral */}
@@ -233,8 +238,8 @@ export const HomePage: React.FC = () => {
               {/* Tarjeta ESCUELA EDDI: Discipulado */}
               <BentoCardEddi />
 
-              {/* Tarjeta MISERICORDIA: Ayuda social */}
-              <BentoCardMisericordia />
+              {/* Tarjeta CÉLULAS: Red de células y líderes (reemplaza Misericordia) */}
+              <BentoCardCelulas />
             </div>
 
             {/* Fila Inferior Ancha: Tabla en Vivo de Hermanos con Filtros de Etapas */}
@@ -243,10 +248,10 @@ export const HomePage: React.FC = () => {
 
           {/* COLUMNA 4 (DERECHA): LIDERAZGO & ALTAR JESÚS DEVOCIONAL */}
           <div className="lg:col-span-1 flex flex-col gap-3.5 sm:gap-4">
-            {/* 1. Tarjeta Tipográfica Geométrica LI-DER-AZGO (EDEM) */}
+            {/* Tarjeta Tipográfica Geométrica LI-DER-AZGO (EDEM) */}
             <BentoCardLiderazgo />
 
-            {/* 2. Tarjeta Devocional Silueta con Cruz Brillante y JESÚS */}
+            {/* Tarjeta Devocional Silueta con Cruz Brillante y JESÚS */}
             <BentoCardJesusDevocional />
           </div>
         </div>
