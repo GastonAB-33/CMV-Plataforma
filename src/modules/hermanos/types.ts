@@ -52,6 +52,11 @@ export interface BrotherExperienciaStage {
   observaciones?: BrotherTimelineObservation[];
 }
 
+export interface BrotherBautismoStage {
+  fechaRealizacion?: string;
+  observaciones?: BrotherTimelineObservation[];
+}
+
 export interface BrotherEDDIStage {
   fechaInicio?: string;
   fechaFin?: string;
@@ -85,6 +90,7 @@ export interface BrotherProfile {
   altar?: BrotherAltarStage;
   grupo?: BrotherGrupoStage;
   experiencia?: BrotherExperienciaStage;
+  bautismo?: BrotherBautismoStage;
   eddi?: BrotherEDDIStage;
   discipulo?: BrotherDiscipuloStage;
   edem?: BrotherEDEMStage;

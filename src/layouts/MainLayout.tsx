@@ -23,7 +23,7 @@ export const MainLayout = ({ children, user }: MainLayoutProps) => {
   const canUseImporter = role === Role.SUPERADMIN;
   const navItems = [
     { id: 'home', feature: 'dashboard' as AppFeatureKey, path: '/', icon: <Home size={22} />, label: 'Inicio', shortLabel: 'Inicio', primaryMobile: true },
-    { id: 'brothers', feature: 'hermanos' as AppFeatureKey, path: '/hermanos', icon: <Users size={22} />, label: 'Congregación', shortLabel: 'Congregación', primaryMobile: true },
+    { id: 'brothers', feature: 'hermanos' as AppFeatureKey, path: '/hermanos', icon: <Users size={22} />, label: 'Visión CMV', shortLabel: 'Visión CMV', primaryMobile: true },
     { id: 'celulas', feature: 'hermanos' as AppFeatureKey, path: '/celulas', icon: <Layers size={22} />, label: 'Células', shortLabel: 'Células', primaryMobile: true },
     { id: 'tracking', feature: 'seguimiento' as AppFeatureKey, path: '/tracking', icon: <LineChart size={22} />, label: 'Seguimiento', shortLabel: 'Seguimiento', primaryMobile: true },
     { id: 'eddi', feature: 'escuela_eddi' as AppFeatureKey, path: '/escuela-eddi', icon: <GraduationCap size={22} />, label: 'Escuela EDDI', shortLabel: 'EDDI', primaryMobile: false },

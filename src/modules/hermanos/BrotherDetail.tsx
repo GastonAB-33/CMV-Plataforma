@@ -20,6 +20,7 @@ import {
   UserCheck,
   Heart,
   Sparkles,
+  Droplets,
   CheckCircle2,
   Flame,
   Building2,
@@ -57,6 +58,7 @@ import { marriagesService, Marriage } from '../../services/marriagesService';
 import { accompanimentService } from '../../services/accompanimentService';
 import { stageDatesService, CincoMinisterios } from '../../services/stageDatesService';
 import { experienciaService } from '../../services/experienciaService';
+import { bautismoService } from '../../services/bautismoService';
 import { discipleshipConfigService } from '../../services/discipleshipConfigService';
 import { grupoVidaApprovalService, BrotherGrupoVidaApproval } from '../../services/grupoVidaApprovalService';
 import { liderCelulaApprovalService, BrotherLiderCelulaApproval } from '../../services/liderCelulaApprovalService';
@@ -586,6 +588,7 @@ export const BrotherDetail = () => {
   const [grupoStartDateDraft, setGrupoStartDateDraft] = useState('');
   const [grupoEndDateDraft, setGrupoEndDateDraft] = useState('');
   const [experienciaDateDraft, setExperienciaDateDraft] = useState('');
+  const [bautismoDateDraft, setBautismoDateDraft] = useState('');
 
   // Drafts for Stage 3 (EDDI)
   const [eddiStartDateDraft, setEddiStartDateDraft] = useState('');
@@ -641,6 +644,7 @@ export const BrotherDetail = () => {
     if (!b) return undefined;
     const acc = accompanimentService.getAccompaniment(b.id);
     const expDate = experienciaService.getExperienciaDate(b.id);
+    const bautismoDate = bautismoService.getBautismoDate(b.id);
     const savedDates = stageDatesService.getBrotherStageDates(b.id);
     return {
       ...b,
@@ -665,6 +669,14 @@ export const BrotherDetail = () => {
           : expDate !== undefined
           ? expDate
           : b.experiencia?.fechaRealizacion,
+      },
+      bautismo: {
+        ...b.bautismo,
+        fechaRealizacion: savedDates?.bautismoFechaRealizacion !== undefined
+          ? savedDates.bautismoFechaRealizacion
+          : bautismoDate !== undefined
+          ? bautismoDate
+          : b.bautismo?.fechaRealizacion,
       },
       eddi: {
         ...b.eddi,
@@ -1174,6 +1186,7 @@ export const BrotherDetail = () => {
     setGrupoStartDateDraft(brother?.grupo?.fechaInicio || resolvedGrupoVidaStartDate || '');
     setGrupoEndDateDraft(brother?.grupo?.fechaFin || resolvedGrupoVidaEndDate || '');
     setExperienciaDateDraft(brother?.experiencia?.fechaRealizacion || experienciaService.getExperienciaDate(brother?.id || '') || '');
+    setBautismoDateDraft(brother?.bautismo?.fechaRealizacion || bautismoService.getBautismoDate(brother?.id || '') || stageDatesService.getBrotherStageDates(brother?.id || '')?.bautismoFechaRealizacion || '');
     if (brother) {
       initAccompanimentSelectors(brother);
     }
@@ -1189,14 +1202,17 @@ export const BrotherDetail = () => {
     const grupoStart = grupoStartDateDraft.trim() || undefined;
     const grupoEnd = grupoEndDateDraft.trim() || undefined;
     const expDate = experienciaDateDraft.trim() || undefined;
+    const bautismoDate = bautismoDateDraft.trim() || undefined;
 
     stageDatesService.saveStageDates(brother.id, {
       grupoFechaInicio: grupoStart,
       grupoFechaFin: grupoEnd,
       experienciaFechaRealizacion: expDate,
+      bautismoFechaRealizacion: bautismoDate,
     });
 
     experienciaService.saveExperienciaDate(brother.id, expDate);
+    bautismoService.saveBautismoDate(brother.id, bautismoDate);
 
     // Resolver Líder de Célula / Grupo de Vida
     let finalLiderName = brother.acompanamiento.liderCelulaName;
@@ -1280,6 +1296,10 @@ export const BrotherDetail = () => {
             experiencia: {
               ...prev.experiencia,
               fechaRealizacion: expDate,
+            },
+            bautismo: {
+              ...prev.bautismo,
+              fechaRealizacion: bautismoDate,
             },
           }
         : prev
@@ -2904,6 +2924,44 @@ export const BrotherDetail = () => {
                     <ApproximateDateHint />
                   </div>
 
+                  {/* Edición Bautismo (Fecha de Realización) */}
+                  <div className="p-3.5 rounded-xl bg-white dark:bg-black/40 border border-slate-200 dark:border-white/10 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <label className="text-[10px] uppercase font-black tracking-wider text-slate-600 dark:text-gray-400 flex items-center gap-1.5">
+                        <Droplets size={13} className="text-cyan-600 dark:text-cyan-400" />
+                        Bautismo (Fecha de Realización)
+                      </label>
+                      {bautismoDateDraft && (
+                        <button
+                          type="button"
+                          onClick={() => setBautismoDateDraft('')}
+                          className="text-[10px] text-rose-500 hover:text-rose-600 font-bold hover:underline"
+                        >
+                          Quitar fecha
+                        </button>
+                      )}
+                    </div>
+                    <input
+                      type="date"
+                      value={bautismoDateDraft}
+                      onChange={(e) => setBautismoDateDraft(e.target.value)}
+                      className="w-full bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/10 rounded-xl p-2.5 text-xs text-slate-800 dark:text-gray-100 outline-none focus:border-cyan-500 [color-scheme:dark]"
+                    />
+                    <div className="flex items-center gap-2 pt-1">
+                      <span className="text-[10px] text-slate-400 dark:text-gray-500">Estado:</span>
+                      <span
+                        className={`text-[9px] uppercase font-black px-2 py-0.5 rounded-full border ${
+                          bautismoDateDraft
+                            ? 'bg-cyan-500/15 text-cyan-700 dark:text-cyan-300 border-cyan-500/30'
+                            : 'bg-slate-200/60 dark:bg-white/10 text-slate-500 dark:text-gray-400 border-slate-300 dark:border-white/10'
+                        }`}
+                      >
+                        {bautismoDateDraft ? 'Realizado' : 'Pendiente'}
+                      </span>
+                    </div>
+                    <ApproximateDateHint />
+                  </div>
+
                   {/* Edición Grupo de Vida Fechas */}
                   <div className="p-3.5 rounded-xl bg-white dark:bg-black/40 border border-slate-200 dark:border-white/10 space-y-3">
                     <div className="flex items-center justify-between">
@@ -3130,6 +3188,65 @@ export const BrotherDetail = () => {
                           }`}
                         >
                           {displayDate(brother.experiencia?.fechaRealizacion)}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Subpanel Bautismo (Ubicado entre Experiencia Transformadora y Grupo de Vida) */}
+                  <div
+                    className={`p-4 rounded-2xl border transition-all ${
+                      brother.bautismo?.fechaRealizacion
+                        ? 'border-cyan-500/40 bg-cyan-50/50 dark:bg-cyan-950/20 shadow-sm'
+                        : 'border-slate-200 dark:border-white/10 bg-white/60 dark:bg-black/30'
+                    }`}
+                  >
+                    <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
+                      <div className="flex items-center gap-2">
+                        <Droplets
+                          size={15}
+                          className={
+                            brother.bautismo?.fechaRealizacion
+                              ? 'text-cyan-600 dark:text-cyan-400'
+                              : 'text-cyan-600 dark:text-cyan-400'
+                          }
+                        />
+                        <span className="text-xs font-black uppercase tracking-[0.14em] text-slate-800 dark:text-gray-200">
+                          Bautismo
+                        </span>
+                      </div>
+                      <span
+                        className={`text-[9px] uppercase font-black tracking-[0.18em] px-2.5 py-1 rounded-full border ${
+                          brother.bautismo?.fechaRealizacion
+                            ? 'bg-cyan-500/15 text-cyan-700 dark:text-cyan-300 border-cyan-500/30 font-black'
+                            : 'bg-slate-200/60 dark:bg-white/10 text-slate-500 dark:text-gray-400 border-slate-300 dark:border-white/10'
+                        }`}
+                      >
+                        {brother.bautismo?.fechaRealizacion ? 'Realizado' : 'Pendiente'}
+                      </span>
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
+                      <div className="space-y-1">
+                        <span className="text-[10px] font-black uppercase tracking-[0.15em] text-slate-500 dark:text-gray-400 flex items-center gap-1.5">
+                          <Calendar
+                            size={13}
+                            className={
+                              brother.bautismo?.fechaRealizacion
+                                ? 'text-cyan-600 dark:text-cyan-400'
+                                : 'text-slate-400'
+                            }
+                          />
+                          Fecha de realización
+                        </span>
+                        <p
+                          className={`text-sm font-bold px-3.5 py-2 rounded-xl inline-flex border shadow-inner ${
+                            brother.bautismo?.fechaRealizacion
+                              ? 'bg-white dark:bg-black/60 text-cyan-800 dark:text-cyan-300 border-cyan-500/30'
+                              : 'bg-white dark:bg-black/40 text-slate-700 dark:text-gray-300 border-slate-200 dark:border-white/10'
+                          }`}
+                        >
+                          {displayDate(brother.bautismo?.fechaRealizacion)}
                         </p>
                       </div>
                     </div>

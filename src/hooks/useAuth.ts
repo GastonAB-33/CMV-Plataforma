@@ -150,13 +150,19 @@ const ensureInitialized = () => {
 
   initialized = true;
 
-  if (typeof window !== 'undefined' && window.localStorage.getItem('cmv_dev_auth') === 'true') {
-    setAuthState({
-      user: FALLBACK_USER,
-      isAuthenticated: true,
-      isLoading: false,
-    });
-    return;
+  if (typeof window !== 'undefined') {
+    const searchParams = new URLSearchParams(window.location.search);
+    if (searchParams.get('demo') === 'true' || searchParams.get('demo') === '1') {
+      window.localStorage.setItem('cmv_dev_auth', 'true');
+    }
+    if (window.localStorage.getItem('cmv_dev_auth') === 'true') {
+      setAuthState({
+        user: FALLBACK_USER,
+        isAuthenticated: true,
+        isLoading: false,
+      });
+      return;
+    }
   }
 
   if (!isSupabaseConfigured()) {
@@ -273,6 +279,9 @@ const logout = async () => {
   const actor = authState.user;
   const client = getSupabaseClient();
   await client?.auth.signOut();
+  if (typeof window !== 'undefined') {
+    window.localStorage.removeItem('cmv_dev_auth');
+  }
   setAuthState({
     user: null,
     isAuthenticated: false,

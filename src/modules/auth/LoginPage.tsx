@@ -1,6 +1,6 @@
 import { FormEvent, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { AlertTriangle, LockKeyhole, Mail } from 'lucide-react';
+import { AlertTriangle, LockKeyhole, Mail, Sparkles } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 
 export const LoginPage = () => {
@@ -94,6 +94,23 @@ export const LoginPage = () => {
             {isSubmitting ? 'Ingresando...' : 'Entrar'}
           </button>
         </form>
+
+        <div className="mt-6 pt-5 border-t border-slate-200 dark:border-white/10 text-center">
+          <p className="text-xs text-slate-500 dark:text-gray-400 mb-3 font-medium">
+            ¿Revisión de demo para el cliente?
+          </p>
+          <button
+            type="button"
+            onClick={() => {
+              window.localStorage.setItem('cmv_dev_auth', 'true');
+              window.location.href = '/';
+            }}
+            className="w-full rounded-xl border border-emerald-500/40 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-bold py-3 text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 cursor-pointer shadow-sm hover:scale-[1.01] active:scale-[0.99]"
+          >
+            <Sparkles size={16} />
+            <span>Acceso Rápido a Demostración</span>
+          </button>
+        </div>
       </section>
     </main>
   );

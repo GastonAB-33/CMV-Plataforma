@@ -29,12 +29,8 @@ const mapObservationFromAppsScript = (row = {}) => ({
   process: row.process ?? row.proceso,
 });
 
-// Permitir requests desde tu frontend
-app.use(
-  cors({
-    origin: ["http://localhost:5174", "http://127.0.0.1:5174"],
-  })
-);
+// Permitir requests desde cualquier origen (túnel o local)
+app.use(cors());
 
 // Permitir JSON hasta 25MB para fotos en base64
 app.use(express.json({ limit: "25mb" }));

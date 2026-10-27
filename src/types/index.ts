@@ -54,6 +54,11 @@ export interface ExperienciaStage {
   observaciones?: ProcessObservation[];
 }
 
+export interface BautismoStage {
+  fechaRealizacion?: string;
+  observaciones?: ProcessObservation[];
+}
+
 export interface EDDIExamGrade {
   id: string;
   materia: string;
@@ -73,6 +78,11 @@ export interface EDDIStage {
 
 export interface DiscipuloStage {
   fechaInicio?: string;
+  observaciones?: ProcessObservation[];
+}
+
+export interface ExperienciaEnvioStage {
+  fechaRealizacion?: string;
   observaciones?: ProcessObservation[];
 }
 
@@ -121,6 +131,7 @@ export interface Brother {
   altar?: AltarStage;
   grupo?: GrupoStage;
   experiencia?: ExperienciaStage;
+  bautismo?: BautismoStage;
   eddi?: EDDIStage;
   discipulo?: DiscipuloStage;
   observations: Observation[];

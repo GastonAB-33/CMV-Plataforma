@@ -35,6 +35,12 @@ const normalizeBrother = (brother: Brother | BrotherProfile): BrotherProfile => 
         observaciones: cloneTimelineObservations(brother.experiencia.observaciones),
       }
     : undefined,
+  bautismo: brother.bautismo
+    ? {
+        ...brother.bautismo,
+        observaciones: cloneTimelineObservations(brother.bautismo.observaciones),
+      }
+    : undefined,
   eddi: brother.eddi
     ? {
         ...brother.eddi,

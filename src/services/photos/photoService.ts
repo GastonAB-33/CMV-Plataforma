@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:3001';
+const API_BASE_URL = (import.meta.env.VITE_API_URL as string) || '';
 
 export const photoService = {
   isCameraCaptureSupported(): boolean {
