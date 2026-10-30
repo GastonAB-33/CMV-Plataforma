@@ -9,12 +9,18 @@ export interface BrotherStageDates {
   grupoFechaInterrupcion?: string;
   grupoInterrumpidoPor?: { id?: string; name?: string; role?: string };
   experienciaFechaRealizacion?: string;
+  bautismoFechaRealizacion?: string;
   eddiFechaInicio?: string;
   eddiFechaFin?: string;
   discipuloFechaInicio?: string;
   discipuloFechaFin?: string;
+  experienciaEnvioFechaRealizacion?: string;
+  eddi2FechaInicio?: string;
+  eddi2FechaFin?: string;
   hermanoMayorFechaInicio?: string;
   hermanoMayorFechaFin?: string;
+  eddi3FechaInicio?: string;
+  eddi3FechaFin?: string;
   liderCelulaFechaInicio?: string;
   liderCelulaFechaFin?: string;
   edemFechaInicio?: string;

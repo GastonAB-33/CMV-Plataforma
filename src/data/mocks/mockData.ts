@@ -27,6 +27,7 @@ export const MOCK_BROTHERS: Brother[] = [
   {
     id: '1',
     name: 'Apostol Guillermo',
+    email: 'apostol@cmv.org',
     role: Role.APOSTOL,
     procesoActual: Proceso.DISCIPULO,
     acompanamiento: {
@@ -61,6 +62,7 @@ export const MOCK_BROTHERS: Brother[] = [
   {
     id: '2',
     name: 'Pastor Carlos',
+    email: 'pastor@cmv.org',
     role: Role.PASTOR,
     procesoActual: Proceso.DISCIPULO,
     acompanamiento: {
@@ -81,6 +83,7 @@ export const MOCK_BROTHERS: Brother[] = [
   {
     id: '3',
     name: 'Pastora Ana',
+    email: 'pastora.ana@cmv.org',
     role: Role.PASTOR,
     procesoActual: Proceso.DISCIPULO,
     acompanamiento: {
@@ -95,6 +98,7 @@ export const MOCK_BROTHERS: Brother[] = [
   {
     id: '4',
     name: 'Luis Rodriguez',
+    email: 'luis.rodriguez@gmail.com',
     fotoUrl: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&q=80&w=200&h=200',
     role: Role.LIDER_RED_CELULAS,
     procesoActual: Proceso.EDDI,
@@ -144,6 +148,7 @@ export const MOCK_BROTHERS: Brother[] = [
   {
     id: '5',
     name: 'Elena Fernandez',
+    email: 'elena.fernandez@gmail.com',
     role: Role.LIDER_CELULA,
     procesoActual: Proceso.EDDI,
     acompanamiento: {
@@ -157,6 +162,7 @@ export const MOCK_BROTHERS: Brother[] = [
   {
     id: '6',
     name: 'Javier Mendoza',
+    email: 'javier.mendoza@gmail.com',
     role: Role.LIDER_CELULA,
     procesoActual: Proceso.EXPERIENCIA,
     acompanamiento: {
@@ -171,6 +177,7 @@ export const MOCK_BROTHERS: Brother[] = [
   {
     id: '7',
     name: 'Sofia Lopez',
+    email: 'sofia.lopez@gmail.com',
     role: Role.LIDER_CELULA,
     procesoActual: Proceso.EXPERIENCIA,
     acompanamiento: {
@@ -184,6 +191,7 @@ export const MOCK_BROTHERS: Brother[] = [
   {
     id: '8',
     name: 'Pedro Gomez',
+    email: 'pedro.gomez@gmail.com',
     role: Role.DISCIPULO,
     procesoActual: Proceso.GRUPO,
     acompanamiento: {
@@ -198,6 +206,7 @@ export const MOCK_BROTHERS: Brother[] = [
   {
     id: '9',
     name: 'Maria Martinez',
+    email: 'maria.martinez@gmail.com',
     role: Role.HERMANO_MAYOR,
     procesoActual: Proceso.GRUPO,
     acompanamiento: {
@@ -212,6 +221,7 @@ export const MOCK_BROTHERS: Brother[] = [
   {
     id: '10',
     name: 'Juan Ruiz',
+    email: 'juan.ruiz@gmail.com',
     role: Role.HERMANO_NUEVO,
     procesoActual: Proceso.ALTAR,
     acompanamiento: {

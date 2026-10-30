@@ -7,9 +7,11 @@ import { LoginPage } from './modules/auth/LoginPage';
 import { DashboardPage } from './modules/dashboard/DashboardPage';
 import { EscuelaEddiPage } from './modules/escuela-eddi/EscuelaEddiPage';
 import { EscuelaEdemPage } from './modules/escuela-edem/EscuelaEdemPage';
+import { EscuelasPage } from './modules/escuelas/EscuelasPage';
 import { EventsPage } from './modules/events/EventsPage';
 import { BrotherDetail } from './modules/hermanos/BrotherDetail';
 import { BrotherList } from './modules/hermanos/BrotherList';
+import { PrimerosPasosPage } from './modules/primeros-pasos/PrimerosPasosPage';
 import { MinisterioAdoracionPage } from './modules/ministerio-adoracion/MinisterioAdoracionPage';
 import { MinisterioMisericordiaPage } from './modules/ministerio-misericordia/MinisterioMisericordiaPage';
 import { MinisterioMultimediaPage } from './modules/ministerio-multimedia/MinisterioMultimediaPage';
@@ -23,19 +25,25 @@ import { User } from './types';
 
 import { HomePage } from './modules/nCMV-Plataforma/HomePage';
 import { CelulasDirectoryPage } from './modules/celulas/CelulasDirectoryPage';
+import { CulturaCongregacionalPage } from './modules/nCMV-Plataforma/CulturaCongregacionalPage';
+import { ComunidadSocialPage } from './modules/comunidad/ComunidadSocialPage';
 
 const ProtectedAppRoutes = ({ user }: { user: User }) => (
   <MainLayout user={user}>
     <Routes>
       <Route path="/" element={<HomePage />} />
+      <Route path="/comunidad" element={<ComunidadSocialPage />} />
+      <Route path="/cultura" element={<CulturaCongregacionalPage />} />
       <Route path="/celulas" element={<CelulasDirectoryPage />} />
       <Route path="/dashboard" element={<DashboardPage />} />
       <Route path="/hermanos" element={<BrotherList />} />
       <Route path="/hermanos/:id" element={<BrotherDetail />} />
+      <Route path="/primeros-pasos" element={<PrimerosPasosPage />} />
       <Route path="/tracking" element={<SeguimientoPage />} />
       <Route path="/events" element={<EventsPage />} />
-      <Route path="/escuela-eddi" element={<EscuelaEddiPage />} />
-      <Route path="/escuela-edem" element={<EscuelaEdemPage />} />
+      <Route path="/escuelas" element={<EscuelasPage />} />
+      <Route path="/escuela-eddi" element={<Navigate to="/escuelas?escuela=eddi-1" replace />} />
+      <Route path="/escuela-edem" element={<Navigate to="/escuelas?escuela=edem" replace />} />
       <Route path="/ministerio-adoracion" element={<MinisterioAdoracionPage />} />
       <Route path="/ministerio-multimedia" element={<MinisterioMultimediaPage />} />
       <Route path="/ministerio-misericordia" element={<MinisterioMisericordiaPage />} />
@@ -63,6 +71,8 @@ const App = () => {
             </RedirectIfAuthenticated>
           }
         />
+        <Route path="/cultura" element={<CulturaCongregacionalPage />} />
+        <Route path="/comunidad" element={<ComunidadSocialPage />} />
         <Route
           path="/*"
           element={

@@ -52,6 +52,11 @@ export interface BrotherExperienciaStage {
   observaciones?: BrotherTimelineObservation[];
 }
 
+export interface BrotherBautismoStage {
+  fechaRealizacion?: string;
+  observaciones?: BrotherTimelineObservation[];
+}
+
 export interface BrotherEDDIStage {
   fechaInicio?: string;
   fechaFin?: string;
@@ -61,6 +66,17 @@ export interface BrotherEDDIStage {
 
 export interface BrotherDiscipuloStage {
   fechaInicio?: string;
+  observaciones?: BrotherTimelineObservation[];
+}
+
+export interface BrotherExperienciaEnvioStage {
+  fechaRealizacion?: string;
+  observaciones?: BrotherTimelineObservation[];
+}
+
+export interface BrotherLiderCelulaStage {
+  fechaInicio?: string;
+  fechaFin?: string;
   observaciones?: BrotherTimelineObservation[];
 }
 
@@ -74,6 +90,7 @@ export interface BrotherEDEMStage {
 export interface BrotherProfile {
   id: BrotherId;
   name: string;
+  email?: string;
   fotoUrl?: string;
   edad?: number;
   fechaNacimiento?: string;
@@ -85,8 +102,13 @@ export interface BrotherProfile {
   altar?: BrotherAltarStage;
   grupo?: BrotherGrupoStage;
   experiencia?: BrotherExperienciaStage;
+  bautismo?: BrotherBautismoStage;
   eddi?: BrotherEDDIStage;
   discipulo?: BrotherDiscipuloStage;
+  eddi2?: BrotherEDDIStage;
+  eddi3?: BrotherEDDIStage;
+  experienciaEnvio?: BrotherExperienciaEnvioStage;
+  liderCelula?: BrotherLiderCelulaStage;
   edem?: BrotherEDEMStage;
   observations: BrotherLegacyObservation[];
   disciples?: string[];
@@ -95,6 +117,7 @@ export interface BrotherProfile {
 export interface BrotherListItem {
   id: BrotherId;
   name: string;
+  email?: string;
   fotoUrl?: string;
   procesoActual: Proceso;
   cellName: Cell;

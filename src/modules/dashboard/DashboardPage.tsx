@@ -41,6 +41,9 @@ const STAGE_ORDER: Proceso[] = [
   Proceso.EXPERIENCIA,
   Proceso.EDDI,
   Proceso.DISCIPULO,
+  Proceso.EDDI2,
+  Proceso.EDDI3,
+  Proceso.LIDER_CELULA,
   Proceso.EDEM,
 ];
 
@@ -50,6 +53,9 @@ const STAGE_LABEL: Record<Proceso, string> = {
   [Proceso.EXPERIENCIA]: 'Experiencia',
   [Proceso.EDDI]: 'EDDI Escuela de Discipulados',
   [Proceso.DISCIPULO]: 'Discipulo',
+  [Proceso.EDDI2]: 'EDDI 2',
+  [Proceso.EDDI3]: 'EDDI 3',
+  [Proceso.LIDER_CELULA]: 'Líder de Célula',
   [Proceso.EDEM]: 'EDEM Escuela de Entrenamiento Ministerial',
 };
 

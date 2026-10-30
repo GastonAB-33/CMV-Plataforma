@@ -3,7 +3,7 @@ import Link from 'next/link';
 const links = [
   { href: '/dashboard', label: 'Dashboard' },
   { href: '/hermanos', label: 'Hermanos' },
-  { href: '/seguimiento', label: 'Seguimiento' },
+  { href: '/seguimiento', label: 'Estadísticas' },
   { href: '/eventos', label: 'Eventos y Noticias' },
 ];
 

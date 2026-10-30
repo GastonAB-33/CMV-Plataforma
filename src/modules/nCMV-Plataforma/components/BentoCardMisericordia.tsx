@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { HeartHandshake, ArrowRight, Heart } from 'lucide-react';
 
@@ -8,41 +8,42 @@ export const BentoCardMisericordia: React.FC = () => {
   return (
     <div
       onClick={() => navigate('/ministerio-misericordia')}
-      className="relative group cursor-pointer overflow-hidden rounded-3xl bg-white dark:bg-[#0c0c0e] border border-slate-200/90 dark:border-white/10 p-4 sm:p-5 shadow-md hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 flex flex-col justify-between min-h-[175px]"
+      className="relative group cursor-pointer overflow-hidden rounded-3xl bg-white dark:bg-[#091522] border border-cyan-500/25 dark:border-cyan-400/30 p-5 sm:p-6 shadow-xl hover:shadow-2xl hover:shadow-cyan-500/20 hover:-translate-y-2 transition-all duration-500 flex flex-col justify-between min-h-[185px]"
     >
-      <div className="absolute inset-0 bg-gradient-to-br from-amber-500/10 via-emerald-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+      {/* Degradé envolvente sutil en la parte de atrás */}
+      <div className="absolute inset-0 bg-gradient-to-br from-[#00dfa2]/10 via-[#06b6d4]/5 to-transparent opacity-60 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
 
       {/* Etiqueta superior */}
-      <div className="flex items-center justify-between z-10">
-        <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/40 text-[#0c1e38] dark:text-sky-200 text-[10px] font-extrabold uppercase tracking-widest">
-          <Heart size={11} className="text-[#0c1e38] dark:text-sky-300 font-black" />
+      <div className="relative z-10 flex items-center justify-between">
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-cyan-50 dark:bg-cyan-950/60 border border-cyan-200 dark:border-cyan-800/50 text-cyan-700 dark:text-cyan-300 text-xs font-black uppercase tracking-widest shadow-2xs">
+          <Heart size={12} className="text-[#00dfa2] fill-[#00dfa2]/40" />
           <span>Acción Social</span>
         </div>
-        <div className="w-7 h-7 rounded-lg bg-slate-100 dark:bg-white/10 flex items-center justify-center text-slate-700 dark:text-white group-hover:bg-amber-500 group-hover:text-white transition-all shadow-2xs group-hover:translate-x-0.5">
-          <ArrowRight size={14} />
+        <div className="w-8 h-8 rounded-xl bg-cyan-50 dark:bg-cyan-950/60 border border-cyan-200 dark:border-cyan-800/50 flex items-center justify-center text-cyan-700 dark:text-cyan-300 group-hover:bg-gradient-to-r group-hover:from-[#00dfa2] group-hover:to-[#06b6d4] group-hover:text-slate-950 transition-all shadow-xs group-hover:translate-x-1">
+          <ArrowRight size={16} />
         </div>
       </div>
 
       {/* Título MISERICORDIA */}
-      <div className="z-10 my-auto py-1">
-        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#0c1e38] dark:text-sky-300 font-black">
+      <div className="relative z-10 my-auto py-2">
+        <span className="text-xs font-black uppercase tracking-[0.25em] text-[#00dfa2] dark:text-emerald-400">
           Servicio & Cuidado
         </span>
-        <h2 className="text-2xl sm:text-3xl font-black uppercase tracking-tight text-slate-900 dark:text-white leading-none mt-0.5">
+        <h2 className="text-2xl sm:text-3xl font-black uppercase tracking-tight text-slate-900 dark:text-white leading-none mt-1">
           MISERICORDIA
         </h2>
-        <p className="text-xs text-slate-500 dark:text-gray-400 font-medium mt-1 leading-snug line-clamp-2">
-          Visitas a hogares, viandas, asistencia alimentaria y contención.
+        <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 font-semibold mt-1.5 leading-snug line-clamp-2">
+          Visitas a hogares, viandas, asistencia alimentaria y contención familiar.
         </p>
       </div>
 
       {/* Pie con detalles */}
-      <div className="z-10 pt-2 border-t border-slate-100 dark:border-white/5 flex items-center justify-between text-[11px] font-bold text-slate-500 dark:text-gray-400">
-        <span className="flex items-center gap-1 text-[#0c1e38] dark:text-sky-300 font-black">
-          <HeartHandshake size={13} />
+      <div className="relative z-10 pt-3 border-t border-cyan-500/20 dark:border-white/10 flex items-center justify-between text-xs font-bold text-slate-600 dark:text-cyan-200">
+        <span className="flex items-center gap-1.5 text-cyan-700 dark:text-cyan-300 font-black">
+          <HeartHandshake size={14} className="text-cyan-500" />
           <span>Familias & Ayuda</span>
         </span>
-        <span className="uppercase tracking-wider text-[10px] font-extrabold text-[#0c1e38] dark:text-sky-300 font-black group-hover:underline">
+        <span className="uppercase tracking-wider text-xs font-black text-cyan-600 dark:text-cyan-300 group-hover:text-emerald-400 group-hover:underline">
           Ver Módulo →
         </span>
       </div>

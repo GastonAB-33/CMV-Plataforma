@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Users,
@@ -43,7 +43,7 @@ const MODULES: ModuleConfig[] = [
   },
   {
     id: 'seguimiento',
-    label: 'Seguimiento',
+    label: 'Estadísticas',
     sublabel: 'Pipeline y etapas espirituales',
     path: '/tracking',
     icon: <LineChart size={20} />,

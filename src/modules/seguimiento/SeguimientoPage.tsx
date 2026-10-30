@@ -1,13 +1,17 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import {
   AlertTriangle,
+  ArrowRight,
   BookOpen,
   Building2,
+  ChevronLeft,
   ChevronRight,
   ExternalLink,
   Filter,
   Flame,
   Phone,
+  Search,
   Sparkles,
   UserCheck,
   Users,
@@ -17,7 +21,7 @@ import { eventsService } from '../../services/eventsService';
 import { useData } from '../../hooks/useData';
 import { Cell, EventType, Proceso, Role } from '../../types';
 import { BrotherProfile } from '../hermanos/types';
-import { altarService } from '../../services/altarService';
+import { altarService, BrotherAltarData } from '../../services/altarService';
 import { grupoVidaApprovalService, BrotherGrupoVidaApproval } from '../../services/grupoVidaApprovalService';
 import { stageProgressionService } from '../../services/stageProgressionService';
 
@@ -46,6 +50,22 @@ interface GrupoVidaItem {
   approvedDate?: string;
   hermanosMenores: BrotherProfile[];
   totalHermanosMenores: number;
+}
+
+interface ApostolicAltarItem {
+  id: string;
+  brother: BrotherProfile;
+  brotherName: string;
+  cellName: string;
+  status: 'EN_PROCESO' | 'FINALIZADO' | 'INTERRUMPIDO';
+  startDate?: string;
+  endDate?: string;
+  mentorName: string;
+  mentorId?: string;
+  mentorPhotoUrl?: string;
+  interruptionReason?: string;
+  interruptionDate?: string;
+  phone?: string;
 }
 
 const clampPercentage = (value: number) => Math.max(0, Math.min(100, Math.round(value)));
@@ -136,9 +156,51 @@ const displayDate = (value?: string) => {
 };
 
 export const SeguimientoPage = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
   const { brothers, isLoadingBrothers } = useData();
+
+  // Scroll automático a la sección correspondiente si se navega con hash o query param
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const isAltar =
+      location.hash === '#altares' ||
+      location.hash === '#seguimiento-altares' ||
+      params.get('seccion') === 'altares' ||
+      params.get('tab') === 'altares';
+
+    const isGrupoVida =
+      location.hash === '#grupos-vida' ||
+      location.hash === '#seguimiento-grupos-vida' ||
+      params.get('seccion') === 'grupos-vida' ||
+      params.get('tab') === 'grupos-vida';
+
+    if (isAltar || isGrupoVida) {
+      const targetId = isAltar ? 'seguimiento-altares' : 'seguimiento-grupos-vida';
+      const ringColor = isAltar ? 'ring-amber-500' : 'ring-[#00dfa2]';
+
+      const scrollTimer = setTimeout(() => {
+        const targetElement = document.getElementById(targetId);
+        if (targetElement) {
+          targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          targetElement.classList.add('ring-2', ringColor, 'ring-offset-2');
+          setTimeout(() => {
+            targetElement.classList.remove('ring-2', ringColor, 'ring-offset-2');
+          }, 2500);
+        }
+      }, 300);
+
+      return () => clearTimeout(scrollTimer);
+    }
+  }, [location.hash, location.search]);
   const [selectedCell, setSelectedCell] = useState<CellFilter>('Todas');
   const [selectedGrupoVidaForModal, setSelectedGrupoVidaForModal] = useState<GrupoVidaItem | null>(null);
+
+  // Estados interactivos para Seguimiento de Altares (con paginación y búsqueda para no saturar)
+  const [altarFilter, setAltarFilter] = useState<'TODOS' | 'EN_PROCESO' | 'FINALIZADOS' | 'INTERRUMPIDOS'>('TODOS');
+  const [altarSearch, setAltarSearch] = useState('');
+  const [altarPage, setAltarPage] = useState(1);
+  const [altarsPerPage, setAltarsPerPage] = useState(8);
 
   const events = useMemo(() => eventsService.list(), []);
 
@@ -182,55 +244,120 @@ export const SeguimientoPage = () => {
   }, [individualCells, selectedCell]);
 
   // ==========================================
-  // 1. ALTARES EN TODA LA CONGREGACIÓN
+  // 1. ALTARES EN TODA LA RED APOSTÓLICA
   // ==========================================
-  const altarStats = useMemo(() => {
-    let total = 0;
-    let enProceso = 0;
-    let finalizados = 0;
-    let interrumpidos = 0;
-    const interruptedList: Array<{
-      brother: BrotherProfile;
-      hermanoMayorName: string;
-      motivo: string;
-      fecha?: string;
-    }> = [];
+  const apostolicAltars = useMemo<ApostolicAltarItem[]>(() => {
+    const list: ApostolicAltarItem[] = [];
 
     for (const b of scopedBrotherProfiles) {
       const info = altarService.getAltarInfo(b.id);
-      const hasAltar = Boolean(
-        info.fechaInicio ||
-          b.altar?.fechaInicio ||
-          (b.altar?.realizadoPor && b.altar.realizadoPor.length > 0) ||
-          info.hermanoMayorName ||
-          info.isInterrumpido,
-      );
+      const isAltarStage = b.procesoActual === Proceso.ALTAR;
+      const hasStart = Boolean(info.fechaInicio || b.altar?.fechaInicio);
+      const hasEnd = Boolean(info.fechaFin || b.altar?.fechaFin);
+      const hasRealizadoPor = Boolean(b.altar?.realizadoPor && b.altar.realizadoPor.length > 0);
+      const hasMentor = Boolean(info.hermanoMayorName || info.hermanoMayorId);
+      const isInterrupted = Boolean(info.isInterrumpido || b.altar?.interrumpido);
+      const hasAnyAltar = hasStart || hasEnd || hasRealizadoPor || hasMentor || isInterrupted || isAltarStage;
 
-      if (hasAltar) {
-        total++;
-        if (info.isInterrumpido || b.altar?.interrumpido) {
-          interrumpidos++;
-          interruptedList.push({
-            brother: b,
-            hermanoMayorName:
-              info.hermanoMayorName ||
-              (b.altar?.realizadoPor ?? []).join(', ') ||
-              b.acompanamiento.acompananteName ||
-              'No asignado',
-            motivo: info.motivoInterrupcion || b.altar?.motivoInterrupcion || 'Sin motivo especificado',
-            fecha: info.fechaInterrupcion || b.altar?.fechaInterrupcion,
-          });
-        } else if (info.fechaFin || b.altar?.fechaFin) {
-          finalizados++;
-        } else {
-          enProceso++;
+      if (!hasAnyAltar) continue;
+
+      let status: 'EN_PROCESO' | 'FINALIZADO' | 'INTERRUMPIDO' = 'EN_PROCESO';
+      if (isInterrupted) {
+        status = 'INTERRUMPIDO';
+      } else if (hasEnd) {
+        status = 'FINALIZADO';
+      } else {
+        status = 'EN_PROCESO';
+      }
+
+      let mentorName =
+        info.hermanoMayorName ||
+        (b.altar?.realizadoPor ?? []).join(', ') ||
+        b.acompanamiento?.acompananteName ||
+        'Sin asignar';
+      let mentorId = info.hermanoMayorId;
+      let mentorPhotoUrl: string | undefined = undefined;
+
+      if (!mentorId && mentorName && mentorName !== 'Sin asignar') {
+        const found = brothers.find((other) => normalizeName(other.name) === normalizeName(mentorName));
+        if (found) {
+          mentorId = found.id;
+          mentorPhotoUrl = found.fotoUrl;
+        }
+      } else if (mentorId) {
+        const found = brothers.find((other) => other.id === mentorId);
+        if (found) {
+          mentorPhotoUrl = found.fotoUrl;
+          if (!mentorName || mentorName === 'Sin asignar') {
+            mentorName = found.name;
+          }
         }
       }
+
+      list.push({
+        id: b.id,
+        brother: b,
+        brotherName: b.name,
+        cellName: b.acompanamiento?.celulaName || 'Sin asignar',
+        status,
+        startDate: info.fechaInicio || b.altar?.fechaInicio,
+        endDate: info.fechaFin || b.altar?.fechaFin,
+        mentorName,
+        mentorId,
+        mentorPhotoUrl,
+        interruptionReason: info.motivoInterrupcion || b.altar?.motivoInterrupcion,
+        interruptionDate: info.fechaInterrupcion || b.altar?.fechaInterrupcion,
+        phone: b.telefono,
+      });
     }
 
+    return list;
+  }, [scopedBrotherProfiles, brothers]);
+
+  const altarStats = useMemo(() => {
+    const total = apostolicAltars.length;
+    const enProceso = apostolicAltars.filter((a) => a.status === 'EN_PROCESO').length;
+    const finalizados = apostolicAltars.filter((a) => a.status === 'FINALIZADO').length;
+    const interrumpidos = apostolicAltars.filter((a) => a.status === 'INTERRUMPIDO').length;
     const efectividad = total > 0 ? Math.round((finalizados / total) * 100) : 0;
+    const interruptedList = apostolicAltars
+      .filter((a) => a.status === 'INTERRUMPIDO')
+      .map((a) => ({
+        brother: a.brother,
+        hermanoMayorName: a.mentorName,
+        motivo: a.interruptionReason || 'Sin motivo especificado',
+        fecha: a.interruptionDate,
+      }));
+
     return { total, enProceso, finalizados, interrumpidos, efectividad, interruptedList };
-  }, [scopedBrotherProfiles]);
+  }, [apostolicAltars]);
+
+  // Filtro y Paginación de Altares para no saturar la pantalla
+  const filteredApostolicAltars = useMemo(() => {
+    return apostolicAltars.filter((altar) => {
+      if (altarFilter !== 'TODOS' && altar.status !== altarFilter) {
+        return false;
+      }
+      if (altarSearch.trim() !== '') {
+        const query = normalizeName(altarSearch);
+        const matchName = normalizeName(altar.brotherName).includes(query);
+        const matchCell = normalizeName(altar.cellName).includes(query);
+        const matchMentor = normalizeName(altar.mentorName).includes(query);
+        if (!matchName && !matchCell && !matchMentor) {
+          return false;
+        }
+      }
+      return true;
+    });
+  }, [apostolicAltars, altarFilter, altarSearch]);
+
+  const totalAltarPages = Math.max(1, Math.ceil(filteredApostolicAltars.length / altarsPerPage));
+  const currentAltarPage = Math.min(altarPage, totalAltarPages);
+
+  const paginatedApostolicAltars = useMemo(() => {
+    const startIndex = (currentAltarPage - 1) * altarsPerPage;
+    return filteredApostolicAltars.slice(startIndex, startIndex + altarsPerPage);
+  }, [filteredApostolicAltars, currentAltarPage, altarsPerPage]);
 
   // ==========================================
   // 2. GRUPOS DE VIDA ABIERTOS Y HERMANOS MENORES
@@ -400,7 +527,7 @@ export const SeguimientoPage = () => {
   // 6. SUGERENCIA 1: EMBUDO DE LA LÍNEA DE VIDA (8 ETAPAS)
   // ==========================================
   const stageFunnel = useMemo(() => {
-    const counts: Record<number, number> = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0 };
+    const counts: Record<number, number> = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0 };
     for (const b of scopedBrotherProfiles) {
       const prog = stageProgressionService.resolveProgression(b);
       counts[prog.currentStageNumber] = (counts[prog.currentStageNumber] || 0) + 1;
@@ -411,12 +538,14 @@ export const SeguimientoPage = () => {
     return [
       { number: 1, name: 'Altar', count: counts[1], pct: Math.round((counts[1] / total) * 100), color: 'bg-amber-500' },
       { number: 2, name: 'Hermano Menor', count: counts[2], pct: Math.round((counts[2] / total) * 100), color: 'bg-blue-500' },
-      { number: 3, name: 'EDDI', count: counts[3], pct: Math.round((counts[3] / total) * 100), color: 'bg-indigo-500' },
+      { number: 3, name: 'EDDI 1', count: counts[3], pct: Math.round((counts[3] / total) * 100), color: 'bg-indigo-500' },
       { number: 4, name: 'Discípulo Conector', count: counts[4], pct: Math.round((counts[4] / total) * 100), color: 'bg-teal-500' },
-      { number: 5, name: 'Hermano Mayor', count: counts[5], pct: Math.round((counts[5] / total) * 100), color: 'bg-emerald-500' },
-      { number: 6, name: 'Líder de Célula', count: counts[6], pct: Math.round((counts[6] / total) * 100), color: 'bg-cyan-500' },
-      { number: 7, name: 'EDEM', count: counts[7], pct: Math.round((counts[7] / total) * 100), color: 'bg-purple-500' },
-      { number: 8, name: 'Líder Ministerial', count: counts[8], pct: Math.round((counts[8] / total) * 100), color: 'bg-[#c5a059]' },
+      { number: 5, name: 'EDDI 2', count: counts[5], pct: Math.round((counts[5] / total) * 100), color: 'bg-cyan-500' },
+      { number: 6, name: 'Hermano Mayor', count: counts[6], pct: Math.round((counts[6] / total) * 100), color: 'bg-emerald-500' },
+      { number: 7, name: 'EDDI 3', count: counts[7], pct: Math.round((counts[7] / total) * 100), color: 'bg-blue-600' },
+      { number: 8, name: 'Líder de Célula', count: counts[8], pct: Math.round((counts[8] / total) * 100), color: 'bg-emerald-600' },
+      { number: 9, name: 'EDEM', count: counts[9], pct: Math.round((counts[9] / total) * 100), color: 'bg-purple-500' },
+      { number: 10, name: 'Líder Ministerial', count: counts[10], pct: Math.round((counts[10] / total) * 100), color: 'bg-[#c5a059]' },
     ];
   }, [scopedBrotherProfiles]);
 
@@ -424,7 +553,7 @@ export const SeguimientoPage = () => {
     return (
       <div className="space-y-4 animate-in fade-in duration-500">
         <h1 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white tracking-tight">
-          Seguimiento Estratégico
+          Estadísticas Estratégicas
         </h1>
         <p className="text-slate-500 dark:text-gray-400">Cargando datos congregacionales...</p>
       </div>
@@ -437,7 +566,7 @@ export const SeguimientoPage = () => {
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 dark:border-white/10 pb-5">
         <div className="space-y-1">
           <h1 className="text-3xl md:text-4xl font-black text-slate-900 dark:text-white tracking-tight">
-            Seguimiento Estratégico
+            Estadísticas Estratégicas
           </h1>
           <p className="text-sm text-slate-500 dark:text-gray-400">
             Tablero congregacional para liderazgo pastoral y apostólico: altares, grupos de vida y discipulado.
@@ -612,8 +741,340 @@ export const SeguimientoPage = () => {
           </article>
         </div>
 
+        {/* ======================================================== */}
+        {/* PANEL: SEGUIMIENTO DE ALTARES EN LA RED APOSTÓLICA       */}
+        {/* ======================================================== */}
+        <div id="seguimiento-altares" className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#151515] p-5 sm:p-6 space-y-4 shadow-sm scroll-mt-24 transition-all duration-500">
+          {/* Encabezado del Panel */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 dark:border-white/5 pb-4">
+            <div className="space-y-0.5">
+              <h3 className="text-lg font-black text-slate-900 dark:text-white uppercase tracking-tight flex items-center gap-2">
+                <Flame size={20} className="text-amber-500" />
+                Seguimiento de Altares · {selectedCell === 'Todas' ? 'Red Apostólica' : `Célula ${selectedCell}`}
+              </h3>
+              <p className="text-xs text-slate-500 dark:text-gray-400">
+                Monitoreo general de altares en la congregación, mentores asignados y fichas personales vinculadas.
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-black px-3 py-1 rounded-full bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/30 w-fit">
+                {altarStats.total} {altarStats.total === 1 ? 'Altar Registrado' : 'Altares Registrados'}
+              </span>
+            </div>
+          </div>
+
+          {/* 4 Tarjetas de Métricas Interactivas (Filtros según Imagen 2) */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+            {/* TOTAL ALTARES */}
+            <button
+              type="button"
+              onClick={() => {
+                setAltarFilter('TODOS');
+                setAltarPage(1);
+              }}
+              className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer ${
+                altarFilter === 'TODOS'
+                  ? 'bg-emerald-500/10 border-emerald-500 shadow-sm ring-1 ring-emerald-500/40'
+                  : 'bg-white dark:bg-black/40 border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20'
+              }`}
+            >
+              <p className="text-[10px] font-black uppercase tracking-wider text-slate-500 dark:text-gray-400">
+                TOTAL ALTARES
+              </p>
+              <p className="text-2xl sm:text-3xl font-black mt-1 text-emerald-600 dark:text-emerald-400">
+                {altarStats.total}
+              </p>
+            </button>
+
+            {/* EN PROCESO */}
+            <button
+              type="button"
+              onClick={() => {
+                setAltarFilter('EN_PROCESO');
+                setAltarPage(1);
+              }}
+              className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer ${
+                altarFilter === 'EN_PROCESO'
+                  ? 'bg-amber-500/10 border-amber-500 shadow-sm ring-1 ring-amber-500/40'
+                  : 'bg-white dark:bg-black/40 border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20'
+              }`}
+            >
+              <p className="text-[10px] font-black uppercase tracking-wider text-slate-500 dark:text-gray-400">
+                EN PROCESO
+              </p>
+              <p className="text-2xl sm:text-3xl font-black mt-1 text-amber-500">
+                {altarStats.enProceso}
+              </p>
+            </button>
+
+            {/* FINALIZADOS */}
+            <button
+              type="button"
+              onClick={() => {
+                setAltarFilter('FINALIZADOS');
+                setAltarPage(1);
+              }}
+              className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer ${
+                altarFilter === 'FINALIZADOS'
+                  ? 'bg-emerald-500/10 border-emerald-500 shadow-sm ring-1 ring-emerald-500/40'
+                  : 'bg-white dark:bg-black/40 border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20'
+              }`}
+            >
+              <p className="text-[10px] font-black uppercase tracking-wider text-slate-500 dark:text-gray-400">
+                FINALIZADOS
+              </p>
+              <p className="text-2xl sm:text-3xl font-black mt-1 text-emerald-600 dark:text-emerald-400">
+                {altarStats.finalizados}
+              </p>
+            </button>
+
+            {/* INTERRUMPIDOS */}
+            <button
+              type="button"
+              onClick={() => {
+                setAltarFilter('INTERRUMPIDOS');
+                setAltarPage(1);
+              }}
+              className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer ${
+                altarFilter === 'INTERRUMPIDOS'
+                  ? 'bg-rose-500/10 border-rose-500 shadow-sm ring-1 ring-rose-500/40'
+                  : 'bg-white dark:bg-black/40 border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20'
+              }`}
+            >
+              <p className="text-[10px] font-black uppercase tracking-wider text-slate-500 dark:text-gray-400">
+                INTERRUMPIDOS
+              </p>
+              <p className="text-2xl sm:text-3xl font-black mt-1 text-rose-600">
+                {altarStats.interrumpidos}
+              </p>
+            </button>
+          </div>
+
+          {/* Barra de Búsqueda y Control de Paginación */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
+            <div className="relative flex-1 min-w-[220px]">
+              <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+              <input
+                type="text"
+                value={altarSearch}
+                onChange={(e) => {
+                  setAltarSearch(e.target.value);
+                  setAltarPage(1);
+                }}
+                placeholder="Buscar por hermano, mentor o célula..."
+                className="w-full bg-slate-50 dark:bg-black/40 border border-slate-200 dark:border-white/10 rounded-xl py-2 pl-9 pr-8 text-xs text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:border-emerald-500 transition-colors"
+              />
+              {altarSearch && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAltarSearch('');
+                    setAltarPage(1);
+                  }}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-slate-600 dark:hover:text-white px-1"
+                >
+                  ✕
+                </button>
+              )}
+            </div>
+
+            <div className="flex items-center gap-2.5 text-xs text-slate-500 dark:text-gray-400 self-end sm:self-center font-bold">
+              <span>
+                Mostrando {paginatedApostolicAltars.length} de {filteredApostolicAltars.length} altares
+              </span>
+              <select
+                value={altarsPerPage}
+                onChange={(e) => {
+                  setAltarsPerPage(Number(e.target.value));
+                  setAltarPage(1);
+                }}
+                className="bg-slate-50 dark:bg-black/40 border border-slate-200 dark:border-white/10 rounded-lg px-2 py-1 text-xs font-semibold text-slate-700 dark:text-gray-300 focus:outline-none cursor-pointer"
+              >
+                <option value={6}>6 por pág.</option>
+                <option value={8}>8 por pág.</option>
+                <option value={12}>12 por pág.</option>
+                <option value={24}>24 por pág.</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Lista de Altares con altura máxima fija para no extender demasiado la pantalla */}
+          {filteredApostolicAltars.length === 0 ? (
+            <div className="py-10 text-center rounded-xl bg-slate-50/70 dark:bg-black/30 border border-dashed border-slate-200 dark:border-white/10 space-y-1.5">
+              <Flame size={28} className="mx-auto text-slate-400 dark:text-gray-600" />
+              <p className="text-xs font-bold text-slate-600 dark:text-gray-400">
+                {altarSearch
+                  ? 'No se encontraron altares con ese criterio de búsqueda.'
+                  : altarFilter === 'TODOS'
+                  ? 'No hay hermanos registrados en altares para este criterio.'
+                  : `No hay altares ${
+                      altarFilter === 'EN_PROCESO'
+                        ? 'en proceso'
+                        : altarFilter === 'FINALIZADOS'
+                        ? 'finalizados'
+                        : 'interrumpidos'
+                    }.`}
+              </p>
+              <p className="text-[11px] text-slate-400 dark:text-gray-500">
+                Los altares se administran y vinculan directamente en las fichas personales de cada hermano.
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-2.5 max-h-[460px] overflow-y-auto pr-1 [scrollbar-width:thin]">
+              {paginatedApostolicAltars.map((item) => (
+                <article
+                  key={`apostolic-altar-${item.brother.id}`}
+                  className="p-3.5 rounded-xl bg-slate-50/70 dark:bg-black/40 border border-slate-200 dark:border-white/10 hover:border-emerald-500/40 transition-all shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                >
+                  <div className="flex items-center gap-3 min-w-0 flex-1">
+                    {/* Foto / Avatar del Hermano vinculado a su ficha */}
+                    <div
+                      onClick={() => navigate(`/hermanos/${item.brother.id}`)}
+                      className="w-10 h-10 rounded-xl overflow-hidden bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-sm font-bold text-emerald-600 shrink-0 cursor-pointer hover:scale-105 transition-transform"
+                      title={`Ver ficha personal de ${item.brotherName}`}
+                    >
+                      {item.brother.fotoUrl ? (
+                        <img src={item.brother.fotoUrl} alt={item.brotherName} className="w-full h-full object-cover" />
+                      ) : (
+                        item.brotherName.charAt(0)
+                      )}
+                    </div>
+
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-wrap items-center gap-2">
+                        {/* Nombre del Hermano vinculado a su ficha */}
+                        <button
+                          type="button"
+                          onClick={() => navigate(`/hermanos/${item.brother.id}`)}
+                          className="text-xs sm:text-sm font-black text-slate-900 dark:text-white uppercase truncate hover:text-emerald-600 dark:hover:text-emerald-400 text-left transition-colors"
+                          title={`Ver ficha personal de ${item.brotherName}`}
+                        >
+                          {item.brotherName}
+                        </button>
+
+                        {/* Badge Célula */}
+                        <span className="text-[9px] font-bold px-2 py-0.5 rounded-md bg-slate-200/70 dark:bg-white/10 text-slate-700 dark:text-gray-300">
+                          {item.cellName}
+                        </span>
+
+                        {/* Status Badge */}
+                        <span
+                          className={`text-[9px] uppercase font-black px-2 py-0.5 rounded-full border shrink-0 ${
+                            item.status === 'FINALIZADO'
+                              ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/30'
+                              : item.status === 'INTERRUMPIDO'
+                              ? 'bg-rose-500/15 text-rose-700 dark:text-rose-300 border-rose-500/30'
+                              : 'bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-500/30'
+                          }`}
+                        >
+                          {item.status === 'FINALIZADO' ? 'Finalizado' : item.status === 'INTERRUMPIDO' ? 'Interrumpido' : 'En Proceso'}
+                        </span>
+                      </div>
+
+                      <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-[10px] text-slate-500 dark:text-gray-400 mt-1">
+                        {/* Mentor / Hermano Mayor vinculado a su ficha */}
+                        <span className="truncate">
+                          Mentor:{' '}
+                          {item.mentorId ? (
+                            <button
+                              type="button"
+                              onClick={() => navigate(`/hermanos/${item.mentorId}`)}
+                              className="font-bold text-slate-800 dark:text-gray-200 hover:text-emerald-600 dark:hover:text-emerald-400 underline decoration-dotted"
+                              title={`Ver ficha del mentor ${item.mentorName}`}
+                            >
+                              {item.mentorName}
+                            </button>
+                          ) : (
+                            <span className="font-bold text-slate-700 dark:text-gray-300">{item.mentorName}</span>
+                          )}
+                        </span>
+
+                        {/* Fechas de inicio y fin */}
+                        <span>
+                          Inicio: {item.startDate ? displayDate(item.startDate) : 'Sin fecha'}
+                          {item.endDate && ` · Fin: ${displayDate(item.endDate)}`}
+                        </span>
+
+                        {/* Motivo si fue interrumpido */}
+                        {item.status === 'INTERRUMPIDO' && item.interruptionReason && (
+                          <span className="text-rose-600 dark:text-rose-400 font-semibold truncate">
+                            Motivo: {item.interruptionReason}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Acciones Rápidas */}
+                  <div className="flex items-center gap-1.5 self-end sm:self-center shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => navigate(`/hermanos/${item.brother.id}`)}
+                      className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[10px] uppercase font-bold text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 hover:bg-emerald-600 hover:text-white transition-all shadow-xs"
+                      title="Abrir ficha personal del hermano"
+                    >
+                      <span>Ver Ficha</span>
+                      <ExternalLink size={12} />
+                    </button>
+                  </div>
+                </article>
+              ))}
+            </div>
+          )}
+
+          {/* Paginación Inferior */}
+          {totalAltarPages > 1 && (
+            <div className="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-white/5 text-xs text-slate-500 dark:text-gray-400 font-bold">
+              <span>
+                Página {currentAltarPage} de {totalAltarPages}
+              </span>
+              <div className="flex items-center gap-1">
+                <button
+                  type="button"
+                  disabled={currentAltarPage <= 1}
+                  onClick={() => setAltarPage((prev) => Math.max(1, prev - 1))}
+                  className="px-2.5 py-1 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-slate-100 dark:hover:bg-white/10 transition-colors"
+                >
+                  Anterior
+                </button>
+
+                {Array.from({ length: totalAltarPages }, (_, i) => i + 1)
+                  .filter((page) => page === 1 || page === totalAltarPages || Math.abs(page - currentAltarPage) <= 1)
+                  .map((page, index, array) => {
+                    const prev = array[index - 1];
+                    return (
+                      <React.Fragment key={page}>
+                        {prev && page - prev > 1 && <span className="px-1 text-slate-400">...</span>}
+                        <button
+                          type="button"
+                          onClick={() => setAltarPage(page)}
+                          className={`w-7 h-7 rounded-lg text-xs font-black transition-colors ${
+                            currentAltarPage === page
+                              ? 'bg-emerald-600 text-white'
+                              : 'border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 hover:bg-slate-100 dark:hover:bg-white/10'
+                          }`}
+                        >
+                          {page}
+                        </button>
+                      </React.Fragment>
+                    );
+                  })}
+
+                <button
+                  type="button"
+                  disabled={currentAltarPage >= totalAltarPages}
+                  onClick={() => setAltarPage((prev) => Math.min(totalAltarPages, prev + 1))}
+                  className="px-2.5 py-1 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-slate-100 dark:hover:bg-white/10 transition-colors"
+                >
+                  Siguiente
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+
         {/* DETALLE: GRUPOS DE VIDA ABIERTOS */}
-        <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#151515] p-5 sm:p-6 space-y-4 shadow-sm">
+        <div id="seguimiento-grupos-vida" className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#151515] p-5 sm:p-6 space-y-4 shadow-sm scroll-mt-24 transition-all duration-500">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 dark:border-white/5 pb-3">
             <div>
               <h3 className="text-lg font-black text-slate-900 dark:text-white uppercase tracking-tight flex items-center gap-2">
@@ -640,7 +1101,7 @@ export const SeguimientoPage = () => {
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 max-h-[460px] overflow-y-auto pr-1 [scrollbar-width:thin]">
               {gruposVidaList.map((grupo) => (
                 <div
                   key={grupo.approval.brotherId}
@@ -657,7 +1118,12 @@ export const SeguimientoPage = () => {
                     </div>
 
                     <div className="flex items-center gap-2 pt-1">
-                      <div className="w-8 h-8 rounded-full bg-[#c5a059]/20 border border-[#c5a059]/40 flex items-center justify-center text-xs font-black text-[#c5a059] shrink-0">
+                      {/* Avatar del Líder vinculado a su ficha */}
+                      <div
+                        onClick={() => grupo.leader && navigate(`/hermanos/${grupo.leader.id}`)}
+                        className="w-8 h-8 rounded-full bg-[#c5a059]/20 border border-[#c5a059]/40 flex items-center justify-center text-xs font-black text-[#c5a059] shrink-0 cursor-pointer hover:scale-105 transition-transform"
+                        title={grupo.leader ? `Ver ficha de ${grupo.leaderName}` : undefined}
+                      >
                         {grupo.leader?.fotoUrl ? (
                           <img src={grupo.leader.fotoUrl} alt={grupo.leaderName} className="w-full h-full rounded-full object-cover" />
                         ) : (
@@ -665,13 +1131,29 @@ export const SeguimientoPage = () => {
                         )}
                       </div>
                       <div className="min-w-0 flex-1">
-                        <p className="text-xs font-bold text-slate-800 dark:text-gray-100 truncate">
+                        {/* Nombre del Líder vinculado a su ficha */}
+                        <button
+                          type="button"
+                          onClick={() => grupo.leader && navigate(`/hermanos/${grupo.leader.id}`)}
+                          className="text-xs font-bold text-slate-800 dark:text-gray-100 truncate hover:text-[#c5a059] text-left block w-full transition-colors"
+                          title={grupo.leader ? `Ver ficha de ${grupo.leaderName}` : undefined}
+                        >
                           Líder: {grupo.leaderName}
-                        </p>
+                        </button>
                         <p className="text-[10px] text-slate-500 dark:text-gray-400 truncate">
                           Célula: {grupo.leaderCell || 'Sin asignar'}
                         </p>
                       </div>
+                      {grupo.leader && (
+                        <button
+                          type="button"
+                          onClick={() => navigate(`/hermanos/${grupo.leader?.id}`)}
+                          className="p-1 rounded-lg text-slate-400 hover:text-[#c5a059] transition-colors"
+                          title={`Ver ficha de ${grupo.leaderName}`}
+                        >
+                          <ExternalLink size={13} />
+                        </button>
+                      )}
                     </div>
                   </div>
 
@@ -965,7 +1447,11 @@ export const SeguimientoPage = () => {
                   {selectedGrupoVidaForModal.hermanosMenores.map((hno) => (
                     <div key={hno.id} className="py-2.5 flex items-center justify-between gap-3">
                       <div className="flex items-center gap-2.5 min-w-0">
-                        <div className="w-8 h-8 rounded-full bg-slate-200 dark:bg-white/10 flex items-center justify-center text-xs font-black text-slate-700 dark:text-gray-200 shrink-0">
+                        <div
+                          onClick={() => window.open(`/hermanos/${hno.id}`, '_blank')}
+                          className="w-8 h-8 rounded-full bg-slate-200 dark:bg-white/10 flex items-center justify-center text-xs font-black text-slate-700 dark:text-gray-200 shrink-0 cursor-pointer hover:scale-105 transition-transform"
+                          title={`Ver ficha personal de ${hno.name}`}
+                        >
                           {hno.fotoUrl ? (
                             <img src={hno.fotoUrl} alt={hno.name} className="w-full h-full rounded-full object-cover" />
                           ) : (
@@ -973,9 +1459,14 @@ export const SeguimientoPage = () => {
                           )}
                         </div>
                         <div className="min-w-0">
-                          <p className="text-xs font-black text-slate-900 dark:text-white uppercase truncate">
+                          <button
+                            type="button"
+                            onClick={() => window.open(`/hermanos/${hno.id}`, '_blank')}
+                            className="text-xs font-black text-slate-900 dark:text-white uppercase truncate hover:text-[#c5a059] text-left block transition-colors"
+                            title={`Ver ficha personal de ${hno.name}`}
+                          >
                             {hno.name}
-                          </p>
+                          </button>
                           <p className="text-[10px] text-slate-500 dark:text-gray-400 truncate">
                             {hno.telefono ? `Tel: ${hno.telefono}` : 'Sin teléfono'} · Etapa: {hno.procesoActual}
                           </p>

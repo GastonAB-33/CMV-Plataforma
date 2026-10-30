@@ -46,6 +46,7 @@ const collectMissingFields = (brother: BrotherProfile): string[] => {
 const toListItem = (brother: BrotherProfile): BrotherListItem => ({
   id: brother.id,
   name: brother.name,
+  email: brother.email,
   fotoUrl: brother.fotoUrl,
   procesoActual: brother.procesoActual,
   cellName: brother.acompanamiento.celulaName,

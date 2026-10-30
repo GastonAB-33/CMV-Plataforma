@@ -1,8 +1,15 @@
-﻿const CACHE_VERSION = 'cmv-seguimiento-v3';
+try {
+  importScripts("https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.sw.js");
+} catch {
+  // Ignorar si no hay conexión al iniciar en offline.
+}
+
+const CACHE_VERSION = 'cmv-seguimiento-v3';
 const APP_SHELL = [
   '/',
   '/index.html',
   '/manifest.json',
+  '/OneSignalSDKWorker.js',
   '/icon.svg',
   '/icon-192.png',
   '/icon-512.png',

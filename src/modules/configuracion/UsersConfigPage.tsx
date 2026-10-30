@@ -1,5 +1,5 @@
 import { FormEvent, useEffect, useMemo, useState } from 'react';
-import { Shield, UserCog } from 'lucide-react';
+import { Shield, UserCog, UserCheck, Sparkles, Mail, CheckCircle2, ArrowRight } from 'lucide-react';
 import { Link, Navigate } from 'react-router-dom';
 import { Toast } from '../../components/ui/Toast';
 import { Modal } from '../../components/ui/Modal';
@@ -15,8 +15,11 @@ import {
 } from '../../lib/permissionsMatrix';
 import { supabaseRolePermissionsService } from '../../services/supabaseRolePermissionsService';
 import { supabaseUserPermissionsService } from '../../services/supabaseUserPermissionsService';
+import { STAGE_NAMES, stageProgressionService } from '../../services/stageProgressionService';
+import { brothersService } from '../../services/brothersService';
+import { BrotherProfile } from '../hermanos/types';
 
-const MANAGER_ROLES = new Set<Role>([Role.SUPERADMIN, Role.APOSTOL]);
+const MANAGER_ROLES = new Set<Role>([Role.SUPERADMIN, Role.APOSTOL, Role.PASTOR]);
 const AVAILABLE_ROLES: Role[] = [
   Role.SUPERADMIN,
   Role.APOSTOL,
@@ -33,7 +36,7 @@ const roleLabel = (role: Role) => role.replace(/_/g, ' ').toLowerCase();
 const FEATURE_LABELS: Record<AppFeatureKey, string> = {
   dashboard: 'Inicio',
   hermanos: 'Hermanos',
-  seguimiento: 'Seguimiento',
+  seguimiento: 'Estadísticas',
   eventos: 'Eventos/Noticias',
   escuela_eddi: 'Escuela EDDI',
   escuela_edem: 'Escuela EDEM',
@@ -85,11 +88,11 @@ export const UsersConfigPage = () => {
   const { user } = useAuth();
   const canManageUsers = MANAGER_ROLES.has(user.role);
   const [users, setUsers] = useState<AppUserRow[]>([]);
+  const [brothers, setBrothers] = useState<BrotherProfile[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [createAccess, setCreateAccess] = useState(true);
-  const [accessPassword, setAccessPassword] = useState('');
   const [toast, setToast] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
   const [selectedRoleForPermissions, setSelectedRoleForPermissions] = useState<Role>(Role.PASTOR);
   const [isSpecialPermissionsModalOpen, setIsSpecialPermissionsModalOpen] = useState(false);
@@ -108,6 +111,19 @@ export const UsersConfigPage = () => {
   const [rol, setRol] = useState<Role>(Role.PASTOR);
   const [activo, setActivo] = useState(true);
 
+  // Etapa configurable para habilitar acceso (Por defecto: 4 = Discípulo Conector)
+  const [minAccessStageNumber, setMinAccessStageNumber] = useState<number>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('cmv_min_access_stage');
+      return saved ? parseInt(saved, 10) : 4;
+    }
+    return 4;
+  });
+
+  // Correos editables para candidatos
+  const [candidateEmails, setCandidateEmails] = useState<Record<string, string>>({});
+  const [activatingCandidateId, setActivatingCandidateId] = useState<string | null>(null);
+
   const loadUsers = async () => {
     setIsLoading(true);
     const rows = await supabaseUsersService.listUsers();
@@ -115,11 +131,17 @@ export const UsersConfigPage = () => {
     setIsLoading(false);
   };
 
+  const loadBrothers = async () => {
+    const list = await brothersService.listAsync();
+    setBrothers(list);
+  };
+
   useEffect(() => {
     if (!canManageUsers) {
       return;
     }
     void loadUsers();
+    void loadBrothers();
   }, [canManageUsers]);
 
   useEffect(() => {
@@ -141,7 +163,6 @@ export const UsersConfigPage = () => {
     setRol(Role.PASTOR);
     setActivo(true);
     setCreateAccess(true);
-    setAccessPassword('');
   };
 
   const openEdit = async (target: AppUserRow) => {
@@ -151,7 +172,6 @@ export const UsersConfigPage = () => {
     setRol(target.rol);
     setActivo(target.activo);
     setCreateAccess(false);
-    setAccessPassword('');
 
     const special = await supabaseUserPermissionsService.listForUser(target.id);
     const next = FEATURE_ORDER.reduce((acc, feature) => {
@@ -175,21 +195,8 @@ export const UsersConfigPage = () => {
 
     let userIdFromAuth: string | undefined;
     if (!editingId && createAccess) {
-      if (!accessPassword.trim() || accessPassword.trim().length < 8) {
-        setIsSaving(false);
-        setToast({ text: 'La contrasena debe tener al menos 8 caracteres.', type: 'error' });
-        return;
-      }
-
-      const authResult = await supabaseUsersService.provisionAuthUser(email, accessPassword.trim());
-      if (!authResult.ok || !authResult.userId) {
-        setIsSaving(false);
-        setToast({
-          text: authResult.error ?? 'No se pudo crear el acceso en Supabase Auth.',
-          type: 'error',
-        });
-        return;
-      }
+      // Flujo de auto-servicio: Se crea en auth con invite/reset sin que el pastor tenga que inventar una clave
+      const authResult = await supabaseUsersService.provisionUserWithInvite(email);
       userIdFromAuth = authResult.userId;
     }
 
@@ -211,11 +218,80 @@ export const UsersConfigPage = () => {
     }
 
     setToast({
-      text: editingId ? 'Usuario actualizado correctamente.' : 'Usuario creado correctamente.',
+      text: editingId
+        ? 'Usuario actualizado correctamente.'
+        : 'Usuario agregado a la lista de aprobados. Se envió el correo para definir contraseña (o podrá usar Google).',
       type: 'success',
     });
     resetForm();
     await loadUsers();
+  };
+
+  // Cálculo de candidatos elegibles para activar acceso
+  const eligibleCandidates = useMemo(() => {
+    return brothers.filter((brother) => {
+      const progression = stageProgressionService.resolveProgression(brother);
+      const hasReached =
+        progression.currentStageNumber >= minAccessStageNumber ||
+        progression.isStageCompleted(minAccessStageNumber);
+
+      if (!hasReached) {
+        return false;
+      }
+
+      const brotherEmail = (candidateEmails[brother.id] ?? brother.email ?? '').trim().toLowerCase();
+      const brotherName = brother.name.trim().toLowerCase();
+
+      // Chequear si ya está activo en la tabla usuarios (whitelist)
+      const isAlreadyUser = users.some((u) => {
+        const userEmail = u.email.trim().toLowerCase();
+        const userName = u.nombre.trim().toLowerCase();
+        return (brotherEmail && userEmail === brotherEmail) || userName === brotherName;
+      });
+
+      return !isAlreadyUser;
+    });
+  }, [brothers, users, minAccessStageNumber, candidateEmails]);
+
+  const handleActivateBrother = async (brother: BrotherProfile) => {
+    const effectiveEmail = (candidateEmails[brother.id] ?? brother.email ?? '').trim().toLowerCase();
+    if (!effectiveEmail || !effectiveEmail.includes('@')) {
+      setToast({
+        text: `Por favor ingresa un correo electrónico válido para ${brother.name} antes de activar su cuenta.`,
+        type: 'error',
+      });
+      return;
+    }
+
+    setActivatingCandidateId(brother.id);
+    const progression = stageProgressionService.resolveProgression(brother);
+    // Rol sugerido: Si ya está en etapa 8 (Líder de Célula) o más se le da LIDER_CELULA, si no DISCIPULO
+    const recommendedRole = progression.currentStageNumber >= 8 ? Role.LIDER_CELULA : Role.DISCIPULO;
+
+    const result = await supabaseUsersService.activateBrotherAccess(
+      {
+        name: brother.name,
+        email: effectiveEmail,
+        role: recommendedRole,
+        celulaId: null,
+      },
+      { id: user.id, name: user.name },
+    );
+
+    setActivatingCandidateId(null);
+
+    if (!result.ok) {
+      setToast({ text: result.error ?? 'No se pudo activar la cuenta.', type: 'error' });
+      return;
+    }
+
+    setToast({
+      text: `¡Cuenta activada para ${brother.name}! Se habilitó su acceso en la lista de aprobados y se envió el correo a ${effectiveEmail} (también puede entrar con Google).`,
+      type: 'success',
+    });
+
+    await loadUsers();
+    await loadBrothers();
   };
 
   const persistSpecialPermission = async (
@@ -281,7 +357,7 @@ export const UsersConfigPage = () => {
           <div>
             <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Usuarios y permisos</h1>
             <p className="text-sm text-slate-600 dark:text-gray-400">
-              Gestiona perfiles, roles y estado de acceso para toda la plataforma.
+              Gestiona perfiles, roles y la lista blanca de acceso (Whitelist) de la plataforma.
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -310,9 +386,10 @@ export const UsersConfigPage = () => {
         </div>
       </header>
 
+      {/* METRICAS */}
       <section className="grid grid-cols-1 md:grid-cols-3 gap-3">
         <article className="rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#111111] p-4">
-          <p className="text-xs text-slate-500 dark:text-gray-400">Usuarios</p>
+          <p className="text-xs text-slate-500 dark:text-gray-400">Usuarios en Whitelist</p>
           <p className="text-2xl font-black text-slate-900 dark:text-white">{summary.total}</p>
         </article>
         <article className="rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#111111] p-4">
@@ -325,12 +402,139 @@ export const UsersConfigPage = () => {
         </article>
       </section>
 
+      {/* SECCIÓN CONFIGURABLE: PROMOCIÓN Y ACTIVACIÓN DE CUENTAS POR ETAPA */}
+      <section className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#111111] p-5 shadow-sm">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-100 dark:border-white/5">
+          <div className="flex items-center gap-2">
+            <Sparkles size={18} className="text-[#c5a059]" />
+            <div>
+              <h2 className="text-lg font-bold text-slate-900 dark:text-white">
+                Activación de Cuentas por Promoción
+              </h2>
+              <p className="text-xs text-slate-500 dark:text-gray-400">
+                Habilita el acceso automático a los hermanos al alcanzar la etapa configurada.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-xs font-semibold text-slate-600 dark:text-gray-300">
+              Etapa para habilitar acceso:
+            </span>
+            <select
+              value={minAccessStageNumber}
+              onChange={(e) => {
+                const val = Number(e.target.value);
+                setMinAccessStageNumber(val);
+                localStorage.setItem('cmv_min_access_stage', String(val));
+              }}
+              className="rounded-xl border border-[#c5a059]/40 bg-[#c5a059]/10 px-3 py-1.5 text-xs font-bold text-[#c5a059] outline-none cursor-pointer"
+            >
+              {Object.entries(STAGE_NAMES).map(([num, name]) => (
+                <option key={num} value={num} className="bg-white dark:bg-[#111111] text-slate-900 dark:text-white">
+                  Etapa {num}: {name} {Number(num) === 4 ? '(Por defecto: Discípulo Conector)' : ''}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        <div className="mt-4">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-xs uppercase tracking-wider font-bold text-slate-500 dark:text-gray-400">
+              Hermanos pendientes de activación en o sobre{' '}
+              <span className="text-[#c5a059] font-black">
+                Etapa {minAccessStageNumber} ({STAGE_NAMES[minAccessStageNumber]})
+              </span>
+            </span>
+            <span className="text-xs bg-[#c5a059]/20 text-[#c5a059] px-2.5 py-0.5 rounded-full font-bold">
+              {eligibleCandidates.length} candidatos listos
+            </span>
+          </div>
+
+          {eligibleCandidates.length === 0 ? (
+            <div className="rounded-xl border border-dashed border-slate-200 dark:border-white/10 p-6 text-center">
+              <CheckCircle2 size={24} className="mx-auto text-emerald-500 mb-2 opacity-80" />
+              <p className="text-sm font-semibold text-slate-800 dark:text-gray-200">
+                ¡Todo al día!
+              </p>
+              <p className="text-xs text-slate-500 dark:text-gray-400 mt-1">
+                No hay hermanos pendientes de activación en la etapa seleccionada. Todos los miembros en esta etapa ya tienen su cuenta habilitada en la Whitelist.
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+              {eligibleCandidates.map((candidate) => {
+                const progression = stageProgressionService.resolveProgression(candidate);
+                const currentEmail = candidateEmails[candidate.id] ?? candidate.email ?? '';
+                const isActivating = activatingCandidateId === candidate.id;
+
+                return (
+                  <div
+                    key={candidate.id}
+                    className="flex flex-col justify-between rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50/70 dark:bg-[#0a0a0a] p-4 hover:border-[#c5a059]/40 transition-all shadow-sm"
+                  >
+                    <div>
+                      <div className="flex items-start justify-between gap-2">
+                        <div>
+                          <p className="font-bold text-sm text-slate-900 dark:text-white">
+                            {candidate.name}
+                          </p>
+                          <p className="text-[11px] text-slate-500 dark:text-gray-400">
+                            Célula: {candidate.acompanamiento.celulaName}
+                          </p>
+                        </div>
+                        <span className="rounded-lg bg-[#c5a059]/15 text-[#c5a059] border border-[#c5a059]/30 px-2 py-0.5 text-[10px] font-black uppercase">
+                          {progression.currentStageName}
+                        </span>
+                      </div>
+
+                      <div className="mt-3">
+                        <label className="text-[10px] uppercase font-bold text-slate-500 dark:text-gray-400 block mb-1">
+                          Correo para la cuenta:
+                        </label>
+                        <div className="relative">
+                          <Mail size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                          <input
+                            type="email"
+                            value={currentEmail}
+                            onChange={(e) =>
+                              setCandidateEmails((prev) => ({
+                                ...prev,
+                                [candidate.id]: e.target.value,
+                              }))
+                            }
+                            placeholder="correo@gmail.com"
+                            className="w-full rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-black/50 py-1.5 pl-7 pr-2 text-xs text-slate-900 dark:text-white outline-none focus:border-[#c5a059]"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <button
+                      type="button"
+                      disabled={isActivating || !currentEmail}
+                      onClick={() => handleActivateBrother(candidate)}
+                      className="mt-4 w-full rounded-xl bg-[#c5a059] hover:bg-[#d4b375] disabled:opacity-50 text-black font-black py-2 px-3 text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-sm active:scale-[0.98]"
+                    >
+                      <UserCheck size={14} />
+                      <span>{isActivating ? 'Activando...' : 'Activar cuenta'}</span>
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* FORMULARIO Y LISTADO MANUAL */}
       <section className="grid grid-cols-1 xl:grid-cols-12 gap-4">
         <article className="xl:col-span-5 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#111111] p-5">
           <div className="flex items-center gap-2 mb-4">
             <UserCog size={16} className="text-[#c5a059]" />
             <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
-              {editingId ? 'Editar usuario' : 'Nuevo usuario'}
+              {editingId ? 'Editar usuario' : 'Nuevo usuario en Whitelist'}
             </h2>
           </div>
           {editingId && (
@@ -344,80 +548,89 @@ export const UsersConfigPage = () => {
           )}
 
           <form className="space-y-3" onSubmit={onSubmit}>
-            <input
-              value={nombre}
-              onChange={(event) => setNombre(event.target.value)}
-              placeholder="Nombre completo"
-              className="w-full rounded-xl border border-slate-300 dark:border-white/10 bg-slate-50 dark:bg-[#0a0a0a] p-3 text-sm"
-              required
-            />
-            <input
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-              type="email"
-              placeholder="email@dominio.com"
-              className="w-full rounded-xl border border-slate-300 dark:border-white/10 bg-slate-50 dark:bg-[#0a0a0a] p-3 text-sm"
-              required
-            />
-            <select
-              value={rol}
-              onChange={(event) => setRol(event.target.value as Role)}
-              className="w-full rounded-xl border border-slate-300 dark:border-white/10 bg-slate-50 dark:bg-[#0a0a0a] p-3 text-sm"
-            >
-              {AVAILABLE_ROLES.filter((roleOption) => {
-                if (roleOption !== Role.SUPERADMIN) {
-                  return true;
-                }
-                return email.trim().toLowerCase() === OWNER_SUPERADMIN_EMAIL;
-              }).map((role) => (
-                <option key={role} value={role}>
-                  {roleLabel(role)}
-                </option>
-              ))}
-            </select>
-            <label className="flex items-center gap-2 text-sm text-slate-700 dark:text-gray-300">
+            <div>
+              <label className="text-xs font-bold text-slate-600 dark:text-gray-300 mb-1 block">
+                Nombre completo
+              </label>
+              <input
+                value={nombre}
+                onChange={(event) => setNombre(event.target.value)}
+                placeholder="Nombre completo"
+                className="w-full rounded-xl border border-slate-300 dark:border-white/10 bg-slate-50 dark:bg-[#0a0a0a] p-3 text-sm"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="text-xs font-bold text-slate-600 dark:text-gray-300 mb-1 block">
+                Correo electrónico
+              </label>
+              <input
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
+                type="email"
+                placeholder="email@dominio.com"
+                className="w-full rounded-xl border border-slate-300 dark:border-white/10 bg-slate-50 dark:bg-[#0a0a0a] p-3 text-sm"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="text-xs font-bold text-slate-600 dark:text-gray-300 mb-1 block">
+                Rol
+              </label>
+              <select
+                value={rol}
+                onChange={(event) => setRol(event.target.value as Role)}
+                className="w-full rounded-xl border border-slate-300 dark:border-white/10 bg-slate-50 dark:bg-[#0a0a0a] p-3 text-sm"
+              >
+                {AVAILABLE_ROLES.filter((roleOption) => {
+                  if (roleOption !== Role.SUPERADMIN) {
+                    return true;
+                  }
+                  return email.trim().toLowerCase() === OWNER_SUPERADMIN_EMAIL;
+                }).map((role) => (
+                  <option key={role} value={role}>
+                    {roleLabel(role)}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <label className="flex items-center gap-2 text-sm text-slate-700 dark:text-gray-300 py-1">
               <input
                 checked={activo}
                 onChange={(event) => setActivo(event.target.checked)}
                 type="checkbox"
               />
-              Usuario activo
+              Usuario habilitado en Whitelist
             </label>
+
             {!editingId && (
-              <div className="space-y-2 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0a0a0a] p-3">
-                <label className="flex items-center gap-2 text-sm text-slate-700 dark:text-gray-300">
-                  <input
-                    checked={createAccess}
-                    onChange={(event) => setCreateAccess(event.target.checked)}
-                    type="checkbox"
-                  />
-                  Crear acceso de inicio de sesion
-                </label>
-                {createAccess && (
-                  <input
-                    value={accessPassword}
-                    onChange={(event) => setAccessPassword(event.target.value)}
-                    type="password"
-                    placeholder="Contrasena inicial (min. 8)"
-                    className="w-full rounded-xl border border-slate-300 dark:border-white/10 bg-white dark:bg-black/40 p-3 text-sm"
-                    required
-                  />
-                )}
+              <div className="rounded-xl border border-[#c5a059]/30 bg-[#c5a059]/10 p-3 text-xs space-y-1.5">
+                <p className="font-bold text-slate-800 dark:text-gray-200 flex items-center gap-1.5">
+                  <Mail size={14} className="text-[#c5a059]" />
+                  Invitación y acceso simplificado
+                </p>
+                <p className="text-slate-600 dark:text-gray-400 leading-relaxed">
+                  No necesitas crear una contraseña para el usuario. Al agregarlo, el sistema le enviará un correo para definir su propia clave, o podrá acceder directamente en 1 clic con <strong>Continuar con Google</strong> usando este correo.
+                </p>
               </div>
             )}
-            <div className="flex gap-2">
+
+            <div className="flex gap-2 pt-2">
               <button
                 type="submit"
                 disabled={isSaving}
-                className="rounded-xl bg-[#c5a059] hover:bg-[#d4b375] text-black font-black px-4 py-2 text-xs uppercase tracking-widest"
+                className="rounded-xl bg-[#c5a059] hover:bg-[#d4b375] text-black font-black px-4 py-2.5 text-xs uppercase tracking-widest cursor-pointer shadow-sm transition-all"
               >
-                {isSaving ? 'Guardando...' : editingId ? 'Actualizar' : 'Crear'}
+                {isSaving ? 'Guardando...' : editingId ? 'Actualizar' : 'Agregar a Whitelist'}
               </button>
               {editingId && (
                 <button
                   type="button"
                   onClick={resetForm}
-                  className="rounded-xl border border-slate-300 dark:border-white/10 px-4 py-2 text-xs uppercase tracking-widest"
+                  className="rounded-xl border border-slate-300 dark:border-white/10 px-4 py-2.5 text-xs uppercase tracking-widest cursor-pointer"
                 >
                   Cancelar
                 </button>
@@ -429,7 +642,9 @@ export const UsersConfigPage = () => {
         <article className="xl:col-span-7 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#111111] p-5">
           <div className="flex items-center gap-2 mb-4">
             <Shield size={16} className="text-[#c5a059]" />
-            <h2 className="text-lg font-semibold text-slate-900 dark:text-white">Listado de usuarios</h2>
+            <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
+              Listado de usuarios en Whitelist
+            </h2>
           </div>
 
           {isLoading ? (
@@ -443,7 +658,7 @@ export const UsersConfigPage = () => {
                   key={item.id}
                   type="button"
                   onClick={() => openEdit(item)}
-                  className="w-full text-left rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0a0a0a] p-3 hover:border-[#c5a059]/40"
+                  className="w-full text-left rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0a0a0a] p-3 hover:border-[#c5a059]/40 transition-all cursor-pointer"
                 >
                   <div className="flex items-start justify-between gap-2">
                     <div>
@@ -453,7 +668,7 @@ export const UsersConfigPage = () => {
                     <div className="text-right">
                       <p className="text-xs font-bold text-[#c5a059] uppercase">{roleLabel(item.rol)}</p>
                       <p className="text-[11px] text-slate-500 dark:text-gray-400">
-                        {item.activo ? 'Activo' : 'Inactivo'}
+                        {item.activo ? 'Habilitado' : 'Bloqueado'}
                       </p>
                     </div>
                   </div>
@@ -464,13 +679,14 @@ export const UsersConfigPage = () => {
         </article>
       </section>
 
+      {/* PERMISOS POR PERFIL */}
       <section className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#111111] p-5">
         <div className="flex items-center gap-2 mb-4">
           <Shield size={16} className="text-[#c5a059]" />
           <h2 className="text-lg font-semibold text-slate-900 dark:text-white">Permisos por perfil</h2>
         </div>
         <p className="text-xs text-slate-500 dark:text-gray-400 mb-4">
-          Para cada modulo: activa visibilidad y define si el perfil solo puede ver o tambien editar.
+          Para cada módulo: activa visibilidad y define si el perfil solo puede ver o también editar.
         </p>
 
         <div className="space-y-4">
