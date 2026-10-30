@@ -37,6 +37,10 @@
 }
 
 @layer utilities {
+  .font-cursive-legend {
+    font-family: 'Courgette', 'Caveat', cursive, sans-serif;
+  }
+
   .no-scrollbar {
     -ms-overflow-style: none;
     scrollbar-width: none;

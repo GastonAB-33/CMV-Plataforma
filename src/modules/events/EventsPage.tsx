@@ -1,4 +1,4 @@
-import { Calendar, ChevronDown, Filter, History, Newspaper, Plus, Tag, Users } from 'lucide-react';
+import { Calendar, ChevronDown, Filter, History, Newspaper, Plus, Tag, Users, Video, Camera, Trash2, Film, Clock } from 'lucide-react';
 import { ChangeEvent, useEffect, useMemo, useState } from 'react';
 import { BrotherNameTrigger } from '../../components/brothers/BrotherNameTrigger';
 import { Modal } from '../../components/ui/Modal';
@@ -18,8 +18,11 @@ interface PublicationFormState {
   visibility: 'publico' | 'privado';
   title: string;
   date: string;
+  time?: string;
   text: string;
   image: string;
+  video?: string;
+  mediaType: 'image' | 'video';
   badge: string;
   involvedCells: Cell[];
   involvedPastors: string[];
@@ -31,8 +34,11 @@ const emptyForm = (): PublicationFormState => ({
   visibility: 'publico',
   title: '',
   date: '',
+  time: '',
   text: '',
   image: '',
+  video: '',
+  mediaType: 'image',
   badge: '',
   involvedCells: [],
   involvedPastors: [],
@@ -77,8 +83,11 @@ const buildDraftFromForm = (
   visibility: form.visibility,
   title: form.title,
   date: form.date,
+  time: form.time || undefined,
   text: form.text,
-  image: form.image,
+  image: form.mediaType === 'image' ? form.image : undefined,
+  video: form.mediaType === 'video' ? form.video : undefined,
+  mediaType: form.mediaType,
   badge: form.badge,
   involved: {
     cells: form.involvedCells,
@@ -92,8 +101,11 @@ const buildFormFromPublication = (item: PublicationItem): PublicationFormState =
   visibility: item.visibility,
   title: item.title,
   date: item.date ?? '',
+  time: item.time ?? '',
   text: item.text,
   image: item.image ?? '',
+  video: item.video ?? '',
+  mediaType: item.mediaType ?? (item.video ? 'video' : 'image'),
   badge: item.badge,
   involvedCells: item.involved.cells,
   involvedPastors: item.involved.pastors,
@@ -226,7 +238,21 @@ export const EventsPage = () => {
     const reader = new FileReader();
     reader.onload = () => {
       const result = typeof reader.result === 'string' ? reader.result : '';
-      setForm((previous) => ({ ...previous, image: result }));
+      setForm((previous) => ({ ...previous, image: result, mediaType: 'image' }));
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleVideoFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) {
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = typeof reader.result === 'string' ? reader.result : '';
+      setForm((previous) => ({ ...previous, video: result, mediaType: 'video' }));
     };
     reader.readAsDataURL(file);
   };
@@ -238,6 +264,23 @@ export const EventsPage = () => {
     setEditingId(item.id);
     setForm(buildFormFromPublication(item));
     setIsEditorOpen(true);
+  };
+
+  const handleDeletePublication = (item: PublicationItem) => {
+    if (!canManageEvents) {
+      return;
+    }
+    const confirmed = window.confirm(`¿Estás seguro de que deseas eliminar "${item.title}"?`);
+    if (!confirmed) {
+      return;
+    }
+    const success = eventsService.deletePublication(item.id, user);
+    if (!success) {
+      showToast('No se pudo eliminar la publicación', 'error');
+      return;
+    }
+    setRefreshKey((previous) => previous + 1);
+    showToast('Publicación eliminada correctamente.', 'success');
   };
 
   const showToast = (message: string, type: ToastType) => {
@@ -280,7 +323,7 @@ export const EventsPage = () => {
               Eventos / Noticias
             </h1>
             <p className="text-sm text-slate-500 dark:text-gray-300 mt-2">
-              Carga unificada de publicaciones internas y publicas.
+              Carga unificada de publicaciones internas, eventos y videos cortos para la agenda congregacional.
             </p>
           </div>
 
@@ -410,6 +453,7 @@ export const EventsPage = () => {
             {filteredFeed.map((item) => {
               const isEvent = item.kind === 'evento';
               const isExpanded = expandedPublicationId === item.id;
+              const hasVideo = Boolean(item.video || item.mediaType === 'video');
 
               return (
                 <article
@@ -428,7 +472,7 @@ export const EventsPage = () => {
                       <div className="min-w-0 flex-1">
                         <h3 className="text-base font-bold text-slate-900 dark:text-white leading-tight break-words">{item.title}</h3>
                         <p className="text-[10px] text-slate-500 dark:text-gray-300 uppercase tracking-widest font-black mt-1">
-                          {isEvent ? 'Evento' : 'Noticia'} · {formatDateLabel(item.date)}
+                          {isEvent ? 'Evento' : 'Noticia'} · {formatDateLabel(item.date)} {item.time ? `· ${item.time} hs` : ''}
                         </p>
                       </div>
                       <ChevronDown
@@ -444,6 +488,27 @@ export const EventsPage = () => {
                     }`}
                   >
                     <div className="overflow-hidden border-t border-slate-200 dark:border-white/10 pt-3 space-y-3">
+                      {hasVideo && item.video ? (
+                        <div className="relative rounded-2xl overflow-hidden border border-slate-200 dark:border-white/10 aspect-video bg-black">
+                          <video
+                            src={item.video}
+                            className="w-full h-full object-cover"
+                            controls
+                            playsInline
+                            preload="metadata"
+                          />
+                          <span className="absolute top-2 left-2 px-2 py-0.5 rounded-md bg-black/70 backdrop-blur-md text-[10px] font-black uppercase tracking-wider text-emerald-400 flex items-center gap-1 pointer-events-none">
+                            <Film size={10} /> Video 7s
+                          </span>
+                        </div>
+                      ) : item.image ? (
+                        <img
+                          src={item.image}
+                          alt={item.title}
+                          className="w-full h-36 object-cover rounded-2xl border border-slate-200 dark:border-white/10"
+                        />
+                      ) : null}
+
                       <p className="text-xs text-slate-600 dark:text-gray-300 leading-relaxed break-words">{item.text}</p>
                       <p className="text-xs text-slate-500 dark:text-gray-300">
                         <Tag size={12} className="inline mr-1" />
@@ -465,13 +530,23 @@ export const EventsPage = () => {
                       ) : null}
 
                       {canManageEvents ? (
-                        <button
-                          type="button"
-                          onClick={() => openEditModal(item)}
-                          className="w-full py-2.5 rounded-xl border border-[#c5a059]/40 bg-[#c5a059]/10 text-[#c5a059] text-[11px] uppercase tracking-widest font-black"
-                        >
-                          Editar
-                        </button>
+                        <div className="flex items-center gap-2 pt-2">
+                          <button
+                            type="button"
+                            onClick={() => openEditModal(item)}
+                            className="flex-1 py-2.5 rounded-xl border border-[#c5a059]/40 bg-[#c5a059]/10 text-[#c5a059] text-[11px] uppercase tracking-widest font-black hover:bg-[#c5a059]/20 transition-colors"
+                          >
+                            Editar
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleDeletePublication(item)}
+                            className="p-2.5 rounded-xl border border-rose-500/30 bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 transition-colors"
+                            title="Eliminar"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
                       ) : null}
                     </div>
                   </div>
@@ -480,23 +555,24 @@ export const EventsPage = () => {
             })}
           </div>
 
-          <div className="hidden md:grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+          <div className="hidden md:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredFeed.map((item) => {
               const isEvent = item.kind === 'evento';
+              const hasVideo = Boolean(item.video || item.mediaType === 'video');
 
               return (
                 <article
                   key={item.id}
-                  className="bg-white dark:bg-[#1a1a1a] rounded-[2rem] border border-slate-200 dark:border-white/10 p-5 sm:p-6 md:p-8 hover:border-[#c5a059]/30 transition-all group relative overflow-hidden shadow-2xl"
+                  className="group relative bg-white dark:bg-[#141414] rounded-3xl border border-slate-200 dark:border-white/10 p-6 hover:border-[#c5a059]/40 transition-all duration-300 shadow-xl flex flex-col justify-between"
                 >
-                  <div className="flex flex-wrap gap-2 mb-3 sm:mb-0 sm:absolute sm:top-0 sm:right-0 sm:p-4">
-                    <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border border-slate-300 dark:border-white/10 bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-gray-400">
+                  <div className="flex items-center justify-between gap-3 mb-4">
+                    <span className="text-[10px] uppercase tracking-widest font-black text-slate-500 dark:text-gray-300">
                       {isEvent ? 'Evento' : 'Noticia'}
                     </span>
                     <span
-                      className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${
+                      className={`px-3 py-1 rounded-full text-[10px] uppercase tracking-widest font-black border ${
                         item.visibility === 'publico'
-                          ? 'border-emerald-400/30 bg-emerald-400/10 text-emerald-300'
+                          ? 'border-emerald-400/40 bg-emerald-500/10 text-emerald-300'
                           : 'border-amber-400/40 bg-amber-500/10 text-amber-300'
                       }`}
                     >
@@ -504,7 +580,7 @@ export const EventsPage = () => {
                     </span>
                   </div>
 
-                  <div className="space-y-5">
+                  <div className="space-y-4 flex-1">
                     <div className="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-white/10 flex items-center justify-center text-[#c5a059] group-hover:scale-110 transition-transform">
                       {isEvent ? <Calendar size={24} /> : <Newspaper size={24} />}
                     </div>
@@ -519,19 +595,35 @@ export const EventsPage = () => {
                       </p>
                     </div>
 
-                    {item.image ? (
+                    {hasVideo && item.video ? (
+                      <div className="relative rounded-2xl overflow-hidden border border-slate-200 dark:border-white/10 aspect-video bg-black shadow-md">
+                        <video
+                          src={item.video}
+                          className="w-full h-full object-cover"
+                          controls
+                          playsInline
+                          preload="metadata"
+                        />
+                        <span className="absolute top-2 left-2 px-2.5 py-0.5 rounded-full bg-black/75 backdrop-blur-md text-[10px] font-black uppercase tracking-wider text-emerald-400 flex items-center gap-1 pointer-events-none">
+                          <Film size={11} /> Video Corto 7s
+                        </span>
+                      </div>
+                    ) : item.image ? (
                       <img
                         src={item.image}
                         alt={item.title}
-                        className="w-full h-40 object-cover rounded-2xl border border-slate-200 dark:border-white/10"
+                        className="w-full h-44 object-cover rounded-2xl border border-slate-200 dark:border-white/10"
                       />
                     ) : null}
 
                     <p className="text-sm text-slate-600 dark:text-gray-300 leading-relaxed break-words">{item.text}</p>
 
-                    <div className="pt-3 border-t border-slate-200 dark:border-white/5 space-y-2">
-                      <p className="text-xs text-slate-500 dark:text-gray-300">
-                        Fecha: {formatDateLabel(item.date)}
+                    <div className="pt-3 border-t border-slate-200 dark:border-white/5 space-y-1.5">
+                      <p className="text-xs text-slate-500 dark:text-gray-300 flex items-center gap-1.5">
+                        <Clock size={13} className="text-[#c5a059]" />
+                        <span>
+                          Fecha: {formatDateLabel(item.date)} {item.time ? `· ${item.time} hs` : ''}
+                        </span>
                       </p>
                       <div className="text-xs text-slate-500 dark:text-gray-300">
                         Autor:{' '}
@@ -544,7 +636,7 @@ export const EventsPage = () => {
                     </div>
 
                     {item.visibility === 'privado' && isEvent ? (
-                      <div className="pt-3 border-t border-slate-200 dark:border-white/5 space-y-2">
+                      <div className="pt-3 border-t border-slate-200 dark:border-white/5 space-y-1">
                         <p className="text-[10px] uppercase tracking-widest font-black text-[#c5a059] flex items-center gap-1">
                           <Users size={12} />
                           Involucrados
@@ -560,17 +652,27 @@ export const EventsPage = () => {
                         </p>
                       </div>
                     ) : null}
+                  </div>
 
-                    {canManageEvents ? (
+                  {canManageEvents ? (
+                    <div className="flex items-center gap-2 pt-4 mt-2 border-t border-slate-200 dark:border-white/5">
                       <button
                         type="button"
                         onClick={() => openEditModal(item)}
-                        className="w-full py-3 rounded-2xl border border-[#c5a059]/40 bg-[#c5a059]/10 text-[#c5a059] text-[11px] uppercase tracking-widest font-black hover:bg-[#c5a059]/20 transition-colors"
+                        className="flex-1 py-3 rounded-2xl border border-[#c5a059]/40 bg-[#c5a059]/10 text-[#c5a059] text-[11px] uppercase tracking-widest font-black hover:bg-[#c5a059]/20 transition-colors"
                       >
                         Editar
                       </button>
-                    ) : null}
-                  </div>
+                      <button
+                        type="button"
+                        onClick={() => handleDeletePublication(item)}
+                        className="px-4 py-3 rounded-2xl border border-rose-500/30 bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 transition-colors"
+                        title="Eliminar publicación"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
+                  ) : null}
                 </article>
               );
             })}
@@ -631,7 +733,7 @@ export const EventsPage = () => {
               className={`px-3 py-2 rounded-xl text-[11px] font-black uppercase tracking-widest border transition-all ${
                 contentFilters.includes('noticias')
                   ? 'bg-[#c5a059]/15 border-[#c5a059]/40 text-[#c5a059]'
-                  : 'bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-gray-300 border-slate-200 dark:border-white/10'
+                : 'bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-gray-300 border-slate-200 dark:border-white/10'
               }`}
             >
               Noticias
@@ -679,7 +781,7 @@ export const EventsPage = () => {
             <button
               type="button"
               onClick={() => setForm((previous) => ({ ...previous, kind: 'evento' }))}
-              className={`w-full px-4 py-3 rounded-2xl border text-xs uppercase tracking-widest font-black ${
+              className={`w-full px-4 py-3 rounded-2xl border text-xs uppercase tracking-widest font-black transition-all ${
                 form.kind === 'evento'
                   ? 'border-[#c5a059]/40 bg-[#c5a059]/15 text-[#c5a059]'
                   : 'border-slate-300 dark:border-white/10 text-slate-500 dark:text-gray-400'
@@ -690,7 +792,7 @@ export const EventsPage = () => {
             <button
               type="button"
               onClick={() => setForm((previous) => ({ ...previous, kind: 'noticia' }))}
-              className={`w-full px-4 py-3 rounded-2xl border text-xs uppercase tracking-widest font-black ${
+              className={`w-full px-4 py-3 rounded-2xl border text-xs uppercase tracking-widest font-black transition-all ${
                 form.kind === 'noticia'
                   ? 'border-[#c5a059]/40 bg-[#c5a059]/15 text-[#c5a059]'
                   : 'border-slate-300 dark:border-white/10 text-slate-500 dark:text-gray-400'
@@ -704,7 +806,7 @@ export const EventsPage = () => {
             <button
               type="button"
               onClick={() => setForm((previous) => ({ ...previous, visibility: 'publico' }))}
-              className={`w-full px-4 py-3 rounded-2xl border text-xs uppercase tracking-widest font-black ${
+              className={`w-full px-4 py-3 rounded-2xl border text-xs uppercase tracking-widest font-black transition-all ${
                 form.visibility === 'publico'
                   ? 'border-emerald-400/40 bg-emerald-500/10 text-emerald-300'
                   : 'border-slate-300 dark:border-white/10 text-slate-500 dark:text-gray-400'
@@ -715,7 +817,7 @@ export const EventsPage = () => {
             <button
               type="button"
               onClick={() => setForm((previous) => ({ ...previous, visibility: 'privado' }))}
-              className={`w-full px-4 py-3 rounded-2xl border text-xs uppercase tracking-widest font-black ${
+              className={`w-full px-4 py-3 rounded-2xl border text-xs uppercase tracking-widest font-black transition-all ${
                 form.visibility === 'privado'
                   ? 'border-amber-400/40 bg-amber-500/10 text-amber-300'
                   : 'border-slate-300 dark:border-white/10 text-slate-500 dark:text-gray-400'
@@ -725,66 +827,193 @@ export const EventsPage = () => {
             </button>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div className="space-y-3">
             <input
               type="text"
               value={form.title}
               onChange={(event) => setForm((previous) => ({ ...previous, title: event.target.value }))}
-              placeholder="Titulo"
-              className="w-full p-3 rounded-xl border border-slate-300 dark:border-white/10 bg-slate-100 dark:bg-[#0f0f0f]"
+              placeholder="Titulo del evento o noticia"
+              className="w-full p-3 rounded-xl border border-slate-300 dark:border-white/10 bg-slate-100 dark:bg-[#0f0f0f] text-sm text-slate-900 dark:text-white"
+              required
             />
-            <input
-              type={form.kind === 'evento' ? 'date' : 'text'}
-              value={form.date}
-              onChange={(event) => setForm((previous) => ({ ...previous, date: event.target.value }))}
-              placeholder={form.kind === 'evento' ? undefined : 'Fecha referencial (opcional)'}
-              className="w-full p-3 rounded-xl border border-slate-300 dark:border-white/10 bg-slate-100 dark:bg-[#0f0f0f]"
-              required={form.kind === 'evento'}
-            />
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div>
+                <label className="block text-[11px] uppercase tracking-wider font-bold text-slate-500 dark:text-gray-400 mb-1">
+                  Fecha
+                </label>
+                <input
+                  type={form.kind === 'evento' ? 'date' : 'text'}
+                  value={form.date}
+                  onChange={(event) => setForm((previous) => ({ ...previous, date: event.target.value }))}
+                  placeholder={form.kind === 'evento' ? undefined : 'Fecha referencial (opcional)'}
+                  className="w-full p-3 rounded-xl border border-slate-300 dark:border-white/10 bg-slate-100 dark:bg-[#0f0f0f] text-sm text-slate-900 dark:text-white"
+                  required={form.kind === 'evento'}
+                />
+              </div>
+
+              <div>
+                <label className="block text-[11px] uppercase tracking-wider font-bold text-slate-500 dark:text-gray-400 mb-1">
+                  Hora (opcional)
+                </label>
+                <input
+                  type="text"
+                  value={form.time ?? ''}
+                  onChange={(event) => setForm((previous) => ({ ...previous, time: event.target.value }))}
+                  placeholder="ej. 19:30 o 20:00 hs"
+                  className="w-full p-3 rounded-xl border border-slate-300 dark:border-white/10 bg-slate-100 dark:bg-[#0f0f0f] text-sm text-slate-900 dark:text-white"
+                />
+              </div>
+            </div>
           </div>
 
           <textarea
             value={form.text}
             onChange={(event) => setForm((previous) => ({ ...previous, text: event.target.value }))}
-            placeholder="Texto"
-            className="w-full min-h-[120px] p-3 rounded-xl border border-slate-300 dark:border-white/10 bg-slate-100 dark:bg-[#0f0f0f] resize-none"
+            placeholder="Descripción o detalle del evento..."
+            className="w-full min-h-[110px] p-3 rounded-xl border border-slate-300 dark:border-white/10 bg-slate-100 dark:bg-[#0f0f0f] text-sm text-slate-900 dark:text-white resize-none"
           />
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <label className="w-full p-3 rounded-xl border border-slate-300 dark:border-white/10 bg-slate-100 dark:bg-[#0f0f0f] text-xs text-slate-600 dark:text-gray-300 cursor-pointer">
-              Seleccionar imagen desde dispositivo
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleImageFileChange}
-                className="mt-2 block w-full text-xs"
-              />
-            </label>
-            <input
-              type="text"
-              value={form.badge}
-              onChange={(event) => setForm((previous) => ({ ...previous, badge: event.target.value }))}
-              placeholder="Badge / etiqueta"
-              className="w-full p-3 rounded-xl border border-slate-300 dark:border-white/10 bg-slate-100 dark:bg-[#0f0f0f]"
-            />
-          </div>
-
-          {form.image ? (
-            <div className="space-y-2">
-              <img
-                src={form.image}
-                alt="Preview"
-                className="w-full h-44 object-cover rounded-2xl border border-slate-200 dark:border-white/10"
-              />
-              <button
-                type="button"
-                onClick={() => setForm((previous) => ({ ...previous, image: '' }))}
-                className="px-3 py-2 rounded-xl text-[10px] uppercase tracking-widest font-black border border-slate-300 dark:border-white/10 text-slate-600 dark:text-gray-300"
-              >
-                Quitar imagen
-              </button>
+          <div className="space-y-3 p-3.5 rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0a0a0a]/50">
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] uppercase tracking-widest font-black text-slate-700 dark:text-gray-300 flex items-center gap-1.5">
+                {form.mediaType === 'video' ? <Film size={14} className="text-emerald-400" /> : <Camera size={14} className="text-[#c5a059]" />}
+                Formato Multimedia (Próximos Eventos)
+              </span>
+              <div className="flex items-center gap-1 bg-slate-200 dark:bg-white/10 p-1 rounded-xl">
+                <button
+                  type="button"
+                  onClick={() => setForm((previous) => ({ ...previous, mediaType: 'image' }))}
+                  className={`px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all flex items-center gap-1 ${
+                    form.mediaType === 'image'
+                      ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-sm'
+                      : 'text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white'
+                  }`}
+                >
+                  <Camera size={12} /> Foto
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setForm((previous) => ({ ...previous, mediaType: 'video' }))}
+                  className={`px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all flex items-center gap-1 ${
+                    form.mediaType === 'video'
+                      ? 'bg-emerald-500 text-white shadow-sm'
+                      : 'text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white'
+                  }`}
+                >
+                  <Film size={12} /> Video 7s
+                </button>
+              </div>
             </div>
-          ) : null}
+
+            {form.mediaType === 'video' ? (
+              <div className="space-y-2">
+                <label className="block w-full p-3 rounded-xl border border-dashed border-emerald-500/40 bg-emerald-500/5 text-xs text-slate-700 dark:text-gray-300 cursor-pointer text-center hover:bg-emerald-500/10 transition-colors">
+                  <span className="font-bold text-emerald-500 dark:text-emerald-400 block mb-1">
+                    Cargar Video Corto (ideal 7 segundos)
+                  </span>
+                  <span className="text-[11px] text-slate-500 dark:text-gray-400">
+                    MP4, WebM o MOV desde tu dispositivo
+                  </span>
+                  <input
+                    type="file"
+                    accept="video/*"
+                    onChange={handleVideoFileChange}
+                    className="hidden"
+                  />
+                </label>
+
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] uppercase font-bold text-slate-400">O ingresa URL:</span>
+                  <input
+                    type="text"
+                    value={form.video ?? ''}
+                    onChange={(event) => setForm((previous) => ({ ...previous, video: event.target.value }))}
+                    placeholder="/cmv-event-short.mp4 o https://..."
+                    className="flex-1 p-2 text-xs rounded-lg border border-slate-300 dark:border-white/10 bg-slate-100 dark:bg-[#0f0f0f]"
+                  />
+                </div>
+
+                {form.video ? (
+                  <div className="space-y-2 pt-2">
+                    <div className="relative rounded-2xl overflow-hidden border border-emerald-500/40 aspect-video bg-black max-h-56">
+                      <video
+                        src={form.video}
+                        controls
+                        playsInline
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setForm((previous) => ({ ...previous, video: '' }))}
+                      className="px-3 py-1.5 rounded-xl text-[10px] uppercase tracking-widest font-black border border-rose-500/30 text-rose-500 hover:bg-rose-500/10"
+                    >
+                      Quitar video
+                    </button>
+                  </div>
+                ) : null}
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <label className="block w-full p-3 rounded-xl border border-dashed border-slate-300 dark:border-white/20 bg-white dark:bg-[#0f0f0f] text-xs text-slate-700 dark:text-gray-300 cursor-pointer text-center hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
+                  <span className="font-bold text-[#c5a059] block mb-1">
+                    Seleccionar imagen desde dispositivo
+                  </span>
+                  <span className="text-[11px] text-slate-500 dark:text-gray-400">
+                    JPG, PNG o WebP en buena resolución
+                  </span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageFileChange}
+                    className="hidden"
+                  />
+                </label>
+
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] uppercase font-bold text-slate-400">O ingresa URL:</span>
+                  <input
+                    type="text"
+                    value={form.image ?? ''}
+                    onChange={(event) => setForm((previous) => ({ ...previous, image: event.target.value }))}
+                    placeholder="/cmv-fellowship.jpg o https://..."
+                    className="flex-1 p-2 text-xs rounded-lg border border-slate-300 dark:border-white/10 bg-slate-100 dark:bg-[#0f0f0f]"
+                  />
+                </div>
+
+                {form.image ? (
+                  <div className="space-y-2 pt-2">
+                    <img
+                      src={form.image}
+                      alt="Preview"
+                      className="w-full h-44 object-cover rounded-2xl border border-slate-200 dark:border-white/10"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setForm((previous) => ({ ...previous, image: '' }))}
+                      className="px-3 py-1.5 rounded-xl text-[10px] uppercase tracking-widest font-black border border-slate-300 dark:border-white/10 text-slate-600 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-white/5"
+                    >
+                      Quitar imagen
+                    </button>
+                  </div>
+                ) : null}
+              </div>
+            )}
+
+            <div className="pt-2">
+              <label className="block text-[11px] uppercase tracking-wider font-bold text-slate-500 dark:text-gray-400 mb-1">
+                Badge / Etiqueta destacada
+              </label>
+              <input
+                type="text"
+                value={form.badge}
+                onChange={(event) => setForm((previous) => ({ ...previous, badge: event.target.value }))}
+                placeholder="ej. Campamento 2026, Jóvenes CMV, Alabanza"
+                className="w-full p-2.5 text-xs rounded-xl border border-slate-300 dark:border-white/10 bg-white dark:bg-[#0f0f0f] text-slate-900 dark:text-white"
+              />
+            </div>
+          </div>
 
           {form.visibility === 'privado' && form.kind === 'evento' ? (
             <div className="space-y-4">
@@ -865,7 +1094,7 @@ export const EventsPage = () => {
           <button
             type="button"
             onClick={savePublication}
-            className="w-full py-3 rounded-xl bg-[#c5a059] hover:bg-[#d4b375] text-black font-black uppercase text-xs tracking-widest"
+            className="w-full py-3.5 rounded-xl bg-[#c5a059] hover:bg-[#d4b375] text-black font-black uppercase text-xs tracking-widest shadow-md transition-all active:scale-[0.99]"
           >
             {editingId ? 'Guardar cambios' : 'Crear publicacion'}
           </button>

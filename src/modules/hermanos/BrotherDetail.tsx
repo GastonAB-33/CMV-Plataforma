@@ -32,6 +32,12 @@ import {
   ChevronLeft,
   ChevronRight,
   ExternalLink,
+  Send,
+  CalendarCheck,
+  XCircle,
+  Plus,
+  Eye,
+  Clock,
 } from 'lucide-react';
 import { brothersService } from '../../services/brothersService';
 import { useAuth } from '../../hooks/useAuth';
@@ -58,11 +64,13 @@ import { marriagesService, Marriage } from '../../services/marriagesService';
 import { accompanimentService } from '../../services/accompanimentService';
 import { stageDatesService, CincoMinisterios } from '../../services/stageDatesService';
 import { experienciaService } from '../../services/experienciaService';
+import { experienciaEnvioService } from '../../services/experienciaEnvioService';
 import { bautismoService } from '../../services/bautismoService';
 import { discipleshipConfigService } from '../../services/discipleshipConfigService';
 import { grupoVidaApprovalService, BrotherGrupoVidaApproval } from '../../services/grupoVidaApprovalService';
 import { liderCelulaApprovalService, BrotherLiderCelulaApproval } from '../../services/liderCelulaApprovalService';
 import { stageFrozenStatsService, BrotherFrozenStages } from '../../services/stageFrozenStatsService';
+import { niveladosService, NiveladoRecord, NiveladoEstado } from '../../services/niveladosService';
 import { stageProgressionService } from '../../services/stageProgressionService';
 import { StageSimulatorModal } from './components/StageSimulatorModal';
 
@@ -96,6 +104,9 @@ const processBadgeLabelMap: Record<Proceso, string> = {
   [Proceso.EXPERIENCIA]: 'Hermano mayor',
   [Proceso.EDDI]: 'EDDI Escuela de Discipulados',
   [Proceso.DISCIPULO]: 'Discípulo conector',
+  [Proceso.EDDI2]: 'EDDI 2',
+  [Proceso.EDDI3]: 'EDDI 3',
+  [Proceso.LIDER_CELULA]: 'Líder de Célula',
   [Proceso.EDEM]: 'EDEM Escuela de Entrenamiento Ministerial',
 };
 
@@ -117,6 +128,9 @@ const createProcessRecord = <T,>(factory: () => T): Record<Proceso, T> => ({
   [Proceso.EXPERIENCIA]: factory(),
   [Proceso.EDDI]: factory(),
   [Proceso.DISCIPULO]: factory(),
+  [Proceso.EDDI2]: factory(),
+  [Proceso.EDDI3]: factory(),
+  [Proceso.LIDER_CELULA]: factory(),
   [Proceso.EDEM]: factory(),
 });
 
@@ -597,20 +611,29 @@ export const BrotherDetail = () => {
   // Drafts for Stage 4 (Discípulo Conector)
   const [discipuloStartDateDraft, setDiscipuloStartDateDraft] = useState('');
   const [discipuloEndDateDraft, setDiscipuloEndDateDraft] = useState('');
+  const [experienciaEnvioDateDraft, setExperienciaEnvioDateDraft] = useState('');
 
-  // Drafts for Stage 5 (Hermano Mayor)
+  // Drafts for Stage 5 (EDDI 2)
+  const [eddi2StartDateDraft, setEddi2StartDateDraft] = useState('');
+  const [eddi2EndDateDraft, setEddi2EndDateDraft] = useState('');
+
+  // Drafts for Stage 6 (Hermano Mayor)
   const [hermanoMayorStartDateDraft, setHermanoMayorStartDateDraft] = useState('');
   const [hermanoMayorEndDateDraft, setHermanoMayorEndDateDraft] = useState('');
 
-  // Drafts for Stage 6 (Líder de Célula)
+  // Drafts for Stage 7 (EDDI 3)
+  const [eddi3StartDateDraft, setEddi3StartDateDraft] = useState('');
+  const [eddi3EndDateDraft, setEddi3EndDateDraft] = useState('');
+
+  // Drafts for Stage 8 (Líder de Célula)
   const [liderCelulaStartDateDraft, setLiderCelulaStartDateDraft] = useState('');
   const [liderCelulaEndDateDraft, setLiderCelulaEndDateDraft] = useState('');
 
-  // Drafts for Stage 7 (EDEM)
+  // Drafts for Stage 9 (EDEM)
   const [edemStartDateDraft, setEdemStartDateDraft] = useState('');
   const [edemEndDateDraft, setEdemEndDateDraft] = useState('');
 
-  // Drafts for Stage 8 (Líder Ministerial)
+  // Drafts for Stage 10 (Líder Ministerial)
   const [liderMinisterialStartDateDraft, setLiderMinisterialStartDateDraft] = useState('');
   const [ministerioAsignadoDraft, setMinisterioAsignadoDraft] = useState<CincoMinisterios | ''>('');
 
@@ -629,6 +652,36 @@ export const BrotherDetail = () => {
   );
   const [isApproveLiderCelulaModalOpen, setIsApproveLiderCelulaModalOpen] = useState(false);
   const [isHermanosMenoresModalOpen, setIsHermanosMenoresModalOpen] = useState(false);
+
+  // Nivelados state & modals (Etapa 8 - Líder de Célula)
+  const [niveladosList, setNiveladosList] = useState<NiveladoRecord[]>(() =>
+    id ? niveladosService.getRecords(id) : []
+  );
+  const [isNiveladosModalOpen, setIsNiveladosModalOpen] = useState(false);
+  const [isAddNiveladoModalOpen, setIsAddNiveladoModalOpen] = useState(false);
+  const [newNiveladoFecha, setNewNiveladoFecha] = useState('');
+  const [newNiveladoNombre, setNewNiveladoNombre] = useState('');
+  const [newNiveladoEstado, setNewNiveladoEstado] = useState<NiveladoEstado>('ASISTIDO');
+  const [newNiveladoObservacion, setNewNiveladoObservacion] = useState('');
+
+  // Seguimiento de Altares de Discípulos Conectores (Etapa 8 - Líder de Célula)
+  const [selectedConectorForAltars, setSelectedConectorForAltars] = useState<BrotherProfile | null>(null);
+  const [isDiscipulosConectoresModalOpen, setIsDiscipulosConectoresModalOpen] = useState(false);
+  const [conectorAltarsFilter, setConectorAltarsFilter] = useState<'TODOS' | 'EN_PROCESO' | 'FINALIZADOS' | 'INTERRUMPIDOS'>('TODOS');
+  const [isConectorAltarsModalOpen, setIsConectorAltarsModalOpen] = useState(false);
+
+  // Seguimiento de Grupos de Vida dentro de la Célula (Etapa 8 - Líder de Célula)
+  const [selectedCellGrupoVida, setSelectedCellGrupoVida] = useState<{
+    leaderId: string;
+    leaderName: string;
+    leaderRole: string;
+    leaderFotoUrl?: string;
+    nombreGrupoVida: string;
+    members: BrotherProfile[];
+    isApproved: boolean;
+    fechaAprobacion?: string;
+  } | null>(null);
+  const [isCellGrupoVidaModalOpen, setIsCellGrupoVidaModalOpen] = useState(false);
 
   // Frozen Stages statistics snapshot
   const [frozenStages, setFrozenStages] = useState<BrotherFrozenStages>(() =>
@@ -686,6 +739,22 @@ export const BrotherDetail = () => {
       discipulo: {
         ...b.discipulo,
         fechaInicio: savedDates?.discipuloFechaInicio !== undefined ? savedDates.discipuloFechaInicio : b.discipulo?.fechaInicio,
+      },
+      experienciaEnvio: {
+        ...b.experienciaEnvio,
+        fechaRealizacion: savedDates?.experienciaEnvioFechaRealizacion !== undefined
+          ? savedDates.experienciaEnvioFechaRealizacion
+          : (b.experienciaEnvio?.fechaRealizacion || experienciaEnvioService.getExperienciaEnvioDate(b.id)),
+      },
+      eddi2: {
+        ...b.eddi2,
+        fechaInicio: savedDates?.eddi2FechaInicio !== undefined ? savedDates.eddi2FechaInicio : b.eddi2?.fechaInicio,
+        fechaFin: savedDates?.eddi2FechaFin !== undefined ? savedDates.eddi2FechaFin : b.eddi2?.fechaFin,
+      },
+      eddi3: {
+        ...b.eddi3,
+        fechaInicio: savedDates?.eddi3FechaInicio !== undefined ? savedDates.eddi3FechaInicio : b.eddi3?.fechaInicio,
+        fechaFin: savedDates?.eddi3FechaFin !== undefined ? savedDates.eddi3FechaFin : b.eddi3?.fechaFin,
       },
       edem: {
         ...b.edem,
@@ -749,6 +818,7 @@ export const BrotherDetail = () => {
     setGrupoVidaApproval(grupoVidaApprovalService.getApproval(brother.id));
     setLiderCelulaApproval(liderCelulaApprovalService.getApproval(brother.id));
     setFrozenStages(stageFrozenStatsService.getFrozenStages(brother.id));
+    setNiveladosList(niveladosService.getRecords(brother.id));
   }, [brother]);
 
   useEffect(() => {
@@ -760,7 +830,14 @@ export const BrotherDetail = () => {
     setIsGrupoVidaMembersModalOpen(false);
     setSelectedGrupoVidaMemberId(null);
     setIsApproveLiderCelulaModalOpen(false);
-    setIsHermanosMenoresModalOpen(false);
+    setIsAddNiveladoModalOpen(false);
+    setIsNiveladosModalOpen(false);
+    setIsDiscipulosConectoresModalOpen(false);
+    setIsConectorAltarsModalOpen(false);
+    setSelectedConectorForAltars(null);
+    setConectorAltarsFilter('TODOS');
+    setIsCellGrupoVidaModalOpen(false);
+    setSelectedCellGrupoVida(null);
     setDiscipuloAltarsFilter('TODOS');
     setSelectedDiscipuloAltarBrotherId(null);
     setShowToast(false);
@@ -832,6 +909,11 @@ export const BrotherDetail = () => {
     brother?.experiencia?.fechaRealizacion || brother?.grupo?.fechaInicio || undefined;
   const resolvedGrupoVidaEndDate =
     eddiTracking?.stageDates?.startDate || brother?.eddi?.fechaInicio || brother?.grupo?.fechaFin || undefined;
+  const resolvedExperienciaEnvioDate =
+    brother?.experienciaEnvio?.fechaRealizacion ||
+    stageDatesService.getBrotherStageDates(brother?.id || '')?.experienciaEnvioFechaRealizacion ||
+    experienciaEnvioService.getExperienciaEnvioDate(brother?.id || '') ||
+    undefined;
 
   const isGrupoInterrumpido = Boolean(brother?.grupo?.interrumpido);
 
@@ -1356,6 +1438,12 @@ export const BrotherDetail = () => {
     const savedDates = stageDatesService.getBrotherStageDates(brother?.id || '');
     setDiscipuloStartDateDraft(brother?.discipulo?.fechaInicio || savedDates?.discipuloFechaInicio || '');
     setDiscipuloEndDateDraft(savedDates?.discipuloFechaFin || '');
+    setExperienciaEnvioDateDraft(
+      brother?.experienciaEnvio?.fechaRealizacion ||
+      savedDates?.experienciaEnvioFechaRealizacion ||
+      experienciaEnvioService.getExperienciaEnvioDate(brother?.id || '') ||
+      ''
+    );
     setEditingStage(4);
   };
 
@@ -1367,11 +1455,14 @@ export const BrotherDetail = () => {
     if (!brother) return;
     const start = discipuloStartDateDraft.trim() || undefined;
     const end = discipuloEndDateDraft.trim() || undefined;
+    const envioDate = experienciaEnvioDateDraft.trim() || undefined;
 
     stageDatesService.saveStageDates(brother.id, {
       discipuloFechaInicio: start,
       discipuloFechaFin: end,
+      experienciaEnvioFechaRealizacion: envioDate,
     });
+    experienciaEnvioService.saveExperienciaEnvioDate(brother.id, envioDate);
 
     setBrother((prev) =>
       prev
@@ -1380,6 +1471,10 @@ export const BrotherDetail = () => {
             discipulo: {
               ...prev.discipulo,
               fechaInicio: start,
+            },
+            experienciaEnvio: {
+              ...prev.experienciaEnvio,
+              fechaRealizacion: envioDate,
             },
           }
         : prev
@@ -1391,15 +1486,11 @@ export const BrotherDetail = () => {
     setShowToast(true);
   };
 
-  // Stage 5 (Hermano Mayor) Handlers
+  // Stage 5 (EDDI 2) Handlers
   const handleStartEditStage5 = () => {
     const savedDates = stageDatesService.getBrotherStageDates(brother?.id || '');
-    setHermanoMayorStartDateDraft(
-      savedDates?.hermanoMayorFechaInicio ||
-      grupoVidaApproval.approvedAt?.slice(0, 10) ||
-      ''
-    );
-    setHermanoMayorEndDateDraft(savedDates?.hermanoMayorFechaFin || '');
+    setEddi2StartDateDraft(savedDates?.eddi2FechaInicio || brother?.eddi2?.fechaInicio || '');
+    setEddi2EndDateDraft(savedDates?.eddi2FechaFin || brother?.eddi2?.fechaFin || '');
     setEditingStage(5);
   };
 
@@ -1408,6 +1499,51 @@ export const BrotherDetail = () => {
   };
 
   const handleSaveStage5 = () => {
+    if (!brother) return;
+    const start = eddi2StartDateDraft.trim() || undefined;
+    const end = eddi2EndDateDraft.trim() || undefined;
+
+    stageDatesService.saveStageDates(brother.id, {
+      eddi2FechaInicio: start,
+      eddi2FechaFin: end,
+    });
+
+    setBrother((prev) =>
+      prev
+        ? {
+            ...prev,
+            eddi2: {
+              ...prev.eddi2,
+              fechaInicio: start,
+              fechaFin: end,
+            },
+          }
+        : prev
+    );
+
+    setEditingStage(null);
+    setProfileToastType('success');
+    setProfileToastMessage('Etapa EDDI 2 guardada correctamente.');
+    setShowToast(true);
+  };
+
+  // Stage 6 (Hermano Mayor) Handlers
+  const handleStartEditStage6 = () => {
+    const savedDates = stageDatesService.getBrotherStageDates(brother?.id || '');
+    setHermanoMayorStartDateDraft(
+      savedDates?.hermanoMayorFechaInicio ||
+      grupoVidaApproval.approvedAt?.slice(0, 10) ||
+      ''
+    );
+    setHermanoMayorEndDateDraft(savedDates?.hermanoMayorFechaFin || '');
+    setEditingStage(6);
+  };
+
+  const handleCancelEditStage6 = () => {
+    setEditingStage(null);
+  };
+
+  const handleSaveStage6 = () => {
     if (!brother) return;
     const start = hermanoMayorStartDateDraft.trim() || undefined;
     const end = hermanoMayorEndDateDraft.trim() || undefined;
@@ -1423,19 +1559,60 @@ export const BrotherDetail = () => {
     setShowToast(true);
   };
 
-  // Stage 6 (Líder de Célula) Handlers
-  const handleStartEditStage6 = () => {
+  // Stage 7 (EDDI 3) Handlers
+  const handleStartEditStage7 = () => {
     const savedDates = stageDatesService.getBrotherStageDates(brother?.id || '');
-    setLiderCelulaStartDateDraft(savedDates?.liderCelulaFechaInicio || liderCelulaApproval.fechaAprobacion?.slice(0, 10) || '');
-    setLiderCelulaEndDateDraft(savedDates?.liderCelulaFechaFin || '');
-    setEditingStage(6);
+    setEddi3StartDateDraft(savedDates?.eddi3FechaInicio || brother?.eddi3?.fechaInicio || '');
+    setEddi3EndDateDraft(savedDates?.eddi3FechaFin || brother?.eddi3?.fechaFin || '');
+    setEditingStage(7);
   };
 
-  const handleCancelEditStage6 = () => {
+  const handleCancelEditStage7 = () => {
     setEditingStage(null);
   };
 
-  const handleSaveStage6 = () => {
+  const handleSaveStage7 = () => {
+    if (!brother) return;
+    const start = eddi3StartDateDraft.trim() || undefined;
+    const end = eddi3EndDateDraft.trim() || undefined;
+
+    stageDatesService.saveStageDates(brother.id, {
+      eddi3FechaInicio: start,
+      eddi3FechaFin: end,
+    });
+
+    setBrother((prev) =>
+      prev
+        ? {
+            ...prev,
+            eddi3: {
+              ...prev.eddi3,
+              fechaInicio: start,
+              fechaFin: end,
+            },
+          }
+        : prev
+    );
+
+    setEditingStage(null);
+    setProfileToastType('success');
+    setProfileToastMessage('Etapa EDDI 3 guardada correctamente.');
+    setShowToast(true);
+  };
+
+  // Stage 8 (Líder de Célula) Handlers
+  const handleStartEditStage8 = () => {
+    const savedDates = stageDatesService.getBrotherStageDates(brother?.id || '');
+    setLiderCelulaStartDateDraft(savedDates?.liderCelulaFechaInicio || liderCelulaApproval.fechaAprobacion?.slice(0, 10) || '');
+    setLiderCelulaEndDateDraft(savedDates?.liderCelulaFechaFin || '');
+    setEditingStage(8);
+  };
+
+  const handleCancelEditStage8 = () => {
+    setEditingStage(null);
+  };
+
+  const handleSaveStage8 = () => {
     if (!brother) return;
     const start = liderCelulaStartDateDraft.trim() || undefined;
     const end = liderCelulaEndDateDraft.trim() || undefined;
@@ -1451,19 +1628,19 @@ export const BrotherDetail = () => {
     setShowToast(true);
   };
 
-  // Stage 7 (EDEM) Handlers
-  const handleStartEditStage7 = () => {
+  // Stage 9 (EDEM) Handlers
+  const handleStartEditStage9 = () => {
     const savedDates = stageDatesService.getBrotherStageDates(brother?.id || '');
     setEdemStartDateDraft(savedDates?.edemFechaInicio || brother?.edem?.fechaInicio || edemTracking.stageDates.startDate || '');
     setEdemEndDateDraft(savedDates?.edemFechaFin || brother?.edem?.fechaFin || edemTracking.stageDates.endDate || '');
-    setEditingStage(7);
+    setEditingStage(9);
   };
 
-  const handleCancelEditStage7 = () => {
+  const handleCancelEditStage9 = () => {
     setEditingStage(null);
   };
 
-  const handleSaveStage7 = () => {
+  const handleSaveStage9 = () => {
     if (!brother) return;
     const start = edemStartDateDraft.trim() || undefined;
     const end = edemEndDateDraft.trim() || undefined;
@@ -1492,19 +1669,19 @@ export const BrotherDetail = () => {
     setShowToast(true);
   };
 
-  // Stage 8 (Líder Ministerial) Handlers
-  const handleStartEditStage8 = () => {
+  // Stage 10 (Líder Ministerial) Handlers
+  const handleStartEditStage10 = () => {
     const savedDates = stageDatesService.getBrotherStageDates(brother?.id || '');
     setLiderMinisterialStartDateDraft(savedDates?.liderMinisterialFechaInicio || '');
     setMinisterioAsignadoDraft(savedDates?.ministerioAsignado || '');
-    setEditingStage(8);
+    setEditingStage(10);
   };
 
-  const handleCancelEditStage8 = () => {
+  const handleCancelEditStage10 = () => {
     setEditingStage(null);
   };
 
-  const handleSaveStage8 = () => {
+  const handleSaveStage10 = () => {
     if (!brother) return;
     const start = liderMinisterialStartDateDraft.trim() || undefined;
     const min = (ministerioAsignadoDraft as CincoMinisterios) || undefined;
@@ -1923,6 +2100,183 @@ export const BrotherDetail = () => {
     setShowToast(true);
   };
 
+  // ==========================================
+  // ETAPA 8: LÍDER DE CÉLULA - 3 SEGUIMIENTOS
+  // ==========================================
+
+  // 1. DISCÍPULOS CONECTORES DE LA CÉLULA Y SUS ALTARES
+  const celulaDiscipulosConectores = useMemo(() => {
+    if (!brother) return [];
+    const bName = normalizeName(brother.name);
+    const cellName = brother.acompanamiento?.celulaName;
+
+    return brothersService.list().filter((entry) => {
+      if (entry.id === brother.id) return false;
+      const entryCell = entry.acompanamiento?.celulaName;
+      const entryLider = normalizeName(entry.acompanamiento?.liderCelulaName || '');
+      const entryAcompanante = normalizeName(entry.acompanamiento?.acompananteName || '');
+
+      const isInCell = Boolean(cellName && entryCell === cellName) || entryLider === bName || entryAcompanante === bName;
+      if (!isInCell) return false;
+
+      const savedDates = stageDatesService.getBrotherStageDates(entry.id);
+      const isConector =
+        entry.procesoActual === Proceso.DISCIPULO ||
+        entry.procesoActual === Proceso.EDDI2 ||
+        entry.procesoActual === Proceso.EDDI3 ||
+        entry.procesoActual === Proceso.LIDER_CELULA ||
+        entry.procesoActual === Proceso.EDEM ||
+        Boolean(entry.discipulo?.fechaInicio) ||
+        Boolean(savedDates?.discipuloFechaInicio);
+
+      return isConector;
+    });
+  }, [brother]);
+
+  const getAltarsForConector = (conectorId: string, conectorName: string) => {
+    const dcName = normalizeName(conectorName);
+    return brothersService.list().filter((entry) => {
+      if (entry.id === conectorId) return false;
+      const info = altarService.getAltarInfo(entry.id);
+      if (info.hermanoMayorId === conectorId || (info.hermanoMayorName && normalizeName(info.hermanoMayorName) === dcName)) {
+        return true;
+      }
+      return (entry.altar?.realizadoPor ?? []).some((resp) => normalizeName(resp) === dcName);
+    });
+  };
+
+  const conectoresAltarsSummary = useMemo(() => {
+    let totalAltars = 0;
+    let finalizedAltars = 0;
+    let inProcessAltars = 0;
+    let interruptedAltars = 0;
+
+    for (const conector of celulaDiscipulosConectores) {
+      const altars = getAltarsForConector(conector.id, conector.name);
+      totalAltars += altars.length;
+      for (const a of altars) {
+        const st = getAltarTrackingStatus(a);
+        if (st === 'FINALIZADO') finalizedAltars++;
+        else if (st === 'EN_PROCESO') inProcessAltars++;
+        else if (st === 'INTERRUMPIDO') interruptedAltars++;
+      }
+    }
+
+    return {
+      totalConectores: celulaDiscipulosConectores.length,
+      totalAltars,
+      finalizedAltars,
+      inProcessAltars,
+      interruptedAltars,
+    };
+  }, [celulaDiscipulosConectores]);
+
+  // 2. GRUPOS DE VIDA DENTRO DE SU CÉLULA
+  const celulaGruposDeVida = useMemo(() => {
+    if (!brother) return [];
+    const cellName = brother.acompanamiento?.celulaName;
+    const bName = normalizeName(brother.name);
+    const allApproved = grupoVidaApprovalService.listApproved();
+    const groups: Array<{
+      leaderId: string;
+      leaderName: string;
+      leaderRole: string;
+      leaderFotoUrl?: string;
+      nombreGrupoVida: string;
+      members: BrotherProfile[];
+      isApproved: boolean;
+      fechaAprobacion?: string;
+    }> = [];
+
+    // Grupo de Vida principal del líder de célula
+    const leaderMembers = disciplesAltarBrothers.filter((entry) => getAltarTrackingStatus(entry) === 'FINALIZADO');
+    groups.push({
+      leaderId: brother.id,
+      leaderName: brother.name,
+      leaderRole: 'Líder de Célula',
+      leaderFotoUrl: brother.fotoUrl,
+      nombreGrupoVida: grupoVidaApproval.grupoVidaNombre || `Grupo de Vida Principal (${brother.name})`,
+      members: leaderMembers,
+      isApproved: isLiderCelulaApproved || grupoVidaApproval.isAprobado,
+      fechaAprobacion: grupoVidaApproval.fechaAprobacion || grupoVidaApproval.approvedAt,
+    });
+
+    // Grupos de Vida de Hermanos Mayores / Discípulos Conectores de la Célula
+    for (const app of allApproved) {
+      if (app.brotherId === brother.id) continue;
+      const leaderBro = brothersService.findById(app.brotherId);
+      if (!leaderBro) continue;
+      const lCell = leaderBro.acompanamiento?.celulaName;
+      const lLeader = normalizeName(leaderBro.acompanamiento?.liderCelulaName || '');
+      const belongsToCell = Boolean(cellName && lCell === cellName) || lLeader === bName || celulaDiscipulosConectores.some((dc) => dc.id === leaderBro.id);
+      if (!belongsToCell) continue;
+
+      const lName = normalizeName(leaderBro.name);
+      const members = brothersService.list().filter((entry) => {
+        if (entry.id === leaderBro.id) return false;
+        const info = altarService.getAltarInfo(entry.id);
+        const matches = info.hermanoMayorId === leaderBro.id || (info.hermanoMayorName && normalizeName(info.hermanoMayorName) === lName);
+        const isFin = info.fechaFin || entry.altar?.fechaFin;
+        return matches && isFin;
+      });
+
+      groups.push({
+        leaderId: leaderBro.id,
+        leaderName: leaderBro.name,
+        leaderRole: 'Hermano Mayor',
+        leaderFotoUrl: leaderBro.fotoUrl,
+        nombreGrupoVida: app.grupoVidaNombre || `Grupo de Vida de ${leaderBro.name}`,
+        members,
+        isApproved: true,
+        fechaAprobacion: app.fechaAprobacion,
+      });
+    }
+
+    return groups;
+  }, [brother, disciplesAltarBrothers, celulaDiscipulosConectores, isLiderCelulaApproved, grupoVidaApproval]);
+
+  // 3. HANDLERS PARA SEGUIMIENTO DE NIVELADOS
+  const handleToggleNiveladoAttendance = (recordId: string) => {
+    if (!brother) return;
+    niveladosService.toggleAttendance(brother.id, recordId);
+    setNiveladosList(niveladosService.getRecords(brother.id));
+    setProfileToastType('success');
+    setProfileToastMessage('Asistencia a Nivelados actualizada.');
+    setShowToast(true);
+  };
+
+  const handleAddNivelado = () => {
+    if (!brother) return;
+    if (!newNiveladoFecha) {
+      alert('Por favor selecciona una fecha para el evento de Nivelados.');
+      return;
+    }
+    niveladosService.addRecord(brother.id, {
+      nombreEvento: newNiveladoNombre.trim() || 'Nivelados',
+      fecha: newNiveladoFecha,
+      estado: newNiveladoEstado,
+      observacion: newNiveladoObservacion.trim() || undefined,
+    });
+    setNiveladosList(niveladosService.getRecords(brother.id));
+    setNewNiveladoFecha('');
+    setNewNiveladoNombre('');
+    setNewNiveladoEstado('ASISTIDO');
+    setNewNiveladoObservacion('');
+    setIsAddNiveladoModalOpen(false);
+    setProfileToastType('success');
+    setProfileToastMessage('Evento de Nivelados registrado con éxito.');
+    setShowToast(true);
+  };
+
+  const handleDeleteNivelado = (recordId: string) => {
+    if (!brother) return;
+    niveladosService.deleteRecord(brother.id, recordId);
+    setNiveladosList(niveladosService.getRecords(brother.id));
+    setProfileToastType('info');
+    setProfileToastMessage('Registro de Nivelados eliminado.');
+    setShowToast(true);
+  };
+
   const filteredDisciplesAltarBrothers =
     discipuloAltarsFilter === 'FINALIZADOS'
       ? disciplesAltarBrothers.filter((entry) => getAltarTrackingStatus(entry) === 'FINALIZADO')
@@ -2019,8 +2373,32 @@ export const BrotherDetail = () => {
         grades: [],
       },
       {
+        key: 'EXPERIENCIA_ENVIO' as any,
+        label: 'Experiencia Envío',
+        startDate: savedDates?.experienciaEnvioFechaRealizacion || selectedDiscipuloAltarBrother.experienciaEnvio?.fechaRealizacion,
+        endDate: savedDates?.experienciaEnvioFechaRealizacion || selectedDiscipuloAltarBrother.experienciaEnvio?.fechaRealizacion,
+        observations: selectedDiscipuloAltarBrother.experienciaEnvio?.observaciones ?? [],
+        grades: [],
+      },
+      {
+        key: Proceso.EDDI2,
+        label: 'Etapa 5: EDDI 2',
+        startDate: savedDates?.eddi2FechaInicio || selectedDiscipuloAltarBrother.eddi2?.fechaInicio,
+        endDate: savedDates?.eddi2FechaFin || selectedDiscipuloAltarBrother.eddi2?.fechaFin,
+        observations: selectedDiscipuloAltarBrother.eddi2?.observaciones ?? [],
+        grades: selectedDiscipuloAltarBrother.eddi2?.notasExamenes ?? [],
+      },
+      {
+        key: Proceso.EDDI3,
+        label: 'Etapa 7: EDDI 3',
+        startDate: savedDates?.eddi3FechaInicio || selectedDiscipuloAltarBrother.eddi3?.fechaInicio,
+        endDate: savedDates?.eddi3FechaFin || selectedDiscipuloAltarBrother.eddi3?.fechaFin,
+        observations: selectedDiscipuloAltarBrother.eddi3?.observaciones ?? [],
+        grades: selectedDiscipuloAltarBrother.eddi3?.notasExamenes ?? [],
+      },
+      {
         key: Proceso.EDEM,
-        label: 'Etapa 7: EDEM Escuela Ministerial',
+        label: 'Etapa 9: EDEM Escuela Ministerial',
         startDate: savedDates?.edemFechaInicio || selectedDiscipuloAltarBrother.edem?.fechaInicio,
         endDate: savedDates?.edemFechaFin || selectedDiscipuloAltarBrother.edem?.fechaFin,
         observations: selectedDiscipuloAltarBrother.edem?.observaciones ?? [],
@@ -2113,8 +2491,32 @@ export const BrotherDetail = () => {
         grades: [],
       },
       {
+        key: 'EXPERIENCIA_ENVIO' as any,
+        label: 'Experiencia Envío',
+        startDate: savedDates?.experienciaEnvioFechaRealizacion || selectedGrupoVidaMember.experienciaEnvio?.fechaRealizacion,
+        endDate: savedDates?.experienciaEnvioFechaRealizacion || selectedGrupoVidaMember.experienciaEnvio?.fechaRealizacion,
+        observations: selectedGrupoVidaMember.experienciaEnvio?.observaciones ?? [],
+        grades: [],
+      },
+      {
+        key: Proceso.EDDI2,
+        label: 'Etapa 5: EDDI 2',
+        startDate: savedDates?.eddi2FechaInicio || selectedGrupoVidaMember.eddi2?.fechaInicio,
+        endDate: savedDates?.eddi2FechaFin || selectedGrupoVidaMember.eddi2?.fechaFin,
+        observations: selectedGrupoVidaMember.eddi2?.observaciones ?? [],
+        grades: selectedGrupoVidaMember.eddi2?.notasExamenes ?? [],
+      },
+      {
+        key: Proceso.EDDI3,
+        label: 'Etapa 7: EDDI 3',
+        startDate: savedDates?.eddi3FechaInicio || selectedGrupoVidaMember.eddi3?.fechaInicio,
+        endDate: savedDates?.eddi3FechaFin || selectedGrupoVidaMember.eddi3?.fechaFin,
+        observations: selectedGrupoVidaMember.eddi3?.observaciones ?? [],
+        grades: selectedGrupoVidaMember.eddi3?.notasExamenes ?? [],
+      },
+      {
         key: Proceso.EDEM,
-        label: 'Etapa 7: EDEM Escuela Ministerial',
+        label: 'Etapa 9: EDEM Escuela Ministerial',
         startDate: savedDates?.edemFechaInicio || selectedGrupoVidaMember.edem?.fechaInicio,
         endDate: savedDates?.edemFechaFin || selectedGrupoVidaMember.edem?.fechaFin,
         observations: selectedGrupoVidaMember.edem?.observaciones ?? [],
@@ -2132,6 +2534,9 @@ export const BrotherDetail = () => {
       [Proceso.EXPERIENCIA]: process === Proceso.EXPERIENCIA,
       [Proceso.EDDI]: process === Proceso.EDDI,
       [Proceso.DISCIPULO]: process === Proceso.DISCIPULO,
+      [Proceso.EDDI2]: process === Proceso.EDDI2,
+      [Proceso.EDDI3]: process === Proceso.EDDI3,
+      [Proceso.LIDER_CELULA]: process === Proceso.LIDER_CELULA,
       [Proceso.EDEM]: process === Proceso.EDEM,
     }));
   };
@@ -2167,6 +2572,15 @@ export const BrotherDetail = () => {
       .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
     [Proceso.DISCIPULO]: visibleObservations
       .filter((obs) => obs.process === Proceso.DISCIPULO)
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
+    [Proceso.EDDI2]: visibleObservations
+      .filter((obs) => obs.process === Proceso.EDDI2)
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
+    [Proceso.EDDI3]: visibleObservations
+      .filter((obs) => obs.process === Proceso.EDDI3)
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
+    [Proceso.LIDER_CELULA]: visibleObservations
+      .filter((obs) => obs.process === Proceso.LIDER_CELULA)
       .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
     [Proceso.EDEM]: visibleObservations
       .filter((obs) => obs.process === Proceso.EDEM)
@@ -3655,6 +4069,43 @@ export const BrotherDetail = () => {
                       </div>
                     </div>
                     <ApproximateDateHint />
+
+                    {/* Edición Experiencia Envío */}
+                    <div className="p-3.5 rounded-xl bg-white dark:bg-black/40 border border-slate-200 dark:border-white/10 space-y-2 mt-2">
+                      <div className="flex items-center justify-between">
+                        <label className="text-[10px] uppercase font-black tracking-wider text-slate-600 dark:text-gray-400 flex items-center gap-1.5">
+                          <Send size={13} className="text-emerald-600 dark:text-emerald-400" />
+                          Experiencia Envío (Fecha de realización)
+                        </label>
+                        {experienciaEnvioDateDraft && (
+                          <button
+                            type="button"
+                            onClick={() => setExperienciaEnvioDateDraft('')}
+                            className="text-[10px] text-rose-500 hover:text-rose-600 font-bold hover:underline"
+                          >
+                            Quitar fecha
+                          </button>
+                        )}
+                      </div>
+                      <input
+                        type="date"
+                        value={experienciaEnvioDateDraft}
+                        onChange={(e) => setExperienciaEnvioDateDraft(e.target.value)}
+                        className="w-full bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/10 rounded-xl p-2.5 text-xs text-slate-800 dark:text-gray-100 outline-none focus:border-emerald-500 [color-scheme:dark]"
+                      />
+                      <div className="flex items-center gap-2 pt-1">
+                        <span className="text-[10px] text-slate-400 dark:text-gray-500">Estado:</span>
+                        <span
+                          className={`text-[9px] uppercase font-black px-2 py-0.5 rounded-full border ${
+                            experienciaEnvioDateDraft
+                              ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/30'
+                              : 'bg-slate-200/60 dark:bg-white/10 text-slate-500 dark:text-gray-400 border-slate-300 dark:border-white/10'
+                          }`}
+                        >
+                          {experienciaEnvioDateDraft ? 'Realizada' : 'Pendiente'}
+                        </span>
+                      </div>
+                    </div>
                   </div>
                 ) : (
                   <div className="flex flex-wrap items-center justify-between gap-3">
@@ -3674,6 +4125,56 @@ export const BrotherDetail = () => {
                         </span>
                         <p className="text-sm font-bold text-slate-800 dark:text-gray-200 bg-white dark:bg-black/55 px-4 py-2 rounded-xl inline-flex border border-slate-200 dark:border-emerald-500/25 dark:border-emerald-400/20 shadow-inner">
                           {displayDate(stageDatesService.getBrotherStageDates(brother.id)?.discipuloFechaFin)}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Nueva Sección: Experiencia Envío (Ubicada debajo de Fecha Inicio y Fin de Discípulo Conector y arriba del Seguimiento de Altares) */}
+                {editingStage !== 4 && (
+                  <div
+                    className={`p-3.5 sm:p-4 rounded-2xl border transition-all ${
+                      resolvedExperienciaEnvioDate
+                        ? 'border-emerald-500/40 bg-emerald-50/50 dark:bg-emerald-950/20 shadow-sm'
+                        : 'border-slate-200 dark:border-white/10 bg-white/60 dark:bg-black/30'
+                    }`}
+                  >
+                    <div className="flex flex-wrap items-center justify-between gap-2 mb-2.5">
+                      <div className="flex items-center gap-2">
+                        <Send
+                          size={15}
+                          className="text-emerald-600 dark:text-emerald-400"
+                        />
+                        <span className="text-xs font-black uppercase tracking-[0.14em] text-slate-800 dark:text-gray-200">
+                          Experiencia Envío
+                        </span>
+                      </div>
+                      <span
+                        className={`text-[9px] uppercase font-black tracking-[0.18em] px-2.5 py-0.5 rounded-full border ${
+                          resolvedExperienciaEnvioDate
+                            ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/30 font-black'
+                            : 'bg-slate-200/60 dark:bg-white/10 text-slate-500 dark:text-gray-400 border-slate-300 dark:border-white/10'
+                        }`}
+                      >
+                        {resolvedExperienciaEnvioDate ? 'Realizada' : 'Pendiente'}
+                      </span>
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-0.5">
+                      <div className="space-y-1">
+                        <span className="text-[10px] font-black uppercase tracking-[0.15em] text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
+                          <Calendar size={13} className={resolvedExperienciaEnvioDate ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400'} />
+                          Fecha de realización
+                        </span>
+                        <p
+                          className={`text-sm font-bold px-3.5 py-2 rounded-xl inline-flex border shadow-inner ${
+                            resolvedExperienciaEnvioDate
+                              ? 'bg-white dark:bg-black/60 text-emerald-800 dark:text-emerald-300 border-emerald-500/30'
+                              : 'bg-white dark:bg-black/55 text-slate-800 dark:text-gray-200 border-slate-200 dark:border-emerald-500/25 dark:border-emerald-400/20'
+                          }`}
+                        >
+                          {displayDate(resolvedExperienciaEnvioDate)}
                         </p>
                       </div>
                     </div>
@@ -3801,11 +4302,12 @@ export const BrotherDetail = () => {
               </div>
             </StageWrapper>
 
-            {/* Etapa 5: Hermano Mayor (SIEMPRE VISIBLE) */}
+            {/* Etapa 5: EDDI 2 */}
             <StageWrapper
               brotherId={id ?? ''}
               number={5}
-              title="Hermano Mayor"
+              title="EDDI 2"
+              subtitle="escuela de discipulados 2"
               isCurrent={progression.currentStageNumber === 5}
               isCompleted={progression.isStageCompleted(5)}
               isLocked={progression.isStageLocked(5)}
@@ -3816,6 +4318,155 @@ export const BrotherDetail = () => {
               onStartEdit={handleStartEditStage5}
               onCancelEdit={handleCancelEditStage5}
               onSaveEdit={handleSaveStage5}
+              rightTitle="Observaciones EDDI 2"
+              rightEntries={observationsByProcess[Proceso.EDDI2]}
+              rightEmpty="Sin observaciones del tutor de EDDI 2."
+              centerClassName="space-y-6"
+              isComposerOpen={observationComposerByProcess[Proceso.EDDI2]}
+              isSavingObservation={observationSavingByProcess[Proceso.EDDI2]}
+              draftValue={observationDraftByProcess[Proceso.EDDI2]}
+              editingObservationId={editingObservationId}
+              editDraftValue={editingObservationId ? observationEditDraftById[editingObservationId] ?? '' : ''}
+              mutatingObservationId={mutatingObservationId}
+              onComposerOpen={() => openObservationComposer(Proceso.EDDI2)}
+              onComposerClose={() => closeObservationComposer(Proceso.EDDI2)}
+              onDraftChange={(value) => updateObservationDraft(Proceso.EDDI2, value)}
+              onSaveObservation={() => saveObservation(Proceso.EDDI2)}
+              onEditObservationStart={startEditObservation}
+              onEditObservationCancel={cancelEditObservation}
+              onEditDraftChange={updateObservationEditDraft}
+              onUpdateObservation={saveObservationEdit}
+              onDeleteObservation={removeObservation}
+            >
+              {editingStage === 5 ? (
+                <div className="space-y-4 p-4 rounded-2xl bg-teal-500/5 dark:bg-teal-500/10 dark:bg-teal-500/15 border border-teal-500/30 dark:border-teal-400/20">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <div className="flex items-center justify-between">
+                        <label className="text-[10px] uppercase font-black tracking-wider text-slate-600 dark:text-gray-400">
+                          Fecha Inicio EDDI 2
+                        </label>
+                        {eddi2StartDateDraft && (
+                          <button
+                            type="button"
+                            onClick={() => setEddi2StartDateDraft('')}
+                            className="text-[10px] text-rose-500 hover:text-rose-600 font-bold hover:underline"
+                          >
+                            Quitar fecha
+                          </button>
+                        )}
+                      </div>
+                      <input
+                        type="date"
+                        value={eddi2StartDateDraft}
+                        onChange={(e) => setEddi2StartDateDraft(e.target.value)}
+                        className="w-full bg-white dark:bg-black border border-slate-200 dark:border-white/10 rounded-xl p-2.5 text-xs text-slate-800 dark:text-gray-100 outline-none focus:border-teal-500 [color-scheme:dark]"
+                      />
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <div className="flex items-center justify-between">
+                        <label className="text-[10px] uppercase font-black tracking-wider text-slate-600 dark:text-gray-400">
+                          Fecha Fin EDDI 2
+                        </label>
+                        {eddi2EndDateDraft && (
+                          <button
+                            type="button"
+                            onClick={() => setEddi2EndDateDraft('')}
+                            className="text-[10px] text-rose-500 hover:text-rose-600 font-bold hover:underline"
+                          >
+                            Quitar fecha
+                          </button>
+                        )}
+                      </div>
+                      <input
+                        type="date"
+                        value={eddi2EndDateDraft}
+                        onChange={(e) => setEddi2EndDateDraft(e.target.value)}
+                        className="w-full bg-white dark:bg-black border border-slate-200 dark:border-white/10 rounded-xl p-2.5 text-xs text-slate-800 dark:text-gray-100 outline-none focus:border-teal-500 [color-scheme:dark]"
+                      />
+                    </div>
+                  </div>
+                  <ApproximateDateHint />
+                  <p className="text-[10px] text-slate-500 dark:text-gray-400">
+                    • Las notas de materias y exámenes de EDDI 2 se registran y actualizan en el plan de formación.
+                  </p>
+                </div>
+              ) : (
+                <div className="flex flex-col sm:flex-row gap-4 md:gap-6">
+                  <div className="space-y-1">
+                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 dark:text-gray-500">Fecha Inicio</span>
+                    <p className="text-sm font-bold text-slate-800 dark:text-gray-200 bg-white dark:bg-black/55 px-4 py-2.5 rounded-xl inline-flex border border-slate-200 dark:border-white/10 shadow-inner">
+                      {displayDate(brother?.eddi2?.fechaInicio || stageDatesService.getBrotherStageDates(brother?.id || '')?.eddi2FechaInicio)}
+                    </p>
+                  </div>
+                  <div className="space-y-1">
+                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 dark:text-gray-500">Fecha Fin</span>
+                    <p className="text-sm font-bold text-slate-800 dark:text-gray-200 bg-white dark:bg-black/55 px-4 py-2.5 rounded-xl inline-flex border border-slate-200 dark:border-white/10 shadow-inner">
+                      {displayDate(brother?.eddi2?.fechaFin || stageDatesService.getBrotherStageDates(brother?.id || '')?.eddi2FechaFin)}
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              <div className="space-y-3 min-w-0">
+                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-teal-600 dark:text-teal-400 flex items-center gap-2">
+                  <BookOpen size={14} /> Tabla de Notas EDDI 2
+                </span>
+
+                {(brother?.eddi2?.notasExamenes && brother.eddi2.notasExamenes.length > 0) ? (
+                  <div className="overflow-x-auto rounded-2xl border border-slate-200 dark:border-white/10 w-full max-h-[260px] [scrollbar-width:thin] [scrollbar-color:#0d948844_transparent] [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-teal-600 dark:bg-teal-500/40 [&::-webkit-scrollbar-thumb]:rounded-full">
+                    <table className="min-w-[620px] text-xs sm:text-sm">
+                      <thead className="bg-slate-100 dark:bg-black/70 sticky top-0 z-[1]">
+                        <tr className="text-[10px] uppercase tracking-[0.2em] text-slate-500 dark:text-gray-500">
+                          <th className="text-left px-4 py-3">Materia</th>
+                          <th className="text-left px-4 py-3">Módulo</th>
+                          <th className="text-left px-4 py-3">Fecha</th>
+                          <th className="text-left px-4 py-3">Nota</th>
+                          <th className="text-left px-4 py-3">Estado</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {brother.eddi2.notasExamenes.map((grade) => {
+                          const status = (grade.estado || (grade.nota >= 7 ? 'APROBADO' : 'REPROBADO')) as 'APROBADO' | 'REPROBADO' | 'EN_CURSO';
+                          return (
+                            <tr key={grade.id || grade.materia} className="border-t border-slate-200 dark:border-white/5 bg-white dark:bg-black/20">
+                              <td className="px-4 py-3 text-slate-700 dark:text-gray-200 font-semibold">{grade.materia}</td>
+                              <td className="px-4 py-3 text-slate-500 dark:text-gray-400">{grade.modulo || '-'}</td>
+                              <td className="px-4 py-3 text-slate-500 dark:text-gray-400">{grade.fecha || '-'}</td>
+                              <td className="px-4 py-3 text-slate-900 dark:text-white font-black">{grade.nota}</td>
+                              <td className="px-4 py-3">
+                                <span className={`text-[10px] px-2 py-1 rounded-md border font-black tracking-wider ${statusStyle[status] || statusStyle.APROBADO}`}>{status}</span>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <p className="text-xs text-slate-500 dark:text-gray-600 font-bold uppercase tracking-widest bg-slate-100 dark:bg-black/30 w-fit px-4 py-2 rounded-lg">
+                    Aún no hay calificaciones cargadas en EDDI 2
+                  </p>
+                )}
+              </div>
+            </StageWrapper>
+
+            {/* Etapa 6: Hermano Mayor */}
+            <StageWrapper
+              brotherId={id ?? ''}
+              number={6}
+              title="Hermano Mayor"
+              isCurrent={progression.currentStageNumber === 6}
+              isCompleted={progression.isStageCompleted(6)}
+              isLocked={progression.isStageLocked(6)}
+              lockedReason={progression.stageCompletionDetails[6]?.reasonIfIncomplete}
+              isEditing={editingStage === 6}
+              isOtherStageEditing={editingStage !== null && editingStage !== 6}
+              canEdit={canEditProfile}
+              onStartEdit={handleStartEditStage6}
+              onCancelEdit={handleCancelEditStage6}
+              onSaveEdit={handleSaveStage6}
               rightTitle="Observaciones Hermano Mayor"
               rightEntries={observationsByProcess[Proceso.DISCIPULO]}
               rightEmpty="Sin observaciones de etapa Hermano Mayor."
@@ -3836,7 +4487,7 @@ export const BrotherDetail = () => {
               onDeleteObservation={removeObservation}
             >
               <div className="space-y-3.5">
-                {editingStage === 5 ? (
+                {editingStage === 6 ? (
                   <div className="space-y-3 p-4 rounded-2xl bg-emerald-500/5 dark:bg-emerald-500/10 dark:bg-emerald-500/15 border border-emerald-500/30 dark:border-emerald-400/20">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div className="space-y-1.5">
@@ -3967,7 +4618,7 @@ export const BrotherDetail = () => {
                   </div>
                 )}
 
-                {/* Pre-aprobación compacta de Líder de Célula si califica en Etapa 5 */}
+                {/* Pre-aprobación compacta de Líder de Célula si califica en Etapa 6 */}
                 {hasReachedLiderCelulaThreshold && !isLiderCelulaApproved && canApproveLiderCelula && (
                   <div className="p-2.5 rounded-xl border border-indigo-500/40 bg-indigo-500/10 flex flex-wrap items-center justify-between gap-2">
                     <div className="flex items-center gap-2">
@@ -3987,7 +4638,7 @@ export const BrotherDetail = () => {
                   </div>
                 )}
 
-                {/* Seguimiento de Altares con Indicador de Discípulos Conectores (congelado si fue promovido a Etapa 6) */}
+                {/* Seguimiento de Altares con Indicador de Discípulos Conectores */}
                 <div className="space-y-3">
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <div className="flex items-center gap-2">
@@ -4004,7 +4655,7 @@ export const BrotherDetail = () => {
                       <button
                         type="button"
                         onClick={() => {
-                          setAltarModalSourceStage(5);
+                          setAltarModalSourceStage(6);
                           setDiscipuloAltarsFilter('TODOS');
                           setSelectedDiscipuloAltarBrotherId(null);
                           setIsDiscipuloAltarsModalOpen(true);
@@ -4019,7 +4670,7 @@ export const BrotherDetail = () => {
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
                     <div
                       onClick={() => {
-                        setAltarModalSourceStage(5);
+                        setAltarModalSourceStage(6);
                         setDiscipuloAltarsFilter('TODOS');
                         setSelectedDiscipuloAltarBrotherId(null);
                         setIsDiscipuloAltarsModalOpen(true);
@@ -4033,7 +4684,7 @@ export const BrotherDetail = () => {
                     </div>
                     <div
                       onClick={() => {
-                        setAltarModalSourceStage(5);
+                        setAltarModalSourceStage(6);
                         setDiscipuloAltarsFilter('FINALIZADOS');
                         setSelectedDiscipuloAltarBrotherId(null);
                         setIsDiscipuloAltarsModalOpen(true);
@@ -4047,7 +4698,7 @@ export const BrotherDetail = () => {
                     </div>
                     <div
                       onClick={() => {
-                        setAltarModalSourceStage(5);
+                        setAltarModalSourceStage(6);
                         setDiscipuloAltarsFilter('INTERRUMPIDOS');
                         setSelectedDiscipuloAltarBrotherId(null);
                         setIsDiscipuloAltarsModalOpen(true);
@@ -4061,7 +4712,7 @@ export const BrotherDetail = () => {
                     </div>
                     <div
                       onClick={() => {
-                        setAltarModalSourceStage(5);
+                        setAltarModalSourceStage(6);
                         setDiscipuloAltarsFilter('CONECTORES');
                         setSelectedDiscipuloAltarBrotherId(null);
                         setIsDiscipuloAltarsModalOpen(true);
@@ -4087,34 +4738,184 @@ export const BrotherDetail = () => {
               </div>
             </StageWrapper>
 
-            {/* Etapa 6: Líder de Célula */}
+            {/* Etapa 7: EDDI 3 */}
             <StageWrapper
               brotherId={id ?? ''}
-              number={6}
-              title="Líder de Célula"
-              isCurrent={progression.currentStageNumber === 6}
-              isCompleted={progression.isStageCompleted(6)}
-              isLocked={progression.isStageLocked(6)}
-              lockedReason={progression.stageCompletionDetails[6]?.reasonIfIncomplete}
-              isEditing={editingStage === 6}
-              isOtherStageEditing={editingStage !== null && editingStage !== 6}
+              number={7}
+              title="EDDI 3"
+              subtitle="escuela de discipulados 3"
+              isCurrent={progression.currentStageNumber === 7}
+              isCompleted={progression.isStageCompleted(7)}
+              isLocked={progression.isStageLocked(7)}
+              lockedReason={progression.stageCompletionDetails[7]?.reasonIfIncomplete}
+              isEditing={editingStage === 7}
+              isOtherStageEditing={editingStage !== null && editingStage !== 7}
               canEdit={canEditProfile}
-              onStartEdit={handleStartEditStage6}
-              onCancelEdit={handleCancelEditStage6}
-              onSaveEdit={handleSaveStage6}
-              rightTitle="Observaciones Líder de Célula"
-              rightEntries={observationsByProcess[Proceso.DISCIPULO]}
-              rightEmpty="Sin observaciones de etapa Líder de Célula."
-              isComposerOpen={observationComposerByProcess[Proceso.DISCIPULO]}
-              isSavingObservation={observationSavingByProcess[Proceso.DISCIPULO]}
-              draftValue={observationDraftByProcess[Proceso.DISCIPULO]}
+              onStartEdit={handleStartEditStage7}
+              onCancelEdit={handleCancelEditStage7}
+              onSaveEdit={handleSaveStage7}
+              rightTitle="Observaciones EDDI 3"
+              rightEntries={observationsByProcess[Proceso.EDDI3]}
+              rightEmpty="Sin observaciones de tutor EDDI 3."
+              centerClassName="space-y-6"
+              isComposerOpen={observationComposerByProcess[Proceso.EDDI3]}
+              isSavingObservation={observationSavingByProcess[Proceso.EDDI3]}
+              draftValue={observationDraftByProcess[Proceso.EDDI3]}
               editingObservationId={editingObservationId}
               editDraftValue={editingObservationId ? observationEditDraftById[editingObservationId] ?? '' : ''}
               mutatingObservationId={mutatingObservationId}
-              onComposerOpen={() => openObservationComposer(Proceso.DISCIPULO)}
-              onComposerClose={() => closeObservationComposer(Proceso.DISCIPULO)}
-              onDraftChange={(value) => updateObservationDraft(Proceso.DISCIPULO, value)}
-              onSaveObservation={() => saveObservation(Proceso.DISCIPULO)}
+              onComposerOpen={() => openObservationComposer(Proceso.EDDI3)}
+              onComposerClose={() => closeObservationComposer(Proceso.EDDI3)}
+              onDraftChange={(value) => updateObservationDraft(Proceso.EDDI3, value)}
+              onSaveObservation={() => saveObservation(Proceso.EDDI3)}
+              onEditObservationStart={startEditObservation}
+              onEditObservationCancel={cancelEditObservation}
+              onEditDraftChange={updateObservationEditDraft}
+              onUpdateObservation={saveObservationEdit}
+              onDeleteObservation={removeObservation}
+            >
+              {editingStage === 7 ? (
+                <div className="space-y-4 p-4 rounded-2xl bg-cyan-500/5 dark:bg-cyan-500/10 border border-cyan-500/30">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <div className="flex items-center justify-between">
+                        <label className="text-[10px] uppercase font-black tracking-wider text-slate-600 dark:text-gray-400">
+                          Fecha Inicio EDDI 3
+                        </label>
+                        {eddi3StartDateDraft && (
+                          <button
+                            type="button"
+                            onClick={() => setEddi3StartDateDraft('')}
+                            className="text-[10px] text-rose-500 hover:text-rose-600 font-bold hover:underline"
+                          >
+                            Quitar fecha
+                          </button>
+                        )}
+                      </div>
+                      <input
+                        type="date"
+                        value={eddi3StartDateDraft}
+                        onChange={(e) => setEddi3StartDateDraft(e.target.value)}
+                        className="w-full bg-white dark:bg-black border border-slate-200 dark:border-white/10 rounded-xl p-2.5 text-xs text-slate-800 dark:text-gray-100 outline-none focus:border-cyan-500 [color-scheme:dark]"
+                      />
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <div className="flex items-center justify-between">
+                        <label className="text-[10px] uppercase font-black tracking-wider text-slate-600 dark:text-gray-400">
+                          Fecha Fin EDDI 3
+                        </label>
+                        {eddi3EndDateDraft && (
+                          <button
+                            type="button"
+                            onClick={() => setEddi3EndDateDraft('')}
+                            className="text-[10px] text-rose-500 hover:text-rose-600 font-bold hover:underline"
+                          >
+                            Quitar fecha
+                          </button>
+                        )}
+                      </div>
+                      <input
+                        type="date"
+                        value={eddi3EndDateDraft}
+                        onChange={(e) => setEddi3EndDateDraft(e.target.value)}
+                        className="w-full bg-white dark:bg-black border border-slate-200 dark:border-white/10 rounded-xl p-2.5 text-xs text-slate-800 dark:text-gray-100 outline-none focus:border-cyan-500 [color-scheme:dark]"
+                      />
+                    </div>
+                  </div>
+                  <ApproximateDateHint />
+                  <p className="text-[10px] text-slate-500 dark:text-gray-400">
+                    • Las notas de materias y exámenes de EDDI 3 se registran y actualizan en el plan de formación.
+                  </p>
+                </div>
+              ) : (
+                <div className="flex flex-col sm:flex-row gap-4 md:gap-6">
+                  <div className="space-y-1">
+                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 dark:text-gray-500">Fecha Inicio</span>
+                    <p className="text-sm font-bold text-slate-800 dark:text-gray-200 bg-white dark:bg-black/55 px-4 py-2.5 rounded-xl inline-flex border border-slate-200 dark:border-white/10 shadow-inner">
+                      {displayDate(brother?.eddi3?.fechaInicio || stageDatesService.getBrotherStageDates(brother?.id || '')?.eddi3FechaInicio)}
+                    </p>
+                  </div>
+                  <div className="space-y-1">
+                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 dark:text-gray-500">Fecha Fin</span>
+                    <p className="text-sm font-bold text-slate-800 dark:text-gray-200 bg-white dark:bg-black/55 px-4 py-2.5 rounded-xl inline-flex border border-slate-200 dark:border-white/10 shadow-inner">
+                      {displayDate(brother?.eddi3?.fechaFin || stageDatesService.getBrotherStageDates(brother?.id || '')?.eddi3FechaFin)}
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              <div className="space-y-3 min-w-0">
+                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-600 dark:text-cyan-400 flex items-center gap-2">
+                  <BookOpen size={14} /> Tabla de Notas EDDI 3
+                </span>
+
+                {(brother?.eddi3?.notasExamenes && brother.eddi3.notasExamenes.length > 0) ? (
+                  <div className="overflow-x-auto rounded-2xl border border-slate-200 dark:border-white/10 w-full max-h-[260px] [scrollbar-width:thin] [scrollbar-color:#06b6d444_transparent] [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-cyan-600 dark:bg-cyan-500/40 [&::-webkit-scrollbar-thumb]:rounded-full">
+                    <table className="min-w-[620px] text-xs sm:text-sm">
+                      <thead className="bg-slate-100 dark:bg-black/70 sticky top-0 z-[1]">
+                        <tr className="text-[10px] uppercase tracking-[0.2em] text-slate-500 dark:text-gray-500">
+                          <th className="text-left px-4 py-3">Materia</th>
+                          <th className="text-left px-4 py-3">Módulo</th>
+                          <th className="text-left px-4 py-3">Fecha</th>
+                          <th className="text-left px-4 py-3">Nota</th>
+                          <th className="text-left px-4 py-3">Estado</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {brother.eddi3.notasExamenes.map((grade) => {
+                          const status = (grade.estado || (grade.nota >= 7 ? 'APROBADO' : 'REPROBADO')) as 'APROBADO' | 'REPROBADO' | 'EN_CURSO';
+                          return (
+                            <tr key={grade.id || grade.materia} className="border-t border-slate-200 dark:border-white/5 bg-white dark:bg-black/20">
+                              <td className="px-4 py-3 text-slate-700 dark:text-gray-200 font-semibold">{grade.materia}</td>
+                              <td className="px-4 py-3 text-slate-500 dark:text-gray-400">{grade.modulo || '-'}</td>
+                              <td className="px-4 py-3 text-slate-500 dark:text-gray-400">{grade.fecha || '-'}</td>
+                              <td className="px-4 py-3 text-slate-900 dark:text-white font-black">{grade.nota}</td>
+                              <td className="px-4 py-3">
+                                <span className={`text-[10px] px-2 py-1 rounded-md border font-black tracking-wider ${statusStyle[status] || statusStyle.APROBADO}`}>{status}</span>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <p className="text-xs text-slate-500 dark:text-gray-600 font-bold uppercase tracking-widest bg-slate-100 dark:bg-black/30 w-fit px-4 py-2 rounded-lg">
+                    Aún no hay calificaciones cargadas en EDDI 3
+                  </p>
+                )}
+              </div>
+            </StageWrapper>
+
+            {/* Etapa 8: Líder de Célula */}
+            <StageWrapper
+              brotherId={id ?? ''}
+              number={8}
+              title="Líder de Célula"
+              isCurrent={progression.currentStageNumber === 8}
+              isCompleted={progression.isStageCompleted(8)}
+              isLocked={progression.isStageLocked(8)}
+              lockedReason={progression.stageCompletionDetails[8]?.reasonIfIncomplete}
+              isEditing={editingStage === 8}
+              isOtherStageEditing={editingStage !== null && editingStage !== 8}
+              canEdit={canEditProfile}
+              onStartEdit={handleStartEditStage8}
+              onCancelEdit={handleCancelEditStage8}
+              onSaveEdit={handleSaveStage8}
+              rightTitle="Observaciones Líder de Célula"
+              rightEntries={observationsByProcess[Proceso.LIDER_CELULA]}
+              rightEmpty="Sin observaciones de etapa Líder de Célula."
+              isComposerOpen={observationComposerByProcess[Proceso.LIDER_CELULA]}
+              isSavingObservation={observationSavingByProcess[Proceso.LIDER_CELULA]}
+              draftValue={observationDraftByProcess[Proceso.LIDER_CELULA]}
+              editingObservationId={editingObservationId}
+              editDraftValue={editingObservationId ? observationEditDraftById[editingObservationId] ?? '' : ''}
+              mutatingObservationId={mutatingObservationId}
+              onComposerOpen={() => openObservationComposer(Proceso.LIDER_CELULA)}
+              onComposerClose={() => closeObservationComposer(Proceso.LIDER_CELULA)}
+              onDraftChange={(value) => updateObservationDraft(Proceso.LIDER_CELULA, value)}
+              onSaveObservation={() => saveObservation(Proceso.LIDER_CELULA)}
               onEditObservationStart={startEditObservation}
               onEditObservationCancel={cancelEditObservation}
               onEditDraftChange={updateObservationEditDraft}
@@ -4122,7 +4923,7 @@ export const BrotherDetail = () => {
               onDeleteObservation={removeObservation}
             >
               <div className="space-y-3.5">
-                {editingStage === 6 ? (
+                {editingStage === 8 ? (
                   <div className="space-y-3 p-4 rounded-2xl bg-emerald-500/5 dark:bg-emerald-500/10 dark:bg-emerald-500/15 border border-emerald-500/30 dark:border-emerald-400/20">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div className="space-y-1.5">
@@ -4251,137 +5052,110 @@ export const BrotherDetail = () => {
                   </div>
                 )}
 
-                {/* Subpanel Datos de Grupo de Vida en Etapa 6 */}
-                <div className="p-3 rounded-2xl bg-white/60 dark:bg-black/30 border border-slate-200 dark:border-white/10 space-y-2.5">
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    <span className="text-[10px] uppercase font-black tracking-[0.15em] text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
-                      <Users size={14} /> {grupoVidaApproval.grupoVidaNombre || `Grupo de Vida de ${brother.name}`}
+                {/* Panel de Gestión y Seguimiento de Etapa 8: Botones con Contadores Interactivos */}
+                <div className="space-y-3 pt-1">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] uppercase font-black tracking-[0.2em] text-slate-500 dark:text-gray-400">
+                      Gestión y Seguimiento de la Célula
                     </span>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setSelectedGrupoVidaMemberId(null);
-                        setIsGrupoVidaMembersModalOpen(true);
-                      }}
-                      className="px-3 py-1.5 rounded-xl text-[10px] uppercase font-black bg-emerald-600 dark:bg-emerald-500 text-white hover:bg-emerald-700 shadow-sm transition-all flex items-center gap-1.5"
-                    >
-                      <Users size={12} />
-                      Ver Grupo de Vida ({grupoVidaMembers.length})
-                    </button>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-0.5">
-                    <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-black/40 border border-slate-100 dark:border-white/5">
-                      <p className="text-[9px] uppercase font-black tracking-wider text-slate-400 dark:text-gray-500">Célula</p>
-                      <p className="text-xs font-bold text-slate-800 dark:text-gray-200 truncate mt-0.5">
-                        {brother.acompanamiento.celulaName || 'Sin asignar'}
-                      </p>
-                    </div>
-                    <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-black/40 border border-slate-100 dark:border-white/5">
-                      <p className="text-[9px] uppercase font-black tracking-wider text-slate-400 dark:text-gray-500">Líderes de Célula</p>
-                      <p className="text-xs font-bold text-slate-800 dark:text-gray-200 truncate mt-0.5">
-                        {brother.acompanamiento.liderCelulaName || brother.name}
-                      </p>
-                    </div>
-                    <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-black/40 border border-slate-100 dark:border-white/5">
-                      <p className="text-[9px] uppercase font-black tracking-wider text-slate-400 dark:text-gray-500">Integrantes Grupo de Vida</p>
-                      <p className="text-xs font-bold text-emerald-600 dark:text-emerald-400 truncate mt-0.5">
-                        {grupoVidaMembers.length} {grupoVidaMembers.length === 1 ? 'hermano' : 'hermanos'}
-                      </p>
-                    </div>
-                  </div>
-                </div>
+                  <div className="space-y-2.5">
+                    {/* Botón 1: Seguimiento de Discípulos Conectores con Contador */}
+                    <div
+                      onClick={() => {
+                        setSelectedConectorForAltars(null);
+                        setConectorAltarsFilter('TODOS');
+                        setIsDiscipulosConectoresModalOpen(true);
+                      }}
+                      className="p-3.5 rounded-2xl border border-purple-500/30 dark:border-purple-500/20 bg-gradient-to-r from-purple-500/10 via-purple-500/5 to-white/40 dark:to-black/30 hover:border-purple-500 hover:shadow-md cursor-pointer transition-all flex items-center justify-between gap-3 group active:scale-[0.99]"
+                    >
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className="w-10 h-10 rounded-xl bg-purple-500/15 border border-purple-500/30 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                          <Sparkles size={18} />
+                        </div>
+                        <div className="min-w-0">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <h5 className="text-xs font-black uppercase tracking-wider text-purple-700 dark:text-purple-300">
+                              Discípulos Conectores
+                            </h5>
+                            <span className="text-[10px] font-black px-2.5 py-0.5 rounded-full bg-purple-500/15 text-purple-700 dark:text-purple-300 border border-purple-500/30 shadow-sm shrink-0">
+                              {celulaDiscipulosConectores.length} {celulaDiscipulosConectores.length === 1 ? 'Conector' : 'Conectores'}
+                            </span>
+                          </div>
+                          <p className="text-[10px] text-slate-500 dark:text-gray-400 truncate mt-0.5">
+                            {conectoresAltarsSummary.totalAltars} {conectoresAltarsSummary.totalAltars === 1 ? 'altar abierto' : 'altares abiertos'} · Seguimiento de sus altares
+                          </p>
+                        </div>
+                      </div>
 
-                {/* Seguimiento de Altares con Indicador de Discípulos Conectores */}
-                <div className="space-y-3">
-                  <div className="flex flex-wrap items-center justify-between gap-3">
-                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-600 dark:text-emerald-400">
-                      Seguimiento de altares
-                    </span>
-                    <div className="flex items-center gap-2">
-                      {hermanosMenoresList.length > 0 && (
-                        <button
-                          type="button"
-                          onClick={() => setIsHermanosMenoresModalOpen(true)}
-                          className="px-3 py-1.5 rounded-xl text-[10px] uppercase tracking-wider font-bold border border-blue-400/30 bg-blue-500/10 text-blue-600 dark:text-blue-300 hover:bg-blue-500/20 transition-colors"
-                        >
-                          Hermanos menores ({hermanosMenoresList.length})
-                        </button>
-                      )}
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setDiscipuloAltarsFilter('TODOS');
-                          setSelectedDiscipuloAltarBrotherId(null);
-                          setIsDiscipuloAltarsModalOpen(true);
-                        }}
-                        className="px-4 py-2 rounded-xl text-[10px] uppercase tracking-widest font-black border border-emerald-500/40 dark:border-emerald-400/30 bg-emerald-500/15 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-600 hover:text-white transition-colors"
-                      >
-                        Ver
-                      </button>
+                      <div className="flex items-center gap-1 shrink-0 text-purple-600 dark:text-purple-400 text-[11px] font-black uppercase tracking-wider group-hover:translate-x-1 transition-transform">
+                        <span>Ver Conectores</span>
+                        <ChevronRight size={14} />
+                      </div>
                     </div>
-                  </div>
 
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
+                    {/* Botón 2: Grupos de Vida dentro de su Célula */}
                     <div
                       onClick={() => {
-                        setDiscipuloAltarsFilter('TODOS');
-                        setSelectedDiscipuloAltarBrotherId(null);
-                        setIsDiscipuloAltarsModalOpen(true);
+                        setSelectedCellGrupoVida(null);
+                        setIsCellGrupoVidaModalOpen(true);
                       }}
-                      className="rounded-xl border border-slate-200 dark:border-white/10 bg-[#f8fafc] dark:bg-black/45 p-3 cursor-pointer hover:border-emerald-500/40 transition-colors flex flex-col justify-between min-h-[86px]"
+                      className="p-3.5 rounded-2xl border border-emerald-500/30 dark:border-emerald-500/20 bg-gradient-to-r from-emerald-500/10 via-emerald-500/5 to-white/40 dark:to-black/30 hover:border-emerald-500 hover:shadow-md cursor-pointer transition-all flex items-center justify-between gap-3 group active:scale-[0.99]"
                     >
-                      <div className="min-h-[28px] flex items-start">
-                        <p className="text-[9px] sm:text-[10px] uppercase tracking-wider leading-tight font-black text-slate-500 dark:text-gray-400 break-normal">Altares abiertos</p>
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className="w-10 h-10 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                          <Users size={18} />
+                        </div>
+                        <div className="min-w-0">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <h5 className="text-xs font-black uppercase tracking-wider text-emerald-700 dark:text-emerald-300">
+                              Grupos de Vida
+                            </h5>
+                            <span className="text-[10px] font-black px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 shadow-sm shrink-0">
+                              {celulaGruposDeVida.length} {celulaGruposDeVida.length === 1 ? 'Grupo' : 'Grupos'}
+                            </span>
+                          </div>
+                          <p className="text-[10px] text-slate-500 dark:text-gray-400 truncate mt-0.5">
+                            {celulaGruposDeVida.reduce((acc, g) => acc + g.members.length, 0)} integrantes en su célula
+                          </p>
+                        </div>
                       </div>
-                      <p className="text-xl sm:text-2xl font-black text-emerald-700 dark:text-emerald-300  mt-auto">{altarTrackingSummary.opened}</p>
+
+                      <div className="flex items-center gap-1 shrink-0 text-emerald-600 dark:text-emerald-400 text-[11px] font-black uppercase tracking-wider group-hover:translate-x-1 transition-transform">
+                        <span>Ver Grupos</span>
+                        <ChevronRight size={14} />
+                      </div>
                     </div>
+
+                    {/* Botón 3: Seguimiento de Nivelados con Contador de Asistencia (ej: 3/5) */}
                     <div
-                      onClick={() => {
-                        setDiscipuloAltarsFilter('FINALIZADOS');
-                        setSelectedDiscipuloAltarBrotherId(null);
-                        setIsDiscipuloAltarsModalOpen(true);
-                      }}
-                      className="rounded-xl border border-slate-200 dark:border-white/10 bg-[#f8fafc] dark:bg-black/45 p-3 cursor-pointer hover:border-emerald-500/40 transition-colors flex flex-col justify-between min-h-[86px]"
+                      onClick={() => setIsNiveladosModalOpen(true)}
+                      className="p-3.5 rounded-2xl border border-indigo-500/30 dark:border-indigo-500/20 bg-gradient-to-r from-indigo-500/10 via-indigo-500/5 to-white/40 dark:to-black/30 hover:border-indigo-500 hover:shadow-md cursor-pointer transition-all flex items-center justify-between gap-3 group active:scale-[0.99]"
                     >
-                      <div className="min-h-[28px] flex items-start">
-                        <p className="text-[9px] sm:text-[10px] uppercase tracking-wider leading-tight font-black text-slate-500 dark:text-gray-400 break-normal">Altares finalizados</p>
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className="w-10 h-10 rounded-xl bg-indigo-500/15 border border-indigo-500/30 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                          <CalendarCheck size={18} />
+                        </div>
+                        <div className="min-w-0">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <h5 className="text-xs font-black uppercase tracking-wider text-indigo-700 dark:text-indigo-300">
+                              Seguimiento Nivelados
+                            </h5>
+                            <span className="text-[10px] font-black px-2.5 py-0.5 rounded-full bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 border border-indigo-500/30 shadow-sm flex items-center gap-1 shrink-0">
+                              <CheckCircle2 size={12} className="text-emerald-600 dark:text-emerald-400" />
+                              {niveladosList.filter((n) => n.estado === 'ASISTIDO').length}/{niveladosList.length} Asistidos
+                            </span>
+                          </div>
+                          <p className="text-[10px] text-slate-500 dark:text-gray-400 truncate mt-0.5">
+                            {niveladosList.filter((n) => n.estado === 'ASISTIDO').length} de {niveladosList.length} eventos asistidos · Asistencia anual
+                          </p>
+                        </div>
                       </div>
-                      <p className="text-xl sm:text-2xl font-black text-emerald-700 dark:text-emerald-300 mt-auto">{altarTrackingSummary.finalized}</p>
-                    </div>
-                    <div
-                      onClick={() => {
-                        setDiscipuloAltarsFilter('INTERRUMPIDOS');
-                        setSelectedDiscipuloAltarBrotherId(null);
-                        setIsDiscipuloAltarsModalOpen(true);
-                      }}
-                      className="rounded-xl border border-slate-200 dark:border-white/10 bg-[#f8fafc] dark:bg-black/45 p-3 cursor-pointer hover:border-rose-500/40 transition-colors flex flex-col justify-between min-h-[86px]"
-                    >
-                      <div className="min-h-[28px] flex items-start">
-                        <p className="text-[9px] sm:text-[10px] uppercase tracking-wider leading-tight font-black text-slate-500 dark:text-gray-400 break-normal">Altares interrumpidos</p>
-                      </div>
-                      <p className="text-xl sm:text-2xl font-black text-rose-700 dark:text-rose-300 mt-auto">{altarTrackingSummary.interrupted}</p>
-                    </div>
-                    <div
-                      onClick={() => {
-                        setDiscipuloAltarsFilter('CONECTORES');
-                        setSelectedDiscipuloAltarBrotherId(null);
-                        setIsDiscipuloAltarsModalOpen(true);
-                      }}
-                      className="rounded-xl border border-emerald-500/40 dark:border-emerald-400/30 bg-emerald-500/10 dark:bg-emerald-500/15 dark:bg-emerald-500/5 dark:bg-emerald-500/10 p-3 cursor-pointer hover:border-emerald-500 transition-colors flex flex-col justify-between min-h-[86px]"
-                    >
-                      <div className="min-h-[28px] flex items-start">
-                        <p className="text-[9px] sm:text-[10px] uppercase tracking-wider leading-tight font-black text-emerald-700 dark:text-emerald-300  break-normal">
-                          Discípulos Conectores
-                        </p>
-                      </div>
-                      <div className="flex items-baseline justify-between mt-auto">
-                        <p className="text-xl sm:text-2xl font-black text-purple-600 dark:text-purple-400">
-                          {altaresFinalizadosConectores.length}
-                        </p>
-                        <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full bg-purple-500/15 text-purple-700 dark:text-purple-300 border border-purple-500/20 shrink-0">
-                          {altaresFinalizadosConectores.length}/{minDiscipulosConfig}
-                        </span>
+
+                      <div className="flex items-center gap-1 shrink-0 text-indigo-600 dark:text-indigo-400 text-[11px] font-black uppercase tracking-wider group-hover:translate-x-1 transition-transform">
+                        <span>Ver Nivelados</span>
+                        <ChevronRight size={14} />
                       </div>
                     </div>
                   </div>
@@ -4389,22 +5163,22 @@ export const BrotherDetail = () => {
               </div>
             </StageWrapper>
 
-            {/* Etapa 7: EDEM (Escuela de Entrenamiento Ministerial) */}
+            {/* Etapa 9: EDEM (Escuela de Entrenamiento Ministerial) */}
             <StageWrapper
               brotherId={id ?? ''}
-              number={7}
+              number={9}
               title="EDEM"
               subtitle="escuela de entrenamiento ministerial"
-              isCurrent={progression.currentStageNumber === 7}
-              isCompleted={progression.isStageCompleted(7)}
-              isLocked={progression.isStageLocked(7)}
-              lockedReason={progression.stageCompletionDetails[7]?.reasonIfIncomplete}
-              isEditing={editingStage === 7}
-              isOtherStageEditing={editingStage !== null && editingStage !== 7}
+              isCurrent={progression.currentStageNumber === 9}
+              isCompleted={progression.isStageCompleted(9)}
+              isLocked={progression.isStageLocked(9)}
+              lockedReason={progression.stageCompletionDetails[9]?.reasonIfIncomplete}
+              isEditing={editingStage === 9}
+              isOtherStageEditing={editingStage !== null && editingStage !== 9}
               canEdit={canEditProfile}
-              onStartEdit={handleStartEditStage7}
-              onCancelEdit={handleCancelEditStage7}
-              onSaveEdit={handleSaveStage7}
+              onStartEdit={handleStartEditStage9}
+              onCancelEdit={handleCancelEditStage9}
+              onSaveEdit={handleSaveStage9}
               rightTitle="Observaciones EDEM"
               rightEntries={observationsByProcess[Proceso.EDEM]}
               rightEmpty="Sin observaciones del tutor de EDEM."
@@ -4425,7 +5199,7 @@ export const BrotherDetail = () => {
               onUpdateObservation={saveObservationEdit}
               onDeleteObservation={removeObservation}
             >
-              {editingStage === 7 ? (
+              {editingStage === 9 ? (
                 <div className="space-y-4 p-4 rounded-2xl bg-purple-500/5 dark:bg-purple-500/10 border border-purple-500/30">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-1.5">
@@ -4539,21 +5313,21 @@ export const BrotherDetail = () => {
               </div>
             </StageWrapper>
 
-            {/* Etapa 8: Líder Ministerial */}
+            {/* Etapa 10: Líder Ministerial */}
             <StageWrapper
               brotherId={id ?? ''}
-              number={8}
+              number={10}
               title="Líder Ministerial"
-              isCurrent={progression.currentStageNumber === 8}
-              isCompleted={progression.isStageCompleted(8)}
-              isLocked={progression.isStageLocked(8)}
-              lockedReason={progression.stageCompletionDetails[8]?.reasonIfIncomplete}
-              isEditing={editingStage === 8}
-              isOtherStageEditing={editingStage !== null && editingStage !== 8}
+              isCurrent={progression.currentStageNumber === 10}
+              isCompleted={progression.isStageCompleted(10)}
+              isLocked={progression.isStageLocked(10)}
+              lockedReason={progression.stageCompletionDetails[10]?.reasonIfIncomplete}
+              isEditing={editingStage === 10}
+              isOtherStageEditing={editingStage !== null && editingStage !== 10}
               canEdit={canEditProfile}
-              onStartEdit={handleStartEditStage8}
-              onCancelEdit={handleCancelEditStage8}
-              onSaveEdit={handleSaveStage8}
+              onStartEdit={handleStartEditStage10}
+              onCancelEdit={handleCancelEditStage10}
+              onSaveEdit={handleSaveStage10}
               rightTitle="Observaciones Ministeriales"
               rightEntries={observationsByProcess[Proceso.DISCIPULO]}
               rightEmpty="Sin observaciones de etapa Líder Ministerial."
@@ -4574,7 +5348,7 @@ export const BrotherDetail = () => {
               onDeleteObservation={removeObservation}
             >
               <div className="space-y-5">
-                {editingStage === 8 ? (
+                {editingStage === 10 ? (
                   <div className="space-y-4 p-4 rounded-2xl bg-emerald-500/5 dark:bg-emerald-500/10 dark:bg-emerald-500/15 border border-emerald-500/30 dark:border-emerald-400/20">
                     <div className="space-y-1.5">
                       <div className="flex items-center justify-between">
@@ -4965,7 +5739,7 @@ export const BrotherDetail = () => {
                           ))
                         )}
                       </div>
-                      {(processEntry.key === Proceso.EDDI || processEntry.key === Proceso.EDEM) && processEntry.grades.length > 0 && (
+                      {(processEntry.key === Proceso.EDDI || processEntry.key === Proceso.EDDI2 || processEntry.key === Proceso.EDDI3 || processEntry.key === Proceso.EDEM) && processEntry.grades.length > 0 && (
                         <div className="mt-3 space-y-2">
                           <p className="text-[10px] uppercase tracking-[0.16em] font-black text-slate-500 dark:text-gray-500">Materias y calificaciones</p>
                           <div className="space-y-2">
@@ -5740,7 +6514,7 @@ export const BrotherDetail = () => {
                           ))
                         )}
                       </div>
-                      {(processEntry.key === Proceso.EDDI || processEntry.key === Proceso.EDEM) && processEntry.grades.length > 0 && (
+                      {(processEntry.key === Proceso.EDDI || processEntry.key === Proceso.EDDI2 || processEntry.key === Proceso.EDDI3 || processEntry.key === Proceso.EDEM) && processEntry.grades.length > 0 && (
                         <div className="mt-3 space-y-2">
                           <p className="text-[10px] uppercase tracking-[0.16em] font-black text-slate-500 dark:text-gray-500">Materias y calificaciones</p>
                           <div className="space-y-2">
@@ -5986,6 +6760,746 @@ export const BrotherDetail = () => {
               className="px-4 py-2 rounded-xl text-[10px] uppercase font-bold border border-slate-200 dark:border-white/10 text-slate-600 dark:text-gray-400 hover:bg-slate-100 dark:hover:bg-white/5"
             >
               Cerrar
+            </button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Modal para Discípulos Conectores y Seguimiento de Altares */}
+      <Modal
+        isOpen={isDiscipulosConectoresModalOpen}
+        onClose={() => {
+          setIsDiscipulosConectoresModalOpen(false);
+          setSelectedConectorForAltars(null);
+          setConectorAltarsFilter('TODOS');
+        }}
+        title={
+          selectedConectorForAltars
+            ? `Seguimiento de Altares y Discípulos · ${selectedConectorForAltars.name}`
+            : `Discípulos Conectores · ${brother?.acompanamiento?.celulaName ? `Célula ${brother.acompanamiento.celulaName}` : (brother?.name || 'Célula')}`
+        }
+      >
+        <div className="space-y-4">
+          {selectedConectorForAltars ? (
+            /* Vista 2: Seguimiento de Altares del Conector seleccionado (según Imagen 2) */
+            (() => {
+              const allConectorAltars = getAltarsForConector(selectedConectorForAltars.id, selectedConectorForAltars.name);
+              const totalCount = allConectorAltars.length;
+              const inProcessCount = allConectorAltars.filter((a) => getAltarTrackingStatus(a) === 'EN_PROCESO').length;
+              const finalizedCount = allConectorAltars.filter((a) => getAltarTrackingStatus(a) === 'FINALIZADO').length;
+              const interruptedCount = allConectorAltars.filter((a) => getAltarTrackingStatus(a) === 'INTERRUMPIDO').length;
+
+              const displayedAltars = conectorAltarsFilter === 'TODOS'
+                ? allConectorAltars
+                : allConectorAltars.filter((a) => getAltarTrackingStatus(a) === conectorAltarsFilter);
+
+              return (
+                <div className="space-y-4">
+                  {/* Botón Volver a la Lista de Conectores */}
+                  <div className="flex items-center justify-between pb-1 border-b border-slate-200 dark:border-white/10">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelectedConectorForAltars(null);
+                        setConectorAltarsFilter('TODOS');
+                      }}
+                      className="inline-flex items-center gap-1.5 text-xs font-bold text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 hover:underline transition-colors"
+                    >
+                      <ArrowLeft size={14} />
+                      <span>Volver a la lista de conectores</span>
+                    </button>
+                    <span className="text-[10px] text-slate-500 dark:text-gray-400 font-bold">
+                      Célula: {selectedConectorForAltars.acompanamiento?.celulaName || 'Sin asignar'}
+                    </span>
+                  </div>
+
+                  {/* 4 Tarjetas de Métricas idénticas a Imagen 2 */}
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                    {/* TOTAL ALTARES */}
+                    <div
+                      onClick={() => setConectorAltarsFilter('TODOS')}
+                      className={`p-3 rounded-2xl border cursor-pointer transition-all ${
+                        conectorAltarsFilter === 'TODOS'
+                          ? 'bg-emerald-500/10 border-emerald-500 shadow-sm'
+                          : 'bg-white dark:bg-black/40 border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20'
+                      }`}
+                    >
+                      <p className="text-[10px] font-black uppercase tracking-wider text-slate-500 dark:text-gray-400">
+                        TOTAL ALTARES
+                      </p>
+                      <p className="text-2xl font-black mt-1 text-emerald-600 dark:text-emerald-400">
+                        {totalCount}
+                      </p>
+                    </div>
+
+                    {/* EN PROCESO */}
+                    <div
+                      onClick={() => setConectorAltarsFilter('EN_PROCESO')}
+                      className={`p-3 rounded-2xl border cursor-pointer transition-all ${
+                        conectorAltarsFilter === 'EN_PROCESO'
+                          ? 'bg-amber-500/10 border-amber-500 shadow-sm'
+                          : 'bg-white dark:bg-black/40 border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20'
+                      }`}
+                    >
+                      <p className="text-[10px] font-black uppercase tracking-wider text-slate-500 dark:text-gray-400">
+                        EN PROCESO
+                      </p>
+                      <p className="text-2xl font-black mt-1 text-amber-500">
+                        {inProcessCount}
+                      </p>
+                    </div>
+
+                    {/* FINALIZADOS */}
+                    <div
+                      onClick={() => setConectorAltarsFilter('FINALIZADOS')}
+                      className={`p-3 rounded-2xl border cursor-pointer transition-all ${
+                        conectorAltarsFilter === 'FINALIZADOS'
+                          ? 'bg-emerald-500/10 border-emerald-500 shadow-sm'
+                          : 'bg-white dark:bg-black/40 border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20'
+                      }`}
+                    >
+                      <p className="text-[10px] font-black uppercase tracking-wider text-slate-500 dark:text-gray-400">
+                        FINALIZADOS
+                      </p>
+                      <p className="text-2xl font-black mt-1 text-emerald-600 dark:text-emerald-400">
+                        {finalizedCount}
+                      </p>
+                    </div>
+
+                    {/* INTERRUMPIDOS */}
+                    <div
+                      onClick={() => setConectorAltarsFilter('INTERRUMPIDOS')}
+                      className={`p-3 rounded-2xl border cursor-pointer transition-all ${
+                        conectorAltarsFilter === 'INTERRUMPIDOS'
+                          ? 'bg-rose-500/10 border-rose-500 shadow-sm'
+                          : 'bg-white dark:bg-black/40 border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20'
+                      }`}
+                    >
+                      <p className="text-[10px] font-black uppercase tracking-wider text-slate-500 dark:text-gray-400">
+                        INTERRUMPIDOS
+                      </p>
+                      <p className="text-2xl font-black mt-1 text-rose-600">
+                        {interruptedCount}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Lista de Altares o mensaje vacío de la Imagen 2 */}
+                  {displayedAltars.length === 0 ? (
+                    <div className="py-8 text-center text-slate-400 dark:text-gray-500 text-xs">
+                      No hay hermanos registrados en altares abiertos por este discípulo.
+                    </div>
+                  ) : (
+                    <div className="space-y-2 max-h-[360px] overflow-y-auto pr-1 [scrollbar-width:thin]">
+                      {displayedAltars.map((altarMember) => {
+                        const info = altarService.getAltarInfo(altarMember.id);
+                        const status = getAltarTrackingStatus(altarMember);
+                        const start = info.fechaInicio || altarMember.altar?.fechaInicio;
+                        const end = info.fechaFin || altarMember.altar?.fechaFin;
+                        return (
+                          <div
+                            key={`conector-altar-item-${altarMember.id}`}
+                            className="p-3 rounded-xl bg-white dark:bg-black/50 border border-slate-200 dark:border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm hover:border-purple-500/30 transition-colors"
+                          >
+                            <div className="flex items-center gap-3 min-w-0">
+                              <div className="w-9 h-9 rounded-xl overflow-hidden bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-xs font-bold text-purple-600 shrink-0">
+                                {altarMember.fotoUrl ? (
+                                  <img src={altarMember.fotoUrl} alt={altarMember.name} className="w-full h-full object-cover" />
+                                ) : (
+                                  altarMember.name.charAt(0)
+                                )}
+                              </div>
+                              <div className="min-w-0">
+                                <div className="flex items-center gap-2">
+                                  <p className="text-xs font-black text-slate-800 dark:text-gray-200 truncate">
+                                    {altarMember.name}
+                                  </p>
+                                  <span
+                                    className={`text-[9px] uppercase font-black px-2 py-0.5 rounded-full border shrink-0 ${
+                                      status === 'FINALIZADO'
+                                        ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/30'
+                                        : status === 'INTERRUMPIDO'
+                                        ? 'bg-rose-500/15 text-rose-700 dark:text-rose-300 border-rose-500/30'
+                                        : 'bg-blue-500/15 text-blue-700 dark:text-blue-300 border-blue-500/30'
+                                    }`}
+                                  >
+                                    {status === 'FINALIZADO' ? 'Finalizado' : status === 'INTERRUMPIDO' ? 'Interrumpido' : 'En Proceso'}
+                                  </span>
+                                </div>
+                                <p className="text-[10px] text-slate-500 dark:text-gray-400 truncate">
+                                  Inicio: {start ? displayDate(start) : 'Sin fecha'}
+                                  {end ? ` · Fin: ${displayDate(end)}` : ''}
+                                </p>
+                              </div>
+                            </div>
+
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setIsDiscipulosConectoresModalOpen(false);
+                                setSelectedConectorForAltars(null);
+                                navigate(`/hermanos/${altarMember.id}`);
+                                requestAnimationFrame(() => {
+                                  window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+                                });
+                              }}
+                              className="self-start sm:self-auto px-3 py-1.5 rounded-lg text-[10px] uppercase font-bold text-purple-600 dark:text-purple-300 border border-purple-500/30 hover:bg-purple-600 hover:text-white transition-colors shrink-0"
+                            >
+                              Ver ficha
+                            </button>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              );
+            })()
+          ) : (
+            /* Vista 1: Lista de Discípulos Conectores de la célula */
+            <div className="space-y-4">
+              {/* Tarjetas de Resumen General de Conectores de la Célula */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                <div className="p-3 rounded-2xl bg-purple-500/10 border border-purple-500/30">
+                  <p className="text-[10px] font-black uppercase tracking-wider text-purple-700 dark:text-purple-300">
+                    TOTAL CONECTORES
+                  </p>
+                  <p className="text-2xl font-black mt-1 text-purple-700 dark:text-purple-300">
+                    {celulaDiscipulosConectores.length}
+                  </p>
+                </div>
+
+                <div className="p-3 rounded-2xl bg-white dark:bg-black/40 border border-slate-200 dark:border-white/10">
+                  <p className="text-[10px] font-black uppercase tracking-wider text-slate-500 dark:text-gray-400">
+                    ALTARES ABIERTOS
+                  </p>
+                  <p className="text-2xl font-black mt-1 text-slate-800 dark:text-gray-100">
+                    {conectoresAltarsSummary.totalAltars}
+                  </p>
+                </div>
+
+                <div className="p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/30">
+                  <p className="text-[10px] font-black uppercase tracking-wider text-emerald-700 dark:text-emerald-300">
+                    ALTARES FINALIZADOS
+                  </p>
+                  <p className="text-2xl font-black mt-1 text-emerald-600 dark:text-emerald-400">
+                    {conectoresAltarsSummary.finalizedAltars}
+                  </p>
+                </div>
+
+                <div className="p-3 rounded-2xl bg-rose-500/10 border border-rose-500/30">
+                  <p className="text-[10px] font-black uppercase tracking-wider text-rose-700 dark:text-rose-300">
+                    INTERRUMPIDOS
+                  </p>
+                  <p className="text-2xl font-black mt-1 text-rose-600">
+                    {conectoresAltarsSummary.interruptedAltars}
+                  </p>
+                </div>
+              </div>
+
+              {/* Lista de Conectores */}
+              {celulaDiscipulosConectores.length === 0 ? (
+                <div className="py-8 text-center text-slate-400 dark:text-gray-500 text-xs">
+                  No hay discípulos conectores registrados en esta célula actualmente.
+                </div>
+              ) : (
+                <div className="space-y-2 max-h-[380px] overflow-y-auto pr-1 [scrollbar-width:thin]">
+                  {celulaDiscipulosConectores.map((conector) => {
+                    const altars = getAltarsForConector(conector.id, conector.name);
+                    return (
+                      <div
+                        key={`conector-item-${conector.id}`}
+                        onClick={() => {
+                          setSelectedConectorForAltars(conector);
+                          setConectorAltarsFilter('TODOS');
+                        }}
+                        className="p-3 rounded-xl bg-white dark:bg-black/50 border border-slate-200 dark:border-white/10 hover:border-purple-500/40 hover:shadow-md cursor-pointer transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3 group"
+                      >
+                        <div className="flex items-center gap-3 min-w-0">
+                          <div className="w-10 h-10 rounded-xl overflow-hidden bg-purple-500/15 border border-purple-500/30 flex items-center justify-center text-sm font-black text-purple-600 shrink-0">
+                            {conector.fotoUrl ? (
+                              <img src={conector.fotoUrl} alt={conector.name} className="w-full h-full object-cover" />
+                            ) : (
+                              conector.name.charAt(0)
+                            )}
+                          </div>
+                          <div className="min-w-0">
+                            <div className="flex items-center gap-2">
+                              <p className="text-xs font-black text-slate-800 dark:text-gray-100 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors truncate">
+                                {conector.name}
+                              </p>
+                              <span className="text-[9px] uppercase font-black px-2 py-0.5 rounded-full bg-purple-500/15 text-purple-700 dark:text-purple-300 border border-purple-500/30 shrink-0">
+                                Conector
+                              </span>
+                            </div>
+                            <p className="text-[10px] text-slate-500 dark:text-gray-400 truncate">
+                              Célula: {conector.acompanamiento?.celulaName || 'Sin asignar'} · Tel: {conector.telefono || 'Sin teléfono'}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-2 shrink-0 self-end sm:self-auto">
+                          <span className="text-[10px] font-bold px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-gray-300 border border-slate-200 dark:border-white/10">
+                            {altars.length} {altars.length === 1 ? 'Altar' : 'Altares'}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedConectorForAltars(conector);
+                              setConectorAltarsFilter('TODOS');
+                            }}
+                            className="px-3 py-1.5 rounded-xl text-[10px] uppercase font-black bg-purple-600 text-white hover:bg-purple-500 shadow-sm transition-all flex items-center gap-1"
+                          >
+                            Ver Altares <ChevronRight size={12} />
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          )}
+
+          <div className="flex justify-end pt-2">
+            <button
+              type="button"
+              onClick={() => {
+                setIsDiscipulosConectoresModalOpen(false);
+                setSelectedConectorForAltars(null);
+                setConectorAltarsFilter('TODOS');
+              }}
+              className="px-4 py-2 rounded-xl text-[10px] uppercase font-bold border border-slate-200 dark:border-white/10 text-slate-600 dark:text-gray-400 hover:bg-slate-100 dark:hover:bg-white/5"
+            >
+              Cerrar
+            </button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Modal para Ver Grupos de Vida de la Célula e Integrantes */}
+      <Modal
+        isOpen={isCellGrupoVidaModalOpen}
+        onClose={() => {
+          setIsCellGrupoVidaModalOpen(false);
+          setSelectedCellGrupoVida(null);
+        }}
+        title={
+          selectedCellGrupoVida
+            ? selectedCellGrupoVida.nombreGrupoVida
+            : `Grupos de Vida · ${brother?.acompanamiento?.celulaName ? `Célula ${brother.acompanamiento.celulaName}` : (brother?.name || 'Célula')}`
+        }
+      >
+        <div className="space-y-4">
+          {selectedCellGrupoVida ? (
+            /* Vista 2: Integrantes del Grupo de Vida seleccionado (según Imagen 1) */
+            <div className="space-y-4">
+              {/* Botón Volver a la Lista de Grupos de Vida */}
+              <div className="flex items-center justify-between pb-1 border-b border-slate-200 dark:border-white/10">
+                <button
+                  type="button"
+                  onClick={() => setSelectedCellGrupoVida(null)}
+                  className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 hover:underline transition-colors"
+                >
+                  <ArrowLeft size={14} />
+                  <span>Volver a la lista de grupos</span>
+                </button>
+                <span className="text-[10px] text-slate-500 dark:text-gray-400 font-bold">
+                  Célula: {brother?.acompanamiento?.celulaName || 'Sin asignar'}
+                </span>
+              </div>
+
+              {/* Ficha del Líder del Grupo (idéntica a Imagen 1) */}
+              <div className="p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/25 flex items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl overflow-hidden bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-sm font-black text-emerald-600 shrink-0">
+                    {selectedCellGrupoVida.leaderFotoUrl ? (
+                      <img
+                        src={selectedCellGrupoVida.leaderFotoUrl}
+                        alt={selectedCellGrupoVida.leaderName}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      selectedCellGrupoVida.leaderName.charAt(0)
+                    )}
+                  </div>
+                  <div>
+                    <p className="text-xs font-black text-slate-800 dark:text-gray-100">
+                      Líder: {selectedCellGrupoVida.leaderName}
+                    </p>
+                    <p className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold">
+                      Rol: {selectedCellGrupoVida.leaderRole}
+                    </p>
+                  </div>
+                </div>
+                <span className="text-[10px] uppercase font-black px-2.5 py-1 rounded-full border shrink-0 bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/30">
+                  {selectedCellGrupoVida.members.length} {selectedCellGrupoVida.members.length === 1 ? 'Integrante' : 'Integrantes'}
+                </span>
+              </div>
+
+              {/* Lista de Hermanos asignados */}
+              {selectedCellGrupoVida.members.length === 0 ? (
+                <div className="py-8 text-center text-slate-400 dark:text-gray-500 text-xs">
+                  No hay hermanos asignados actualmente a este grupo de vida.
+                </div>
+              ) : (
+                <div className="space-y-2 max-h-[380px] overflow-y-auto pr-1 [scrollbar-width:thin]">
+                  {selectedCellGrupoVida.members.map((member) => (
+                    <div
+                      key={`gv-cell-member-${member.id}`}
+                      className="p-3 rounded-xl bg-white dark:bg-black/50 border border-slate-200 dark:border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm hover:border-emerald-500/30 transition-colors"
+                    >
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className="w-9 h-9 rounded-xl overflow-hidden bg-slate-100 dark:bg-black/60 border border-emerald-500/30 flex items-center justify-center text-xs font-bold text-emerald-600 shrink-0">
+                          {member.fotoUrl ? (
+                            <img src={member.fotoUrl} alt={member.name} className="w-full h-full object-cover" />
+                          ) : (
+                            member.name.charAt(0)
+                          )}
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-xs font-black text-slate-800 dark:text-gray-200 truncate">
+                            {member.name}
+                          </p>
+                          <p className="text-[10px] text-slate-500 dark:text-gray-400 truncate">
+                            {processBadgeLabelMap[member.procesoActual] || 'Hermano'} · {member.telefono || 'Sin teléfono'}
+                          </p>
+                        </div>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsCellGrupoVidaModalOpen(false);
+                          setSelectedCellGrupoVida(null);
+                          navigate(`/hermanos/${member.id}`);
+                          requestAnimationFrame(() => {
+                            window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+                          });
+                        }}
+                        className="self-start sm:self-auto px-3 py-1.5 rounded-lg text-[10px] uppercase font-bold text-emerald-600 dark:text-emerald-300 border border-emerald-500/30 hover:bg-emerald-600 hover:text-white transition-colors shrink-0"
+                      >
+                        Ver ficha
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          ) : (
+            /* Vista 1: Lista de Grupos de Vida dentro de la célula */
+            <div className="space-y-4">
+              {/* Tarjeta de Resumen de Grupos en la Célula */}
+              <div className="p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/25 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                <div className="flex items-center gap-2.5">
+                  <div className="p-2 rounded-xl bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 shrink-0">
+                    <Users size={18} />
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-black uppercase tracking-wider text-emerald-800 dark:text-emerald-200">
+                      Grupos de Vida en la Célula
+                    </h4>
+                    <p className="text-[10px] text-slate-500 dark:text-gray-400">
+                      Selecciona un grupo para ver sus integrantes y líder a cargo
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 shrink-0">
+                  <span className="text-[10px] font-black px-2.5 py-1 rounded-full bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30">
+                    {celulaGruposDeVida.length} {celulaGruposDeVida.length === 1 ? 'Grupo' : 'Grupos'}
+                  </span>
+                  <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-gray-300 border border-slate-200 dark:border-white/10">
+                    {celulaGruposDeVida.reduce((acc, g) => acc + g.members.length, 0)} integrantes
+                  </span>
+                </div>
+              </div>
+
+              {/* Lista de Grupos de Vida */}
+              {celulaGruposDeVida.length === 0 ? (
+                <div className="py-8 text-center text-slate-400 dark:text-gray-500 text-xs">
+                  No hay grupos de vida registrados en esta célula actualmente.
+                </div>
+              ) : (
+                <div className="space-y-2.5 max-h-[380px] overflow-y-auto pr-1 [scrollbar-width:thin]">
+                  {celulaGruposDeVida.map((grupo, idx) => (
+                    <div
+                      key={`celula-gv-${grupo.leaderId}-${idx}`}
+                      onClick={() => setSelectedCellGrupoVida(grupo)}
+                      className="p-3.5 rounded-2xl bg-white dark:bg-black/50 border border-slate-200 dark:border-white/10 hover:border-emerald-500/40 hover:shadow-md cursor-pointer transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3 group active:scale-[0.99]"
+                    >
+                      <div className="flex items-center gap-3.5 min-w-0">
+                        <div className="w-10 h-10 rounded-xl overflow-hidden bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-sm font-black text-emerald-600 shrink-0 group-hover:scale-105 transition-transform">
+                          {grupo.leaderFotoUrl ? (
+                            <img src={grupo.leaderFotoUrl} alt={grupo.leaderName} className="w-full h-full object-cover" />
+                          ) : (
+                            grupo.leaderName.charAt(0)
+                          )}
+                        </div>
+                        <div className="min-w-0">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <h4 className="text-xs font-black text-slate-800 dark:text-gray-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors truncate">
+                              {grupo.nombreGrupoVida}
+                            </h4>
+                            <span className="text-[9px] uppercase font-black px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 shrink-0">
+                              {grupo.leaderRole}
+                            </span>
+                          </div>
+                          <p className="text-[10px] text-slate-500 dark:text-gray-400 truncate mt-0.5">
+                            Líder a cargo: <strong className="text-slate-700 dark:text-gray-300 font-bold">{grupo.leaderName}</strong>
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2.5 shrink-0 self-end sm:self-auto">
+                        <span className="text-[10px] font-bold px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-gray-300 border border-slate-200 dark:border-white/10">
+                          {grupo.members.length} {grupo.members.length === 1 ? 'Integrante' : 'Integrantes'}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedCellGrupoVida(grupo);
+                          }}
+                          className="px-3.5 py-1.5 rounded-xl text-[10px] uppercase font-black bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm transition-all flex items-center gap-1"
+                        >
+                          Ver Integrantes <ChevronRight size={12} />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          <div className="flex justify-end pt-2">
+            <button
+              type="button"
+              onClick={() => {
+                setIsCellGrupoVidaModalOpen(false);
+                setSelectedCellGrupoVida(null);
+              }}
+              className="px-4 py-2 rounded-xl text-[10px] uppercase font-bold border border-slate-200 dark:border-white/10 text-slate-600 dark:text-gray-400 hover:bg-slate-100 dark:hover:bg-white/5"
+            >
+              Cerrar
+            </button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Modal para Seguimiento de Nivelados */}
+      <Modal
+        isOpen={isNiveladosModalOpen}
+        onClose={() => setIsNiveladosModalOpen(false)}
+        title={`Seguimiento de Nivelados · ${brother?.name || 'Hermano'}`}
+      >
+        <div className="space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-200 dark:border-white/10">
+            <div>
+              <p className="text-xs text-slate-600 dark:text-gray-400">
+                Eventos periódicos durante el año con control de asistencia (Asistido / No Asistido)
+              </p>
+              <div className="flex flex-wrap items-center gap-2 mt-2">
+                <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-gray-300 border border-slate-200 dark:border-white/10">
+                  Total: {niveladosList.length}
+                </span>
+                <span className="text-[10px] font-black px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 flex items-center gap-1">
+                  <CheckCircle2 size={11} className="text-emerald-500" />
+                  Asistidos: {niveladosList.filter((n) => n.estado === 'ASISTIDO').length}
+                </span>
+                <span className="text-[10px] font-black px-2.5 py-0.5 rounded-full bg-rose-500/15 text-rose-700 dark:text-rose-300 border border-rose-500/30 flex items-center gap-1">
+                  <XCircle size={11} className="text-rose-500" />
+                  No Asistidos: {niveladosList.filter((n) => n.estado === 'NO_ASISTIDO').length}
+                </span>
+                {niveladosList.some((n) => !n.estado || n.estado === 'PENDIENTE') && (
+                  <span className="text-[10px] font-black px-2.5 py-0.5 rounded-full bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/30 flex items-center gap-1">
+                    <Clock size={11} className="text-amber-500" />
+                    Pendientes: {niveladosList.filter((n) => !n.estado || n.estado === 'PENDIENTE').length}
+                  </span>
+                )}
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setIsAddNiveladoModalOpen(true)}
+              className="px-3.5 py-2 rounded-xl text-[10px] uppercase font-black bg-indigo-600 hover:bg-indigo-500 text-white shadow-md active:scale-95 transition-all flex items-center gap-1.5 shrink-0 self-start sm:self-auto"
+            >
+              <Plus size={13} />
+              + REGISTRAR NIVELADOS
+            </button>
+          </div>
+
+          {niveladosList.length === 0 ? (
+            <div className="py-8 text-center text-slate-400 dark:text-gray-500 text-xs">
+              No hay convocatorias de Nivelados registradas para este hermano.
+            </div>
+          ) : (
+            <div className="space-y-2.5 max-h-[420px] overflow-y-auto pr-1 [scrollbar-width:thin]">
+              {niveladosList.map((item) => (
+                <div
+                  key={`nivelado-item-${item.id}`}
+                  className="p-3.5 rounded-2xl bg-white dark:bg-black/50 border border-slate-200 dark:border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm hover:border-indigo-500/30 transition-colors"
+                >
+                  <div className="flex items-start gap-3 min-w-0">
+                    <div className="p-2 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-600 shrink-0 mt-0.5">
+                      <CalendarCheck size={16} />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-xs font-black text-slate-800 dark:text-gray-100 truncate">
+                        {item.nombreEvento || 'Nivelados'}
+                      </p>
+                      <p className="text-[10px] text-slate-500 dark:text-gray-400">
+                        Fecha: {displayDate(item.fecha)}
+                      </p>
+                      {item.observacion && (
+                        <p className="text-[10px] text-slate-600 dark:text-gray-300 italic mt-0.5">
+                          Nota: {item.observacion}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2 shrink-0 self-end sm:self-auto">
+                    <button
+                      type="button"
+                      onClick={() => handleToggleNiveladoAttendance(item.id)}
+                      className={`px-3 py-1.5 rounded-xl border text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5 transition-all ${
+                        item.estado === 'ASISTIDO'
+                          ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-500/25'
+                          : 'bg-rose-500/15 border-rose-500/40 text-rose-700 dark:text-rose-300 hover:bg-rose-500/25'
+                      }`}
+                    >
+                      {item.estado === 'ASISTIDO' ? (
+                        <>
+                          <CheckCircle2 size={13} className="text-emerald-500" />
+                          ASISTIDO
+                        </>
+                      ) : (
+                        <>
+                          <XCircle size={13} className="text-rose-500" />
+                          NO ASISTIDO
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <div className="flex justify-end pt-2">
+            <button
+              type="button"
+              onClick={() => setIsNiveladosModalOpen(false)}
+              className="px-4 py-2 rounded-xl text-[10px] uppercase font-bold border border-slate-200 dark:border-white/10 text-slate-600 dark:text-gray-400 hover:bg-slate-100 dark:hover:bg-white/5"
+            >
+              Cerrar
+            </button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Modal para Registrar Evento Nivelados */}
+      <Modal
+        isOpen={isAddNiveladoModalOpen}
+        onClose={() => setIsAddNiveladoModalOpen(false)}
+        title="Registrar Evento de Nivelados"
+      >
+        <div className="space-y-4">
+          <p className="text-xs text-slate-600 dark:text-gray-400">
+            Registra una nueva convocatoria del evento Nivelados y su estado de asistencia para este hermano.
+          </p>
+
+          <div className="space-y-3">
+            <div>
+              <label className="text-[10px] uppercase font-black tracking-wider text-slate-500 dark:text-gray-400 block mb-1">
+                Nombre de la Convocatoria / Evento
+              </label>
+              <input
+                type="text"
+                value={newNiveladoNombre}
+                onChange={(e) => setNewNiveladoNombre(e.target.value)}
+                placeholder="Ej. Nivelados Primer Semestre 2026"
+                className="w-full bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/10 rounded-xl p-2.5 text-xs text-slate-800 dark:text-gray-100 outline-none focus:border-indigo-500"
+              />
+            </div>
+
+            <div>
+              <label className="text-[10px] uppercase font-black tracking-wider text-slate-500 dark:text-gray-400 block mb-1">
+                Fecha del Evento *
+              </label>
+              <input
+                type="date"
+                value={newNiveladoFecha}
+                onChange={(e) => setNewNiveladoFecha(e.target.value)}
+                className="w-full bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/10 rounded-xl p-2.5 text-xs text-slate-800 dark:text-gray-100 outline-none focus:border-indigo-500 [color-scheme:dark]"
+              />
+            </div>
+
+            <div>
+              <label className="text-[10px] uppercase font-black tracking-wider text-slate-500 dark:text-gray-400 block mb-1">
+                Estado de Asistencia *
+              </label>
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={() => setNewNiveladoEstado('ASISTIDO')}
+                  className={`p-2.5 rounded-xl border text-xs font-bold flex items-center justify-center gap-1.5 transition-all ${
+                    newNiveladoEstado === 'ASISTIDO'
+                      ? 'bg-emerald-500/20 border-emerald-500 text-emerald-700 dark:text-emerald-300 shadow-sm'
+                      : 'bg-slate-50 dark:bg-black/40 border-slate-200 dark:border-white/10 text-slate-600 dark:text-gray-400 hover:border-slate-300'
+                  }`}
+                >
+                  <CheckCircle2 size={14} className="text-emerald-500" />
+                  Asistido
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setNewNiveladoEstado('NO_ASISTIDO')}
+                  className={`p-2.5 rounded-xl border text-xs font-bold flex items-center justify-center gap-1.5 transition-all ${
+                    newNiveladoEstado === 'NO_ASISTIDO'
+                      ? 'bg-rose-500/20 border-rose-500 text-rose-700 dark:text-rose-300 shadow-sm'
+                      : 'bg-slate-50 dark:bg-black/40 border-slate-200 dark:border-white/10 text-slate-600 dark:text-gray-400 hover:border-slate-300'
+                  }`}
+                >
+                  <XCircle size={14} className="text-rose-500" />
+                  No Asistido
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <label className="text-[10px] uppercase font-black tracking-wider text-slate-500 dark:text-gray-400 block mb-1">
+                Observación / Nota (opcional)
+              </label>
+              <textarea
+                value={newNiveladoObservacion}
+                onChange={(e) => setNewNiveladoObservacion(e.target.value)}
+                placeholder="Detalles sobre el evento o justificación de asistencia..."
+                rows={2}
+                className="w-full bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/10 rounded-xl p-2.5 text-xs text-slate-800 dark:text-gray-100 outline-none focus:border-indigo-500"
+              />
+            </div>
+          </div>
+
+          <div className="flex justify-end gap-2 pt-2">
+            <button
+              type="button"
+              onClick={() => setIsAddNiveladoModalOpen(false)}
+              className="px-4 py-2 rounded-xl text-[10px] uppercase font-bold border border-slate-200 dark:border-white/10 text-slate-600 dark:text-gray-400 hover:bg-slate-100 dark:hover:bg-white/5"
+            >
+              Cancelar
+            </button>
+            <button
+              type="button"
+              onClick={handleAddNivelado}
+              className="px-4 py-2 rounded-xl text-[10px] uppercase font-black bg-indigo-600 hover:bg-indigo-500 text-white shadow-md active:scale-95 transition-all flex items-center gap-1.5"
+            >
+              <Save size={13} />
+              Guardar Registro
             </button>
           </div>
         </div>

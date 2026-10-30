@@ -1,6 +1,7 @@
-import { MOCK_BROTHERS, MOCK_EVENTS } from '../data/mocks';
+import { MOCK_BROTHERS, MOCK_EVENTS } from '../data/mocks/mockData';
 import { canManageEventsForUser, hasPermissionAtLeastForUser } from '../lib/permissionsMatrix';
 import { Cell, Event, EventType, Role, User } from '../types';
+import { eventsChangeLogService } from './eventsChangeLogService';
 
 export type PublicationKind = 'evento' | 'noticia';
 export type PublicationVisibility = 'publico' | 'privado';
@@ -17,8 +18,11 @@ export interface PublicationItem {
   visibility: PublicationVisibility;
   title: string;
   date?: string;
+  time?: string;
   text: string;
   image?: string;
+  video?: string;
+  mediaType?: 'image' | 'video';
   badge: string;
   involved: PublicationInvolved;
   author: string;
@@ -33,8 +37,11 @@ export interface PublicationDraft {
   visibility: PublicationVisibility;
   title: string;
   date?: string;
+  time?: string;
   text: string;
   image?: string;
+  video?: string;
+  mediaType?: 'image' | 'video';
   badge: string;
   involved?: Partial<PublicationInvolved>;
 }
@@ -118,23 +125,75 @@ const DEFAULT_NEWS: PublicationItem[] = [
 ];
 
 const DEFAULT_PUBLICATIONS: PublicationItem[] = [
-  ...MOCK_EVENTS.map((event) => ({
-    id: event.id,
-    kind: 'evento' as const,
-    visibility: 'publico' as const,
-    title: event.title,
-    date: event.date,
-    text: '',
-    image: '',
-    badge: event.type,
-    involved: normalizeInvolved({
-      cells: [event.organizerCell, ...(event.invitedCells ?? [])],
-    }),
-    author: 'Sistema',
-    createdAt: `${event.date}T${event.time || '00:00'}:00.000Z`,
-    updatedAt: `${event.date}T${event.time || '00:00'}:00.000Z`,
-    legacyType: event.type,
-  })),
+  {
+    id: 'ev-1',
+    kind: 'evento',
+    visibility: 'publico',
+    title: 'Noche de Avivamiento & Adoración',
+    date: '2026-11-15',
+    time: '19:30',
+    text: 'Tiempo especial de alabanza congregacional, palabra viva y manifestación del Espíritu Santo.',
+    image: '/cmv-fellowship.jpg',
+    video: '/cmv-event-short.mp4',
+    mediaType: 'video',
+    badge: 'Celebración General',
+    involved: normalizeInvolved({ cells: ['Vida', 'Nissi', 'Zaeta', 'Sion'] }),
+    author: 'Apostol Guillermo',
+    createdAt: '2026-11-15T19:30:00.000Z',
+    updatedAt: '2026-11-15T19:30:00.000Z',
+    legacyType: EventType.RED,
+  },
+  {
+    id: 'ev-2',
+    kind: 'evento',
+    visibility: 'publico',
+    title: 'Congreso de Jóvenes & Familias CMV',
+    date: '2026-11-22',
+    time: '18:00',
+    text: 'Encuentro especial de comunión, visión y testimonios en un ambiente cercano, fraterno y lleno de fe.',
+    image: '/cmv-novedades.jpg',
+    mediaType: 'image',
+    badge: 'Fuerza Joven',
+    involved: normalizeInvolved({ cells: ['Zaeta', 'Sion', 'Vida'] }),
+    author: 'Pastor Carlos',
+    createdAt: '2026-11-22T18:00:00.000Z',
+    updatedAt: '2026-11-22T18:00:00.000Z',
+    legacyType: EventType.JOVENES,
+  },
+  {
+    id: 'ev-3',
+    kind: 'evento',
+    visibility: 'publico',
+    title: 'Encuentro Red de Células de Vida',
+    date: '2026-11-28',
+    time: '20:00',
+    text: 'Compartiendo testimonios de fe, café y oración en cada hogar, fortaleciendo el discipulado y la hermandad.',
+    image: '/cmv-comunidad-c.jpg',
+    mediaType: 'image',
+    badge: 'Red de Células',
+    involved: normalizeInvolved({ cells: ['Vida', 'Zaeta'] }),
+    author: 'Pastor Carlos',
+    createdAt: '2026-11-28T20:00:00.000Z',
+    updatedAt: '2026-11-28T20:00:00.000Z',
+    legacyType: EventType.CELULA,
+  },
+  {
+    id: 'ev-4',
+    kind: 'evento',
+    visibility: 'publico',
+    title: 'Reunión General de Liderazgo & Discipulado',
+    date: '2026-12-06',
+    time: '09:00',
+    text: 'Capacitación intensiva para líderes de células, anfitriones y discipuladores en formación EDEM.',
+    image: '/banner-hermanos.jpg',
+    mediaType: 'image',
+    badge: 'Liderazgo EDEM',
+    involved: normalizeInvolved({ cells: ['Maranata', 'Vida', 'Nissi', 'Zaeta', 'Sion', 'Alpha y Omega'] }),
+    author: 'Apostol Guillermo',
+    createdAt: '2026-12-06T09:00:00.000Z',
+    updatedAt: '2026-12-06T09:00:00.000Z',
+    legacyType: EventType.RED,
+  },
   ...DEFAULT_NEWS,
 ];
 
@@ -180,12 +239,13 @@ const readPublications = (): PublicationItem[] => {
 
   try {
     const parsed = JSON.parse(raw) as PublicationItem[];
-    if (!Array.isArray(parsed)) {
+    if (!Array.isArray(parsed) || parsed.length === 0) {
       return [...DEFAULT_PUBLICATIONS];
     }
     return parsed.map((item) => ({
       ...item,
       involved: normalizeInvolved(item.involved),
+      mediaType: item.mediaType || (item.video ? 'video' : 'image'),
     }));
   } catch {
     return [...DEFAULT_PUBLICATIONS];
@@ -195,10 +255,12 @@ const readPublications = (): PublicationItem[] => {
 const writePublications = (items: PublicationItem[]) => {
   const sorted = [...items].sort(byTimestampDesc);
   memoryPublications = sorted;
-  if (!canUseStorage()) {
-    return;
+  if (canUseStorage()) {
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(sorted));
   }
-  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(sorted));
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('cmv_events_updated'));
+  }
 };
 
 const resolveUserCells = (user: User): Set<Cell> => {
@@ -284,7 +346,7 @@ const toLegacyEvent = (item: PublicationItem, user: User): VisibleEvent => {
     title: item.title,
     type: inferLegacyEventType(item),
     date: item.date ?? item.createdAt.slice(0, 10),
-    time: '19:30',
+    time: item.time || '19:30',
     cell: item.involved.cells.length > 0 ? item.involved.cells.join(' / ') : 'General',
     organizerCell,
     invitedCells,
@@ -305,16 +367,16 @@ const toLegacyNews = (item: PublicationItem): NewsItem => ({
 
 const validateDraft = (draft: PublicationDraft): string | null => {
   if (!draft.title.trim()) {
-    return 'Debes completar el titulo.';
+    return 'Debes completar el título.';
   }
   if (!draft.badge.trim()) {
-    return 'Debes completar el badge.';
+    return 'Debes completar el badge / categoría.';
   }
   if (draft.kind === 'evento' && !String(draft.date ?? '').trim()) {
     return 'Para eventos la fecha es obligatoria.';
   }
   if (!draft.text.trim()) {
-    return 'Debes completar el texto.';
+    return 'Debes completar la descripción.';
   }
 
   if (draft.visibility === 'privado' && draft.kind === 'evento') {
@@ -370,6 +432,119 @@ export const eventsService = {
       .sort((left, right) => parseIsoDateTime(right.publishedAt) - parseIsoDateTime(left.publishedAt));
   },
 
+  listUpcomingEvents(user?: User): PublicationItem[] {
+    const all = user ? this.listPublicationsVisibleForUser(user) : readPublications();
+    const eventItems = all.filter((item) => item.kind === 'evento');
+
+    const fallbackMedia = [
+      { image: '/cmv-fellowship.jpg', video: '/cmv-event-short.mp4', mediaType: 'video' as const },
+      { image: '/cmv-novedades.jpg', mediaType: 'image' as const },
+      { image: '/cmv-comunidad-c.jpg', mediaType: 'image' as const },
+      { image: '/banner-hermanos.jpg', mediaType: 'image' as const },
+    ];
+
+    return eventItems.map((item, idx) => {
+      const fallback = fallbackMedia[idx % fallbackMedia.length];
+      const hasVideo = Boolean(item.video);
+      const isVideoType = item.mediaType === 'video' || (hasVideo && !item.image);
+      return {
+        ...item,
+        mediaType: isVideoType ? 'video' : 'image',
+        image: item.image || (!isVideoType ? fallback.image : ''),
+        video: item.video || (isVideoType ? fallback.video || '/cmv-event-short.mp4' : undefined),
+      };
+    });
+  },
+
+  listLoVividoEstaSemana(user?: User): PublicationItem[] {
+    const all = user ? this.listPublicationsVisibleForUser(user) : readPublications();
+    const newsItems = all.filter((item) => item.kind === 'noticia');
+
+    const defaultWeeklyHighlights: PublicationItem[] = [
+      {
+        id: 'vivido-1',
+        kind: 'noticia',
+        visibility: 'publico',
+        title: 'Célula de Jóvenes: Clamor & Adoración',
+        text: 'Noche de rendición y presencia viva de Dios con más de 50 jóvenes reunidos en unidad.',
+        date: '2026-10-25',
+        badge: 'Jóvenes CMV',
+        video: '/cmv-event-short.mp4',
+        mediaType: 'video',
+        involved: { cells: ['Vida', 'Zaeta'], pastors: ['Apostol CMV'], disciples: [] },
+        author: 'Equipo Juvenil',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      },
+      {
+        id: 'vivido-2',
+        kind: 'noticia',
+        visibility: 'publico',
+        title: 'Bautismos & Nuevos Comienzos',
+        text: 'Celebramos con alegría 12 nuevos hermanos que dieron testimonio público de su fe en Cristo.',
+        date: '2026-10-24',
+        badge: 'Vida Congregacional',
+        image: '/banner-hermanos.jpg',
+        mediaType: 'image',
+        involved: { cells: ['Sion', 'Nissi'], pastors: [], disciples: [] },
+        author: 'Secretaría Pastoral',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      },
+      {
+        id: 'vivido-3',
+        kind: 'noticia',
+        visibility: 'publico',
+        title: 'Misericordia en Acción: Alimentos & Amor',
+        text: 'Llegamos a familias con viandas, ropa y la palabra transformadora de esperanza en los barrios.',
+        date: '2026-10-22',
+        badge: 'Misericordia CMV',
+        image: '/cmv-fellowship.jpg',
+        mediaType: 'image',
+        involved: { cells: ['Maranata'], pastors: [], disciples: [] },
+        author: 'Ministerio de Misericordia',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      },
+      {
+        id: 'vivido-4',
+        kind: 'noticia',
+        visibility: 'publico',
+        title: 'Altar Familiar & Comunión en Hogares',
+        text: 'Grupos de bendición compartiendo mesas, fe y oración mutua en toda la ciudad.',
+        date: '2026-10-21',
+        badge: 'Hogares CMV',
+        image: '/cmv-comunidad-c.jpg',
+        mediaType: 'image',
+        involved: { cells: ['Vida'], pastors: [], disciples: [] },
+        author: 'Red de Células',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      },
+    ];
+
+    if (newsItems.length === 0) {
+      return defaultWeeklyHighlights;
+    }
+
+    const combined = [
+      ...newsItems.map((item, idx) => ({
+        ...item,
+        mediaType: item.mediaType || (item.video ? 'video' : 'image'),
+        image: item.image || (item.video ? undefined : defaultWeeklyHighlights[idx % defaultWeeklyHighlights.length].image),
+        video: item.video || (item.mediaType === 'video' ? '/cmv-event-short.mp4' : undefined),
+      })),
+      ...defaultWeeklyHighlights,
+    ];
+
+    const seen = new Set<string>();
+    return combined.filter((item) => {
+      if (seen.has(item.title)) return false;
+      seen.add(item.title);
+      return true;
+    }).slice(0, 6);
+  },
+
   upsertPublication(draft: PublicationDraft, user: User): UpsertPublicationResult {
     const validationError = validateDraft(draft);
     if (validationError) {
@@ -383,7 +558,10 @@ export const eventsService = {
     const text = draft.text.trim();
     const badge = draft.badge.trim();
     const image = draft.image?.trim() || '';
+    const video = draft.video?.trim() || '';
+    const mediaType = draft.mediaType || (video ? 'video' : 'image');
     const date = draft.date?.trim() || '';
+    const time = draft.time?.trim() || '';
 
     if (draft.id) {
       const index = current.findIndex((item) => item.id === draft.id);
@@ -398,8 +576,11 @@ export const eventsService = {
         visibility: draft.visibility,
         title,
         date: date || undefined,
+        time: time || undefined,
         text,
         image,
+        video,
+        mediaType,
         badge,
         involved,
         updatedAt: now,
@@ -408,6 +589,13 @@ export const eventsService = {
       const next = [...current];
       next[index] = updated;
       writePublications(next);
+
+      eventsChangeLogService.add({
+        change: `Edición de ${draft.kind}`,
+        responsible: user.name || 'Sistema',
+        details: `Se editó: "${title}" (${mediaType === 'video' ? 'Video 7s' : 'Foto'})`,
+      });
+
       return { ok: true, created: false, item: updated };
     }
 
@@ -417,8 +605,11 @@ export const eventsService = {
       visibility: draft.visibility,
       title,
       date: date || undefined,
+      time: time || undefined,
       text,
       image,
+      video,
+      mediaType,
       badge,
       involved,
       author: user.name || buildAuthorFallback(),
@@ -428,7 +619,33 @@ export const eventsService = {
     };
 
     writePublications([...current, created]);
+
+    eventsChangeLogService.add({
+      change: `Creación de ${draft.kind}`,
+      responsible: user.name || 'Sistema',
+      details: `Se publicó: "${title}" (${mediaType === 'video' ? 'Video 7s' : 'Foto'})`,
+    });
+
     return { ok: true, created: true, item: created };
+  },
+
+  deletePublication(id: string, user: User): boolean {
+    const current = readPublications();
+    const target = current.find((item) => item.id === id);
+    if (!target) {
+      return false;
+    }
+
+    const next = current.filter((item) => item.id !== id);
+    writePublications(next);
+
+    eventsChangeLogService.add({
+      change: `Eliminación de ${target.kind}`,
+      responsible: user.name || 'Sistema',
+      details: `Se eliminó: "${target.title}"`,
+    });
+
+    return true;
   },
 
   canManageForUser(user: User): boolean {

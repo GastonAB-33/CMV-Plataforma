@@ -69,6 +69,84 @@ const MOCK_EDDI_GRADES = [
   },
 ];
 
+const MOCK_EDDI_2_GRADES = [
+  {
+    id: 'grade-eddi2-1',
+    materia: 'Liderazgo de Servicio',
+    modulo: 'Módulo 1',
+    fecha: '2025-10-10',
+    nota: 9.5,
+    estado: 'APROBADO' as const,
+    observacion: 'Excelente asimilación del corazón pastoral',
+  },
+  {
+    id: 'grade-eddi2-2',
+    materia: 'Mayordomía Bíblica',
+    modulo: 'Módulo 1',
+    fecha: '2025-10-28',
+    nota: 9.0,
+    estado: 'APROBADO' as const,
+    observacion: 'Gran compromiso y orden financiero',
+  },
+  {
+    id: 'grade-eddi2-3',
+    materia: 'Evangelismo Sobrenatural',
+    modulo: 'Módulo 2',
+    fecha: '2025-11-15',
+    nota: 10,
+    estado: 'APROBADO' as const,
+    observacion: 'Pasión y denuedo al compartir la palabra',
+  },
+  {
+    id: 'grade-eddi2-4',
+    materia: 'Fundamentos de Consejería',
+    modulo: 'Módulo 2',
+    fecha: '2025-12-05',
+    nota: 8.5,
+    estado: 'APROBADO' as const,
+    observacion: 'Sensibilidad y madurez en el trato espiritual',
+  },
+];
+
+const MOCK_EDDI_3_GRADES = [
+  {
+    id: 'grade-eddi3-1',
+    materia: 'Plantación y Cuidado Celular',
+    modulo: 'Módulo 1',
+    fecha: '2026-01-15',
+    nota: 10,
+    estado: 'APROBADO' as const,
+    observacion: 'Visión clara de multiplicación celular',
+  },
+  {
+    id: 'grade-eddi3-2',
+    materia: 'Guerra Espiritual y Victoria',
+    modulo: 'Módulo 1',
+    fecha: '2026-01-30',
+    nota: 9.5,
+    estado: 'APROBADO' as const,
+    observacion: 'Firmeza doctrinal y discernimiento espiritual',
+  },
+  {
+    id: 'grade-eddi3-3',
+    materia: 'Formación de Nuevos Líderes',
+    modulo: 'Módulo 2',
+    fecha: '2026-02-15',
+    nota: 9.0,
+    estado: 'APROBADO' as const,
+    observacion: 'Capacidad comprobada de mentoreo',
+  },
+  {
+    id: 'grade-eddi3-4',
+    materia: 'Ministración y Dones del Espíritu',
+    modulo: 'Módulo 2',
+    fecha: '2026-03-01',
+    nota: 10,
+    estado: 'APROBADO' as const,
+    observacion: 'Operación en los dones y autoridad espiritual',
+  },
+];
+
 const MOCK_EDEM_GRADES = [
   {
     id: 'grade-edem-1',
@@ -202,6 +280,14 @@ export const StageSimulatorModal: React.FC<StageSimulatorModalProps> = ({
         ...brother.eddi,
         ...brotherPatch.eddi,
       },
+      eddi2: {
+        ...brother.eddi2,
+        ...brotherPatch.eddi2,
+      },
+      eddi3: {
+        ...brother.eddi3,
+        ...brotherPatch.eddi3,
+      },
       edem: {
         ...brother.edem,
         ...brotherPatch.edem,
@@ -229,8 +315,12 @@ export const StageSimulatorModal: React.FC<StageSimulatorModalProps> = ({
             eddiFechaFin: '',
             discipuloFechaInicio: '',
             discipuloFechaFin: '',
+            eddi2FechaInicio: '',
+            eddi2FechaFin: '',
             hermanoMayorFechaInicio: '',
             hermanoMayorFechaFin: '',
+            eddi3FechaInicio: '',
+            eddi3FechaFin: '',
             liderCelulaFechaInicio: '',
             liderCelulaFechaFin: '',
             edemFechaInicio: '',
@@ -245,6 +335,8 @@ export const StageSimulatorModal: React.FC<StageSimulatorModalProps> = ({
             experiencia: { fechaRealizacion: '' },
             grupo: { fechaInicio: '', fechaFin: '', interrumpido: false },
             eddi: { fechaInicio: '', fechaFin: '', notasExamenes: [] },
+            eddi2: { fechaInicio: '', fechaFin: '', notasExamenes: [] },
+            eddi3: { fechaInicio: '', fechaFin: '', notasExamenes: [] },
             edem: { fechaInicio: '', fechaFin: '' },
           },
         });
@@ -264,8 +356,12 @@ export const StageSimulatorModal: React.FC<StageSimulatorModalProps> = ({
             eddiFechaFin: '',
             discipuloFechaInicio: '',
             discipuloFechaFin: '',
+            eddi2FechaInicio: '',
+            eddi2FechaFin: '',
             hermanoMayorFechaInicio: '',
             hermanoMayorFechaFin: '',
+            eddi3FechaInicio: '',
+            eddi3FechaFin: '',
             liderCelulaFechaInicio: '',
             liderCelulaFechaFin: '',
             edemFechaInicio: '',
@@ -280,6 +376,8 @@ export const StageSimulatorModal: React.FC<StageSimulatorModalProps> = ({
             experiencia: { fechaRealizacion: '' },
             grupo: { fechaInicio: '2025-03-05', fechaFin: '', interrumpido: false },
             eddi: { fechaInicio: '', fechaFin: '', notasExamenes: [] },
+            eddi2: { fechaInicio: '', fechaFin: '', notasExamenes: [] },
+            eddi3: { fechaInicio: '', fechaFin: '', notasExamenes: [] },
             edem: { fechaInicio: '', fechaFin: '' },
           },
         });
@@ -299,8 +397,12 @@ export const StageSimulatorModal: React.FC<StageSimulatorModalProps> = ({
             eddiFechaFin: '',
             discipuloFechaInicio: '',
             discipuloFechaFin: '',
+            eddi2FechaInicio: '',
+            eddi2FechaFin: '',
             hermanoMayorFechaInicio: '',
             hermanoMayorFechaFin: '',
+            eddi3FechaInicio: '',
+            eddi3FechaFin: '',
             liderCelulaFechaInicio: '',
             liderCelulaFechaFin: '',
             edemFechaInicio: '',
@@ -319,6 +421,8 @@ export const StageSimulatorModal: React.FC<StageSimulatorModalProps> = ({
               fechaFin: '',
               notasExamenes: MOCK_EDDI_GRADES.slice(0, 2),
             },
+            eddi2: { fechaInicio: '', fechaFin: '', notasExamenes: [] },
+            eddi3: { fechaInicio: '', fechaFin: '', notasExamenes: [] },
             edem: { fechaInicio: '', fechaFin: '' },
           },
         });
@@ -338,8 +442,12 @@ export const StageSimulatorModal: React.FC<StageSimulatorModalProps> = ({
             eddiFechaFin: '2025-08-30',
             discipuloFechaInicio: '2025-09-01',
             discipuloFechaFin: '',
+            eddi2FechaInicio: '',
+            eddi2FechaFin: '',
             hermanoMayorFechaInicio: '',
             hermanoMayorFechaFin: '',
+            eddi3FechaInicio: '',
+            eddi3FechaFin: '',
             liderCelulaFechaInicio: '',
             liderCelulaFechaFin: '',
             edemFechaInicio: '',
@@ -358,13 +466,15 @@ export const StageSimulatorModal: React.FC<StageSimulatorModalProps> = ({
               fechaFin: '2025-08-30',
               notasExamenes: MOCK_EDDI_GRADES,
             },
+            eddi2: { fechaInicio: '', fechaFin: '', notasExamenes: [] },
+            eddi3: { fechaInicio: '', fechaFin: '', notasExamenes: [] },
             edem: { fechaInicio: '', fechaFin: '' },
           },
         });
         break;
       }
       case 5: {
-        // Etapas 1 a 4 completadas, Hermano Mayor en curso
+        // Etapas 1 a 4 completadas, EDDI 2 en curso con notas parciales
         saveAllMockData({
           altarDates: { fechaInicio: '2025-01-10', fechaFin: '2025-02-28' },
           altarInterrumpido: false,
@@ -377,8 +487,12 @@ export const StageSimulatorModal: React.FC<StageSimulatorModalProps> = ({
             eddiFechaFin: '2025-08-30',
             discipuloFechaInicio: '2025-09-01',
             discipuloFechaFin: '2025-10-15',
-            hermanoMayorFechaInicio: '2025-10-20',
+            eddi2FechaInicio: '2025-10-20',
+            eddi2FechaFin: '',
+            hermanoMayorFechaInicio: '',
             hermanoMayorFechaFin: '',
+            eddi3FechaInicio: '',
+            eddi3FechaFin: '',
             liderCelulaFechaInicio: '',
             liderCelulaFechaFin: '',
             edemFechaInicio: '',
@@ -397,13 +511,19 @@ export const StageSimulatorModal: React.FC<StageSimulatorModalProps> = ({
               fechaFin: '2025-08-30',
               notasExamenes: MOCK_EDDI_GRADES,
             },
+            eddi2: {
+              fechaInicio: '2025-10-20',
+              fechaFin: '',
+              notasExamenes: MOCK_EDDI_2_GRADES.slice(0, 2),
+            },
+            eddi3: { fechaInicio: '', fechaFin: '', notasExamenes: [] },
             edem: { fechaInicio: '', fechaFin: '' },
           },
         });
         break;
       }
       case 6: {
-        // Etapas 1 a 5 completadas, Líder de Célula en curso
+        // Etapas 1 a 5 completadas (EDDI 2 finalizado), Hermano Mayor en curso
         saveAllMockData({
           altarDates: { fechaInicio: '2025-01-10', fechaFin: '2025-02-28' },
           altarInterrumpido: false,
@@ -416,9 +536,62 @@ export const StageSimulatorModal: React.FC<StageSimulatorModalProps> = ({
             eddiFechaFin: '2025-08-30',
             discipuloFechaInicio: '2025-09-01',
             discipuloFechaFin: '2025-10-15',
-            hermanoMayorFechaInicio: '2025-10-20',
-            hermanoMayorFechaFin: '2025-11-20',
-            liderCelulaFechaInicio: '2025-11-25',
+            eddi2FechaInicio: '2025-10-20',
+            eddi2FechaFin: '2025-12-10',
+            hermanoMayorFechaInicio: '2025-12-15',
+            hermanoMayorFechaFin: '',
+            eddi3FechaInicio: '',
+            eddi3FechaFin: '',
+            liderCelulaFechaInicio: '',
+            liderCelulaFechaFin: '',
+            edemFechaInicio: '',
+            edemFechaFin: '',
+            liderMinisterialFechaInicio: '',
+            ministerioAsignado: undefined,
+          },
+          grupoApproval: true,
+          liderApproval: false,
+          brotherPatch: {
+            altar: { fechaInicio: '2025-01-10', fechaFin: '2025-02-28', interrumpido: false },
+            experiencia: { fechaRealizacion: '2025-03-20' },
+            grupo: { fechaInicio: '2025-03-05', fechaFin: '2025-05-25', interrumpido: false },
+            eddi: {
+              fechaInicio: '2025-06-01',
+              fechaFin: '2025-08-30',
+              notasExamenes: MOCK_EDDI_GRADES,
+            },
+            eddi2: {
+              fechaInicio: '2025-10-20',
+              fechaFin: '2025-12-10',
+              notasExamenes: MOCK_EDDI_2_GRADES,
+            },
+            eddi3: { fechaInicio: '', fechaFin: '', notasExamenes: [] },
+            edem: { fechaInicio: '', fechaFin: '' },
+          },
+        });
+        break;
+      }
+      case 7: {
+        // Etapas 1 a 6 completadas (Hermano Mayor aprobado), EDDI 3 en curso
+        saveAllMockData({
+          altarDates: { fechaInicio: '2025-01-10', fechaFin: '2025-02-28' },
+          altarInterrumpido: false,
+          experienciaFecha: '2025-03-20',
+          stageDatesPatch: {
+            grupoFechaInicio: '2025-03-05',
+            grupoFechaFin: '2025-05-25',
+            grupoInterrumpido: false,
+            eddiFechaInicio: '2025-06-01',
+            eddiFechaFin: '2025-08-30',
+            discipuloFechaInicio: '2025-09-01',
+            discipuloFechaFin: '2025-10-15',
+            eddi2FechaInicio: '2025-10-20',
+            eddi2FechaFin: '2025-12-10',
+            hermanoMayorFechaInicio: '2025-12-15',
+            hermanoMayorFechaFin: '2026-01-05',
+            eddi3FechaInicio: '2026-01-10',
+            eddi3FechaFin: '',
+            liderCelulaFechaInicio: '',
             liderCelulaFechaFin: '',
             edemFechaInicio: '',
             edemFechaFin: '',
@@ -436,13 +609,23 @@ export const StageSimulatorModal: React.FC<StageSimulatorModalProps> = ({
               fechaFin: '2025-08-30',
               notasExamenes: MOCK_EDDI_GRADES,
             },
+            eddi2: {
+              fechaInicio: '2025-10-20',
+              fechaFin: '2025-12-10',
+              notasExamenes: MOCK_EDDI_2_GRADES,
+            },
+            eddi3: {
+              fechaInicio: '2026-01-10',
+              fechaFin: '',
+              notasExamenes: MOCK_EDDI_3_GRADES.slice(0, 2),
+            },
             edem: { fechaInicio: '', fechaFin: '' },
           },
         });
         break;
       }
-      case 7: {
-        // Etapas 1 a 6 completadas, EDEM en curso
+      case 8: {
+        // Etapas 1 a 7 completadas (EDDI 3 finalizado), Líder de Célula en curso
         saveAllMockData({
           altarDates: { fechaInicio: '2025-01-10', fechaFin: '2025-02-28' },
           altarInterrumpido: false,
@@ -455,11 +638,15 @@ export const StageSimulatorModal: React.FC<StageSimulatorModalProps> = ({
             eddiFechaFin: '2025-08-30',
             discipuloFechaInicio: '2025-09-01',
             discipuloFechaFin: '2025-10-15',
-            hermanoMayorFechaInicio: '2025-10-20',
-            hermanoMayorFechaFin: '2025-11-20',
-            liderCelulaFechaInicio: '2025-11-25',
-            liderCelulaFechaFin: '2025-12-10',
-            edemFechaInicio: '2026-01-10',
+            eddi2FechaInicio: '2025-10-20',
+            eddi2FechaFin: '2025-12-10',
+            hermanoMayorFechaInicio: '2025-12-15',
+            hermanoMayorFechaFin: '2026-01-05',
+            eddi3FechaInicio: '2026-01-10',
+            eddi3FechaFin: '2026-03-05',
+            liderCelulaFechaInicio: '2026-03-10',
+            liderCelulaFechaFin: '',
+            edemFechaInicio: '',
             edemFechaFin: '',
             liderMinisterialFechaInicio: '',
             ministerioAsignado: undefined,
@@ -475,17 +662,23 @@ export const StageSimulatorModal: React.FC<StageSimulatorModalProps> = ({
               fechaFin: '2025-08-30',
               notasExamenes: MOCK_EDDI_GRADES,
             },
-            edem: {
-              fechaInicio: '2026-01-10',
-              fechaFin: '',
-              notasExamenes: MOCK_EDEM_GRADES.slice(0, 2),
+            eddi2: {
+              fechaInicio: '2025-10-20',
+              fechaFin: '2025-12-10',
+              notasExamenes: MOCK_EDDI_2_GRADES,
             },
+            eddi3: {
+              fechaInicio: '2026-01-10',
+              fechaFin: '2026-03-05',
+              notasExamenes: MOCK_EDDI_3_GRADES,
+            },
+            edem: { fechaInicio: '', fechaFin: '' },
           },
         });
         break;
       }
-      case 8: {
-        // Etapas 1 a 7 completadas, Líder Ministerial activo
+      case 9: {
+        // Etapas 1 a 8 completadas, EDEM en curso
         saveAllMockData({
           altarDates: { fechaInicio: '2025-01-10', fechaFin: '2025-02-28' },
           altarInterrumpido: false,
@@ -498,13 +691,17 @@ export const StageSimulatorModal: React.FC<StageSimulatorModalProps> = ({
             eddiFechaFin: '2025-08-30',
             discipuloFechaInicio: '2025-09-01',
             discipuloFechaFin: '2025-10-15',
-            hermanoMayorFechaInicio: '2025-10-20',
-            hermanoMayorFechaFin: '2025-11-20',
-            liderCelulaFechaInicio: '2025-11-25',
-            liderCelulaFechaFin: '2025-12-10',
-            edemFechaInicio: '2026-01-10',
-            edemFechaFin: '2026-04-15',
-            liderMinisterialFechaInicio: '2026-05-01',
+            eddi2FechaInicio: '2025-10-20',
+            eddi2FechaFin: '2025-12-10',
+            hermanoMayorFechaInicio: '2025-12-15',
+            hermanoMayorFechaFin: '2026-01-05',
+            eddi3FechaInicio: '2026-01-10',
+            eddi3FechaFin: '2026-03-05',
+            liderCelulaFechaInicio: '2026-03-10',
+            liderCelulaFechaFin: '2026-04-01',
+            edemFechaInicio: '2026-04-05',
+            edemFechaFin: '',
+            liderMinisterialFechaInicio: '',
             ministerioAsignado: undefined,
           },
           grupoApproval: true,
@@ -518,9 +715,76 @@ export const StageSimulatorModal: React.FC<StageSimulatorModalProps> = ({
               fechaFin: '2025-08-30',
               notasExamenes: MOCK_EDDI_GRADES,
             },
-            edem: {
+            eddi2: {
+              fechaInicio: '2025-10-20',
+              fechaFin: '2025-12-10',
+              notasExamenes: MOCK_EDDI_2_GRADES,
+            },
+            eddi3: {
               fechaInicio: '2026-01-10',
-              fechaFin: '2026-04-15',
+              fechaFin: '2026-03-05',
+              notasExamenes: MOCK_EDDI_3_GRADES,
+            },
+            edem: {
+              fechaInicio: '2026-04-05',
+              fechaFin: '',
+              notasExamenes: MOCK_EDEM_GRADES.slice(0, 2),
+            },
+          },
+        });
+        break;
+      }
+      case 10: {
+        // Etapas 1 a 9 completadas, Líder Ministerial activo
+        saveAllMockData({
+          altarDates: { fechaInicio: '2025-01-10', fechaFin: '2025-02-28' },
+          altarInterrumpido: false,
+          experienciaFecha: '2025-03-20',
+          stageDatesPatch: {
+            grupoFechaInicio: '2025-03-05',
+            grupoFechaFin: '2025-05-25',
+            grupoInterrumpido: false,
+            eddiFechaInicio: '2025-06-01',
+            eddiFechaFin: '2025-08-30',
+            discipuloFechaInicio: '2025-09-01',
+            discipuloFechaFin: '2025-10-15',
+            eddi2FechaInicio: '2025-10-20',
+            eddi2FechaFin: '2025-12-10',
+            hermanoMayorFechaInicio: '2025-12-15',
+            hermanoMayorFechaFin: '2026-01-05',
+            eddi3FechaInicio: '2026-01-10',
+            eddi3FechaFin: '2026-03-05',
+            liderCelulaFechaInicio: '2026-03-10',
+            liderCelulaFechaFin: '2026-04-01',
+            edemFechaInicio: '2026-04-05',
+            edemFechaFin: '2026-07-15',
+            liderMinisterialFechaInicio: '2026-08-01',
+            ministerioAsignado: undefined,
+          },
+          grupoApproval: true,
+          liderApproval: true,
+          brotherPatch: {
+            altar: { fechaInicio: '2025-01-10', fechaFin: '2025-02-28', interrumpido: false },
+            experiencia: { fechaRealizacion: '2025-03-20' },
+            grupo: { fechaInicio: '2025-03-05', fechaFin: '2025-05-25', interrumpido: false },
+            eddi: {
+              fechaInicio: '2025-06-01',
+              fechaFin: '2025-08-30',
+              notasExamenes: MOCK_EDDI_GRADES,
+            },
+            eddi2: {
+              fechaInicio: '2025-10-20',
+              fechaFin: '2025-12-10',
+              notasExamenes: MOCK_EDDI_2_GRADES,
+            },
+            eddi3: {
+              fechaInicio: '2026-01-10',
+              fechaFin: '2026-03-05',
+              notasExamenes: MOCK_EDDI_3_GRADES,
+            },
+            edem: {
+              fechaInicio: '2026-04-05',
+              fechaFin: '2026-07-15',
               notasExamenes: MOCK_EDEM_GRADES,
             },
           },
@@ -531,7 +795,7 @@ export const StageSimulatorModal: React.FC<StageSimulatorModalProps> = ({
   };
 
   const advanceOneStage = () => {
-    if (currentStage < 8) {
+    if (currentStage < 10) {
       jumpToStage(currentStage + 1);
     } else {
       completeAll();
@@ -558,13 +822,17 @@ export const StageSimulatorModal: React.FC<StageSimulatorModalProps> = ({
         eddiFechaFin: '2024-08-30',
         discipuloFechaInicio: '2024-09-01',
         discipuloFechaFin: '2024-10-15',
-        hermanoMayorFechaInicio: '2024-10-20',
-        hermanoMayorFechaFin: '2024-11-20',
-        liderCelulaFechaInicio: '2024-11-25',
-        liderCelulaFechaFin: '2024-12-10',
-        edemFechaInicio: '2025-01-10',
-        edemFechaFin: '2025-04-15',
-        liderMinisterialFechaInicio: '2025-05-01',
+        eddi2FechaInicio: '2024-10-20',
+        eddi2FechaFin: '2024-12-10',
+        hermanoMayorFechaInicio: '2024-12-15',
+        hermanoMayorFechaFin: '2025-01-05',
+        eddi3FechaInicio: '2025-01-10',
+        eddi3FechaFin: '2025-03-05',
+        liderCelulaFechaInicio: '2025-03-10',
+        liderCelulaFechaFin: '2025-04-01',
+        edemFechaInicio: '2025-04-05',
+        edemFechaFin: '2025-07-15',
+        liderMinisterialFechaInicio: '2025-08-01',
         ministerioAsignado: 'Pastor',
       },
       grupoApproval: true,
@@ -578,9 +846,19 @@ export const StageSimulatorModal: React.FC<StageSimulatorModalProps> = ({
           fechaFin: '2024-08-30',
           notasExamenes: MOCK_EDDI_GRADES,
         },
-        edem: {
+        eddi2: {
+          fechaInicio: '2024-10-20',
+          fechaFin: '2024-12-10',
+          notasExamenes: MOCK_EDDI_2_GRADES,
+        },
+        eddi3: {
           fechaInicio: '2025-01-10',
-          fechaFin: '2025-04-15',
+          fechaFin: '2025-03-05',
+          notasExamenes: MOCK_EDDI_3_GRADES,
+        },
+        edem: {
+          fechaInicio: '2025-04-05',
+          fechaFin: '2025-07-15',
           notasExamenes: MOCK_EDEM_GRADES,
         },
       },
@@ -624,14 +902,54 @@ export const StageSimulatorModal: React.FC<StageSimulatorModalProps> = ({
     });
   };
 
+  const handleLoadEddi2Grades = () => {
+    stageDatesService.saveStageDates(brother.id, {
+      eddi2FechaInicio: '2025-10-20',
+      eddi2FechaFin: '2025-12-10',
+    });
+    const updatedEddi2 = {
+      fechaInicio: '2025-10-20',
+      fechaFin: '2025-12-10',
+      notasExamenes: MOCK_EDDI_2_GRADES,
+    };
+    const updatedBrother: BrotherProfile = {
+      ...brother,
+      eddi2: updatedEddi2,
+    };
+    brothersService.addBrother(updatedBrother);
+    onApplySimulatorState({
+      eddi2: updatedEddi2,
+    });
+  };
+
+  const handleLoadEddi3Grades = () => {
+    stageDatesService.saveStageDates(brother.id, {
+      eddi3FechaInicio: '2026-01-10',
+      eddi3FechaFin: '2026-03-05',
+    });
+    const updatedEddi3 = {
+      fechaInicio: '2026-01-10',
+      fechaFin: '2026-03-05',
+      notasExamenes: MOCK_EDDI_3_GRADES,
+    };
+    const updatedBrother: BrotherProfile = {
+      ...brother,
+      eddi3: updatedEddi3,
+    };
+    brothersService.addBrother(updatedBrother);
+    onApplySimulatorState({
+      eddi3: updatedEddi3,
+    });
+  };
+
   const handleLoadEdemGrades = () => {
     stageDatesService.saveStageDates(brother.id, {
-      edemFechaInicio: '2026-02-01',
-      edemFechaFin: '2026-04-30',
+      edemFechaInicio: '2026-04-05',
+      edemFechaFin: '2026-07-15',
     });
     const updatedEdem = {
-      fechaInicio: '2026-02-01',
-      fechaFin: '2026-04-30',
+      fechaInicio: '2026-04-05',
+      fechaFin: '2026-07-15',
       notasExamenes: MOCK_EDEM_GRADES,
     };
     const updatedBrother: BrotherProfile = {
@@ -736,14 +1054,14 @@ export const StageSimulatorModal: React.FC<StageSimulatorModalProps> = ({
 
           {!isMinimized && (
             <div className="p-4 space-y-4 max-h-[75vh] overflow-y-auto text-slate-800 dark:text-gray-200">
-              {/* Sección 1: Saltos Rápidos de Etapa (1 a 8) */}
+              {/* Sección 1: Saltos Rápidos de Etapa (1 a 10) */}
               <div>
                 <span className="text-[10px] uppercase font-black tracking-widest text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5 mb-2">
                   <Layers size={12} />
                   Saltar a Etapa
                 </span>
-                <div className="grid grid-cols-4 gap-1.5">
-                  {[1, 2, 3, 4, 5, 6, 7, 8].map((stg) => {
+                <div className="grid grid-cols-5 gap-1.5">
+                  {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((stg) => {
                     const isCurrent = currentStage === stg;
                     const isCompleted = progression.isStageCompleted(stg);
                     return (
@@ -751,7 +1069,7 @@ export const StageSimulatorModal: React.FC<StageSimulatorModalProps> = ({
                         key={stg}
                         type="button"
                         onClick={() => jumpToStage(stg)}
-                        className={`px-2 py-2 rounded-xl text-center flex flex-col items-center justify-center gap-0.5 border transition-all active:scale-95 ${
+                        className={`px-1.5 py-2 rounded-xl text-center flex flex-col items-center justify-center gap-0.5 border transition-all active:scale-95 ${
                           isCurrent
                             ? 'btn-3d-emerald text-white border-emerald-400 font-black shadow-md ring-2 ring-emerald-500/50'
                             : isCompleted
@@ -770,10 +1088,14 @@ export const StageSimulatorModal: React.FC<StageSimulatorModalProps> = ({
                             : stg === 4
                             ? 'Discípulo'
                             : stg === 5
-                            ? 'Hno Mayor'
+                            ? 'EDDI 2'
                             : stg === 6
-                            ? 'Líder Cél'
+                            ? 'Hno Mayor'
                             : stg === 7
+                            ? 'EDDI 3'
+                            : stg === 8
+                            ? 'Líder Cél'
+                            : stg === 9
                             ? 'EDEM'
                             : 'Líder Min'}
                         </span>
@@ -783,7 +1105,7 @@ export const StageSimulatorModal: React.FC<StageSimulatorModalProps> = ({
                 </div>
               </div>
 
-              {/* Sección 2: Altares y Discípulos de Prueba (Etapas 4, 5 y 6) */}
+              {/* Sección 2: Altares y Discípulos de Prueba */}
               <div className="pt-2 border-t border-slate-200 dark:border-white/10">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-[10px] uppercase font-black tracking-widest text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
@@ -840,29 +1162,47 @@ export const StageSimulatorModal: React.FC<StageSimulatorModalProps> = ({
                 </div>
               </div>
 
-              {/* Sección 3: Inyección de Notas EDDI y EDEM */}
+              {/* Sección 3: Inyección de Notas EDDI 1, 2, 3 y EDEM */}
               <div className="pt-2 border-t border-slate-200 dark:border-white/10 space-y-2">
                 <span className="text-[10px] uppercase font-black tracking-widest text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
                   <BookOpen size={12} />
                   Calificaciones de Escuelas
                 </span>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+                <div className="grid grid-cols-2 gap-1.5">
                   <button
                     type="button"
                     onClick={handleLoadEddiGrades}
-                    className="px-2.5 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-950/20 border border-blue-400/30 text-blue-700 dark:text-blue-300 hover:bg-blue-100 text-[11px] font-bold flex items-center justify-center gap-1.5 transition-all active:scale-95"
-                    title="Cargar fechas y 4 notas aprobadas en EDDI"
+                    className="px-2 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-950/20 border border-blue-400/30 text-blue-700 dark:text-blue-300 hover:bg-blue-100 text-[10px] font-bold flex items-center justify-center gap-1 transition-all active:scale-95"
+                    title="Cargar fechas y 4 notas aprobadas en EDDI 1"
                   >
-                    <BookOpen size={12} />
-                    <span>Notas EDDI</span>
+                    <BookOpen size={11} />
+                    <span>Notas EDDI 1</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleLoadEddi2Grades}
+                    className="px-2 py-1.5 rounded-xl bg-teal-50 dark:bg-teal-950/20 border border-teal-400/30 text-teal-700 dark:text-teal-300 hover:bg-teal-100 text-[10px] font-bold flex items-center justify-center gap-1 transition-all active:scale-95"
+                    title="Cargar fechas y 4 notas aprobadas en EDDI 2"
+                  >
+                    <BookOpen size={11} />
+                    <span>Notas EDDI 2</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleLoadEddi3Grades}
+                    className="px-2 py-1.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/20 border border-indigo-400/30 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 text-[10px] font-bold flex items-center justify-center gap-1 transition-all active:scale-95"
+                    title="Cargar fechas y 4 notas aprobadas en EDDI 3"
+                  >
+                    <BookOpen size={11} />
+                    <span>Notas EDDI 3</span>
                   </button>
                   <button
                     type="button"
                     onClick={handleLoadEdemGrades}
-                    className="px-2.5 py-1.5 rounded-xl bg-purple-50 dark:bg-purple-950/20 border border-purple-400/30 text-purple-700 dark:text-purple-300 hover:bg-purple-100 text-[11px] font-bold flex items-center justify-center gap-1.5 transition-all active:scale-95"
+                    className="px-2 py-1.5 rounded-xl bg-purple-50 dark:bg-purple-950/20 border border-purple-400/30 text-purple-700 dark:text-purple-300 hover:bg-purple-100 text-[10px] font-bold flex items-center justify-center gap-1 transition-all active:scale-95"
                     title="Cargar fechas y 4 notas aprobadas en EDEM"
                   >
-                    <BookOpen size={12} />
+                    <BookOpen size={11} />
                     <span>Notas EDEM</span>
                   </button>
                 </div>
@@ -887,7 +1227,7 @@ export const StageSimulatorModal: React.FC<StageSimulatorModalProps> = ({
                   <button
                     type="button"
                     onClick={advanceOneStage}
-                    disabled={currentStage >= 8 && progression.isStageCompleted(8)}
+                    disabled={currentStage >= 10 && progression.isStageCompleted(10)}
                     className="px-3 py-2 rounded-xl btn-3d-emerald text-white text-xs font-black flex items-center justify-center gap-1.5 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
                   >
                     <FastForward size={13} />

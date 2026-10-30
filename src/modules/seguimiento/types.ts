@@ -7,6 +7,9 @@ export const SEGUIMIENTO_STAGE_ORDER: Proceso[] = [
   Proceso.EXPERIENCIA,
   Proceso.EDDI,
   Proceso.DISCIPULO,
+  Proceso.EDDI2,
+  Proceso.EDDI3,
+  Proceso.LIDER_CELULA,
   Proceso.EDEM,
 ];
 

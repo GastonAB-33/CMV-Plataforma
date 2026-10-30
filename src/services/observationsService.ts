@@ -52,11 +52,20 @@ const normalizeProcess = (process?: string): Proceso => {
   if (normalized === 'experiencia') {
     return Proceso.EXPERIENCIA;
   }
+  if (normalized === 'eddi 2' || normalized === 'eddi2') {
+    return Proceso.EDDI2;
+  }
+  if (normalized === 'eddi 3' || normalized === 'eddi3') {
+    return Proceso.EDDI3;
+  }
   if (normalized === 'eddi') {
     return Proceso.EDDI;
   }
   if (normalized === 'discipulo') {
     return Proceso.DISCIPULO;
+  }
+  if (normalized === 'lider de celula' || normalized === 'lider celula' || normalized === 'lider_celula') {
+    return Proceso.LIDER_CELULA;
   }
   if (normalized === 'edem') {
     return Proceso.EDEM;

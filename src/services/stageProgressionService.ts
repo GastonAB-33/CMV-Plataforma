@@ -9,7 +9,7 @@ import { liderCelulaApprovalService } from './liderCelulaApprovalService';
 
 export interface StageProgressionInfo {
   brotherId: string;
-  currentStageNumber: number; // 1 to 8
+  currentStageNumber: number; // 1 to 10
   currentProcess: Proceso;
   currentStageName: string;
   currentStageBadgeLabel: string;
@@ -28,21 +28,25 @@ export const STAGE_NAMES: Record<number, string> = {
   2: 'Hermano Menor',
   3: 'EDDI Escuela de Discipulados',
   4: 'Discípulo Conector',
-  5: 'Hermano Mayor',
-  6: 'Líder de Célula',
-  7: 'EDEM Escuela de Entrenamiento Ministerial',
-  8: 'Líder Ministerial',
+  5: 'EDDI 2',
+  6: 'Hermano Mayor',
+  7: 'EDDI 3',
+  8: 'Líder de Célula',
+  9: 'EDEM Escuela de Entrenamiento Ministerial',
+  10: 'Líder Ministerial',
 };
 
 export const STAGE_BADGE_LABELS: Record<number, string> = {
   1: 'Altar Familiar (Hermano nuevo)',
   2: 'Hermano menor',
-  3: 'EDDI Escuela de Discipulados',
+  3: 'EDDI 1',
   4: 'Discípulo conector',
-  5: 'Hermano mayor',
-  6: 'Líder de célula',
-  7: 'EDEM Escuela de Entrenamiento Ministerial',
-  8: 'Líder ministerial',
+  5: 'EDDI 2',
+  6: 'Hermano mayor',
+  7: 'EDDI 3',
+  8: 'Líder de célula',
+  9: 'EDEM Escuela de Entrenamiento Ministerial',
+  10: 'Líder ministerial',
 };
 
 export const stageProgressionService = {
@@ -123,56 +127,82 @@ export const stageProgressionService = {
       stage4Reason = 'Falta habilitación / aprobación para apertura de Grupo de Vida.';
     }
 
-    // ETAPA 5: Hermano Mayor
-    // Requiere Etapa 4 completada + Aprobación de Líder de Célula (o fecha fin hermano mayor)
-    const hasHermanoMayorApproved = liderApproval.isAprobado || Boolean(stageDates?.hermanoMayorFechaFin && stageDates.hermanoMayorFechaFin.trim() !== '');
+    // ETAPA 5: EDDI 2
+    // Requiere Etapa 4 completada + Fecha de fin de EDDI 2
+    const eddi2EndDate = stageDates?.eddi2FechaFin || brother.eddi2?.fechaFin;
+    const hasEddi2Finalizado = Boolean(eddi2EndDate && eddi2EndDate.trim() !== '');
 
-    const isStage5Complete = isStage4Complete && hasHermanoMayorApproved;
+    const isStage5Complete = isStage4Complete && hasEddi2Finalizado;
     let stage5Reason: string | undefined;
     if (!isStage4Complete) {
       stage5Reason = 'Requiere completar la Etapa 4 (Discípulo Conector).';
-    } else if (!hasHermanoMayorApproved) {
-      stage5Reason = 'Falta aprobación ministerial como Líder de Célula.';
+    } else if (!hasEddi2Finalizado) {
+      stage5Reason = 'Falta registrar la fecha de finalización de EDDI 2.';
     }
 
-    // ETAPA 6: Líder de Célula
-    // Requiere Etapa 5 completada + Inicio de cursada EDEM (o fin de liderazgo inicial de célula)
+    // ETAPA 6: Hermano Mayor
+    // Requiere Etapa 5 completada + Aprobación de Líder de Célula (o fecha fin hermano mayor)
+    const hasHermanoMayorApproved = liderApproval.isAprobado || Boolean(stageDates?.hermanoMayorFechaFin && stageDates.hermanoMayorFechaFin.trim() !== '');
+
+    const isStage6Complete = isStage5Complete && hasHermanoMayorApproved;
+    let stage6Reason: string | undefined;
+    if (!isStage5Complete) {
+      stage6Reason = 'Requiere completar la Etapa 5 (EDDI 2).';
+    } else if (!hasHermanoMayorApproved) {
+      stage6Reason = 'Falta aprobación ministerial como Líder de Célula.';
+    }
+
+    // ETAPA 7: EDDI 3
+    // Requiere Etapa 6 completada + Fecha de fin de EDDI 3
+    const eddi3EndDate = stageDates?.eddi3FechaFin || brother.eddi3?.fechaFin;
+    const hasEddi3Finalizado = Boolean(eddi3EndDate && eddi3EndDate.trim() !== '');
+
+    const isStage7Complete = isStage6Complete && hasEddi3Finalizado;
+    let stage7Reason: string | undefined;
+    if (!isStage6Complete) {
+      stage7Reason = 'Requiere completar la Etapa 6 (Hermano Mayor).';
+    } else if (!hasEddi3Finalizado) {
+      stage7Reason = 'Falta registrar la fecha de finalización de EDDI 3.';
+    }
+
+    // ETAPA 8: Líder de Célula
+    // Requiere Etapa 7 completada + Inicio de cursada EDEM (o fin de liderazgo inicial de célula)
     const edemStartDate = stageDates?.edemFechaInicio || brother.edem?.fechaInicio || edemTracking.stageDates.startDate || stageDates?.liderCelulaFechaFin;
     const hasLiderCelulaComplete = Boolean(edemStartDate && edemStartDate.trim() !== '');
 
-    const isStage6Complete = isStage5Complete && hasLiderCelulaComplete;
-    let stage6Reason: string | undefined;
-    if (!isStage5Complete) {
-      stage6Reason = 'Requiere completar la Etapa 5 (Hermano Mayor).';
+    const isStage8Complete = isStage7Complete && hasLiderCelulaComplete;
+    let stage8Reason: string | undefined;
+    if (!isStage7Complete) {
+      stage8Reason = 'Requiere completar la Etapa 7 (EDDI 3).';
     } else if (!hasLiderCelulaComplete) {
-      stage6Reason = 'Falta registrar inicio de Escuela EDEM.';
+      stage8Reason = 'Falta registrar inicio de Escuela EDEM.';
     }
 
-    // ETAPA 7: EDEM Escuela de Entrenamiento Ministerial
-    // Requiere Etapa 6 completada + Fin de cursada EDEM
+    // ETAPA 9: EDEM Escuela de Entrenamiento Ministerial
+    // Requiere Etapa 8 completada + Fin de cursada EDEM
     const edemEndDate = stageDates?.edemFechaFin || brother.edem?.fechaFin || edemTracking.stageDates.endDate;
     const hasEdemComplete = Boolean(edemEndDate && edemEndDate.trim() !== '');
 
-    const isStage7Complete = isStage6Complete && hasEdemComplete;
-    let stage7Reason: string | undefined;
-    if (!isStage6Complete) {
-      stage7Reason = 'Requiere completar la Etapa 6 (Líder de Célula).';
+    const isStage9Complete = isStage8Complete && hasEdemComplete;
+    let stage9Reason: string | undefined;
+    if (!isStage8Complete) {
+      stage9Reason = 'Requiere completar la Etapa 8 (Líder de Célula).';
     } else if (!hasEdemComplete) {
-      stage7Reason = 'Falta registrar la fecha de finalización de EDEM.';
+      stage9Reason = 'Falta registrar la fecha de finalización de EDEM.';
     }
 
-    // ETAPA 8: Líder Ministerial
-    // Requiere Etapa 7 completada + Ministerio asignado
+    // ETAPA 10: Líder Ministerial
+    // Requiere Etapa 9 completada + Ministerio asignado
     const hasMinisterioAsignado = Boolean(stageDates?.ministerioAsignado);
-    const isStage8Complete = isStage7Complete && hasMinisterioAsignado;
-    let stage8Reason: string | undefined;
-    if (!isStage7Complete) {
-      stage8Reason = 'Requiere completar la Etapa 7 (EDEM).';
+    const isStage10Complete = isStage9Complete && hasMinisterioAsignado;
+    let stage10Reason: string | undefined;
+    if (!isStage9Complete) {
+      stage10Reason = 'Requiere completar la Etapa 9 (EDEM).';
     } else if (!hasMinisterioAsignado) {
-      stage8Reason = 'Falta asignación de alguno de los 5 ministerios.';
+      stage10Reason = 'Falta asignación de alguno de los 5 ministerios.';
     }
 
-    // Determinar la etapa actual (primera etapa que NO esté completada, del 1 al 8)
+    // Determinar la etapa actual (primera etapa que NO esté completada, del 1 al 10)
     let currentStageNumber = 1;
     if (!isStage1Complete) {
       currentStageNumber = 1;
@@ -188,8 +218,12 @@ export const stageProgressionService = {
       currentStageNumber = 6;
     } else if (!isStage7Complete) {
       currentStageNumber = 7;
-    } else {
+    } else if (!isStage8Complete) {
       currentStageNumber = 8;
+    } else if (!isStage9Complete) {
+      currentStageNumber = 9;
+    } else {
+      currentStageNumber = 10;
     }
 
     // Mapeo a enum Proceso para compatibilidad con el resto del sistema
@@ -198,10 +232,12 @@ export const stageProgressionService = {
       2: Proceso.GRUPO,
       3: Proceso.EDDI,
       4: Proceso.DISCIPULO,
-      5: Proceso.DISCIPULO,
+      5: Proceso.EDDI2,
       6: Proceso.DISCIPULO,
-      7: Proceso.EDEM,
-      8: Proceso.EDEM,
+      7: Proceso.EDDI3,
+      8: Proceso.DISCIPULO,
+      9: Proceso.EDEM,
+      10: Proceso.EDEM,
     };
 
     const completionMap: Record<number, boolean> = {
@@ -213,6 +249,8 @@ export const stageProgressionService = {
       6: isStage6Complete,
       7: isStage7Complete,
       8: isStage8Complete,
+      9: isStage9Complete,
+      10: isStage10Complete,
     };
 
     const reasonsMap: Record<number, string | undefined> = {
@@ -224,6 +262,8 @@ export const stageProgressionService = {
       6: stage6Reason,
       7: stage7Reason,
       8: stage8Reason,
+      9: stage9Reason,
+      10: stage10Reason,
     };
 
     const stageStatuses: Record<number, 'COMPLETADA' | 'ACTUAL' | 'BLOQUEADA'> = {
@@ -235,10 +275,12 @@ export const stageProgressionService = {
       6: isStage6Complete ? 'COMPLETADA' : currentStageNumber === 6 ? 'ACTUAL' : 'BLOQUEADA',
       7: isStage7Complete ? 'COMPLETADA' : currentStageNumber === 7 ? 'ACTUAL' : 'BLOQUEADA',
       8: isStage8Complete ? 'COMPLETADA' : currentStageNumber === 8 ? 'ACTUAL' : 'BLOQUEADA',
+      9: isStage9Complete ? 'COMPLETADA' : currentStageNumber === 9 ? 'ACTUAL' : 'BLOQUEADA',
+      10: isStage10Complete ? 'COMPLETADA' : currentStageNumber === 10 ? 'ACTUAL' : 'BLOQUEADA',
     };
 
     const stageCompletionDetails: StageProgressionInfo['stageCompletionDetails'] = {};
-    for (let i = 1; i <= 8; i++) {
+    for (let i = 1; i <= 10; i++) {
       stageCompletionDetails[i] = {
         completed: completionMap[i],
         reasonIfIncomplete: reasonsMap[i],
@@ -247,7 +289,7 @@ export const stageProgressionService = {
 
     const currentStageName = STAGE_NAMES[currentStageNumber] || 'Altar Familiar';
     let currentStageBadgeLabel = STAGE_BADGE_LABELS[currentStageNumber] || 'Hermano nuevo';
-    if (currentStageNumber === 8 && stageDates?.ministerioAsignado) {
+    if (currentStageNumber === 10 && stageDates?.ministerioAsignado) {
       currentStageBadgeLabel = `Líder Ministerial (${stageDates.ministerioAsignado})`;
     }
 

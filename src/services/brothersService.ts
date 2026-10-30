@@ -10,6 +10,7 @@ let cellsCache = hermanosModuleService.listCells();
 const toBrotherListItem = (brother: BrotherProfile): BrotherListItem => ({
   id: brother.id,
   name: brother.name,
+  email: brother.email,
   fotoUrl: brother.fotoUrl,
   procesoActual: stageProgressionService.resolveProcess(brother),
   cellName: brother.acompanamiento.celulaName,

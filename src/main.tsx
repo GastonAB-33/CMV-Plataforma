@@ -5,8 +5,10 @@ import './index.css'
 import './telemed.css'
 import { ThemeProvider } from './theme/ThemeProvider'
 import { registerServiceWorker } from './services/pwa'
+import { initOneSignal } from './services/onesignal'
 
 registerServiceWorker()
+initOneSignal()
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

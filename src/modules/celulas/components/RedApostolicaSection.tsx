@@ -22,11 +22,15 @@ interface RedApostolicaSectionProps {
     totalMembers: number;
   };
   daughterCells: { id: string; nombre: string; totalMembers: number }[];
+  onSelectLeader?: (leader: { id: string; name: string; fotoUrl?: string; role?: string }) => void;
+  onSelectCell?: (cellKey: string) => void;
 }
 
 export const RedApostolicaSection: React.FC<RedApostolicaSectionProps> = ({
   apostolicGroup,
   daughterCells,
+  onSelectLeader,
+  onSelectCell,
 }) => {
   const navigate = useNavigate();
   const [isMembersOpen, setIsMembersOpen] = useState(false);
@@ -70,11 +74,6 @@ export const RedApostolicaSection: React.FC<RedApostolicaSectionProps> = ({
               <h2 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-white flex items-center gap-3">
                 Red Apostólica
               </h2>
-              <p className="text-sm sm:text-base md:text-lg text-slate-200 max-w-3xl font-medium leading-relaxed">
-                <strong className="text-cyan-300 font-bold">No es una célula más</strong>, sino la{' '}
-                <strong className="text-white font-black underline decoration-cyan-400/50">cobertura apostólica de la cual se desprenden todas las células</strong>: es la fuente y cobertura
-                que forma, sostiene y porta a los líderes responsables que derivan a cada uno de los grupos de vida.
-              </p>
             </div>
           </div>
 
@@ -106,8 +105,9 @@ export const RedApostolicaSection: React.FC<RedApostolicaSectionProps> = ({
               leaders.map((leader) => (
                 <div
                   key={leader.id}
-                  onClick={() => navigate(`/hermanos/${leader.id}`)}
-                  className="group inline-flex items-center gap-3 px-4 py-2.5 rounded-2xl bg-cyan-950/60 hover:bg-cyan-900/60 border border-cyan-400/40 hover:border-cyan-300 text-white text-xs sm:text-sm font-extrabold cursor-pointer transition-all duration-200 shadow-md hover:scale-[1.03]"
+                  onClick={() => (onSelectLeader ? onSelectLeader(leader) : navigate(`/hermanos/${leader.id}`))}
+                  title={`Ver detalles de ${leader.name}`}
+                  className="group inline-flex items-center gap-3 px-4 py-2.5 rounded-2xl bg-cyan-950/60 hover:bg-cyan-900/80 border border-cyan-400/40 hover:border-cyan-300 text-white text-xs sm:text-sm font-extrabold cursor-pointer transition-all duration-200 shadow-md hover:scale-[1.03] active:scale-[0.98]"
                 >
                   <img
                     src={getAvatarForBrother(leader.name, leader.fotoUrl)}
@@ -122,8 +122,13 @@ export const RedApostolicaSection: React.FC<RedApostolicaSectionProps> = ({
               ))
             ) : (
               <div
-                onClick={() => navigate('/hermanos/1')}
-                className="group inline-flex items-center gap-3 px-4 py-2.5 rounded-2xl bg-cyan-950/60 hover:bg-cyan-900/60 border border-cyan-400/40 hover:border-cyan-300 text-white text-xs sm:text-sm font-extrabold cursor-pointer transition-all duration-200 shadow-md"
+                onClick={() =>
+                  onSelectLeader
+                    ? onSelectLeader({ id: '1', name: 'Apostol Guillermo', role: 'Apóstol' })
+                    : navigate('/hermanos/1')
+                }
+                title="Ver detalles de Apostol Guillermo"
+                className="group inline-flex items-center gap-3 px-4 py-2.5 rounded-2xl bg-cyan-950/60 hover:bg-cyan-900/80 border border-cyan-400/40 hover:border-cyan-300 text-white text-xs sm:text-sm font-extrabold cursor-pointer transition-all duration-200 shadow-md"
               >
                 <img
                   src={getAvatarForBrother('Apostol Guillermo')}
@@ -150,16 +155,21 @@ export const RedApostolicaSection: React.FC<RedApostolicaSectionProps> = ({
             {daughterCells.map((cell) => {
               const brand = getCellBranding(cell.nombre);
               return (
-                <div
+                <button
                   key={cell.id}
-                  className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-2xl bg-white/10 hover:bg-white/15 border border-white/15 text-white text-xs sm:text-sm font-bold shadow-xs transition-colors"
+                  type="button"
+                  onClick={() => onSelectCell?.(brand.key)}
+                  title={`Desplazarse a la célula ${brand.displayName}`}
+                  className="inline-flex items-center gap-2.5 px-4 py-2 rounded-2xl bg-cyan-950/60 hover:bg-cyan-900/80 border border-cyan-400/40 hover:border-cyan-300 text-white text-xs sm:text-sm font-extrabold shadow-md hover:shadow-cyan-500/25 transition-all duration-200 hover:-translate-y-1 hover:scale-105 active:scale-95 cursor-pointer group"
                 >
                   <CellLogoBadge cellName={cell.nombre} size="sm" showGlow={false} />
-                  <span className="text-white font-extrabold">{brand.displayName}</span>
+                  <span className="text-white font-extrabold group-hover:text-cyan-300 transition-colors">
+                    {brand.displayName}
+                  </span>
                   <span className="text-xs text-cyan-300 font-black">
                     ({cell.totalMembers})
                   </span>
-                </div>
+                </button>
               );
             })}
           </div>

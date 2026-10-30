@@ -14,8 +14,13 @@ export interface BrotherStageDates {
   eddiFechaFin?: string;
   discipuloFechaInicio?: string;
   discipuloFechaFin?: string;
+  experienciaEnvioFechaRealizacion?: string;
+  eddi2FechaInicio?: string;
+  eddi2FechaFin?: string;
   hermanoMayorFechaInicio?: string;
   hermanoMayorFechaFin?: string;
+  eddi3FechaInicio?: string;
+  eddi3FechaFin?: string;
   liderCelulaFechaInicio?: string;
   liderCelulaFechaFin?: string;
   edemFechaInicio?: string;

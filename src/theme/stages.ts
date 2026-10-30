@@ -5,7 +5,10 @@ export const STAGE_COLORS: Record<Proceso, string> = {
   [Proceso.GRUPO]: 'bg-teal-500/15 text-teal-700 dark:text-teal-300 border-teal-500/30',
   [Proceso.EXPERIENCIA]: 'bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-500/30',
   [Proceso.EDDI]: 'bg-sky-500/15 text-sky-700 dark:text-sky-300 border-sky-500/30',
+  [Proceso.EDDI2]: 'bg-cyan-500/15 text-cyan-700 dark:text-cyan-300 border-cyan-500/30',
+  [Proceso.EDDI3]: 'bg-blue-500/15 text-blue-700 dark:text-blue-300 border-blue-500/30',
   [Proceso.DISCIPULO]: 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/40 font-bold shadow-sm',
+  [Proceso.LIDER_CELULA]: 'bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 border-indigo-500/30 font-bold',
   [Proceso.EDEM]: 'bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 border-indigo-500/30',
 };
 

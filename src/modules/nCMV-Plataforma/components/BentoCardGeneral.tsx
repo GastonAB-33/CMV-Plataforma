@@ -8,7 +8,7 @@ export const BentoCardGeneral: React.FC = () => {
   return (
     <div
       onClick={() => navigate('/hermanos')}
-      className="relative group cursor-pointer overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-600 via-teal-600 to-cyan-700 text-white p-5 sm:p-6 shadow-xl hover:shadow-2xl hover:shadow-cyan-500/20 hover:-translate-y-2 transition-all duration-500 flex flex-col justify-between min-h-[185px]"
+      className="relative group cursor-pointer overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-600 via-teal-600 to-cyan-700 text-white p-5 sm:p-6 shadow-xl hover:shadow-2xl hover:shadow-cyan-500/20 hover:-translate-y-2 transition-all duration-500 flex flex-col justify-between min-h-[185px] h-full"
     >
       <div className="absolute top-0 right-0 w-36 h-36 bg-white/20 rounded-full blur-2xl pointer-events-none group-hover:scale-125 transition-transform duration-500" />
 
@@ -23,13 +23,13 @@ export const BentoCardGeneral: React.FC = () => {
         </div>
       </div>
 
-      {/* Título CONGREGACIÓN destacado */}
+      {/* Título VISIÓN CMV destacado */}
       <div className="z-10 my-auto py-1">
         <span className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-200">
           Padrón General
         </span>
         <h2 className="text-2xl sm:text-3xl font-black uppercase tracking-tight text-white drop-shadow-sm leading-none mt-0.5">
-          CONGREGACIÓN
+          VISIÓN CMV
         </h2>
         <p className="text-xs text-emerald-100 font-medium mt-1 leading-snug line-clamp-2">
           Padrón general de miembros activos, familias y seguimiento congregacional.
@@ -51,3 +51,4 @@ export const BentoCardGeneral: React.FC = () => {
 };
 
 export const BentoCardCongregacion = BentoCardGeneral;
+export const BentoCardVisionCMV = BentoCardGeneral;

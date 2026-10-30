@@ -54,6 +54,39 @@ const normalizeBrother = (brother: Brother | BrotherProfile): BrotherProfile => 
         observaciones: cloneTimelineObservations(brother.discipulo.observaciones),
       }
     : undefined,
+  eddi2: brother.eddi2
+    ? {
+        ...brother.eddi2,
+        notasExamenes: brother.eddi2.notasExamenes?.map((grade) => ({ ...grade })),
+        observaciones: cloneTimelineObservations(brother.eddi2.observaciones),
+      }
+    : undefined,
+  eddi3: brother.eddi3
+    ? {
+        ...brother.eddi3,
+        notasExamenes: brother.eddi3.notasExamenes?.map((grade) => ({ ...grade })),
+        observaciones: cloneTimelineObservations(brother.eddi3.observaciones),
+      }
+    : undefined,
+  experienciaEnvio: brother.experienciaEnvio
+    ? {
+        ...brother.experienciaEnvio,
+        observaciones: cloneTimelineObservations(brother.experienciaEnvio.observaciones),
+      }
+    : undefined,
+  liderCelula: (brother as any).liderCelula
+    ? {
+        ...(brother as any).liderCelula,
+        observaciones: cloneTimelineObservations((brother as any).liderCelula.observaciones),
+      }
+    : undefined,
+  edem: (brother as any).edem
+    ? {
+        ...(brother as any).edem,
+        notasExamenes: (brother as any).edem.notasExamenes?.map((grade: any) => ({ ...grade })),
+        observaciones: cloneTimelineObservations((brother as any).edem.observaciones),
+      }
+    : undefined,
   observations: cloneObservations(brother.observations ?? []),
   disciples: brother.disciples ? [...brother.disciples] : [],
 });

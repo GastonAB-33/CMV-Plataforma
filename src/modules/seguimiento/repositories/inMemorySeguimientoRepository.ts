@@ -23,6 +23,18 @@ const toStageDatesByProcess = (brother: BrotherProfile): StageDatesByProcess => 
   [Proceso.DISCIPULO]: {
     startDate: brother.discipulo?.fechaInicio,
   },
+  [Proceso.EDDI2]: {
+    startDate: brother.eddi2?.fechaInicio,
+    endDate: brother.eddi2?.fechaFin,
+  },
+  [Proceso.EDDI3]: {
+    startDate: brother.eddi3?.fechaInicio,
+    endDate: brother.eddi3?.fechaFin,
+  },
+  [Proceso.LIDER_CELULA]: {
+    startDate: brother.liderCelula?.fechaInicio,
+    endDate: brother.liderCelula?.fechaFin,
+  },
   [Proceso.EDEM]: {
     startDate: brother.edem?.fechaInicio,
     endDate: brother.edem?.fechaFin,
@@ -35,6 +47,9 @@ const cloneStageDatesByProcess = (stageDatesByProcess: StageDatesByProcess): Sta
   [Proceso.EXPERIENCIA]: { ...stageDatesByProcess[Proceso.EXPERIENCIA] },
   [Proceso.EDDI]: { ...stageDatesByProcess[Proceso.EDDI] },
   [Proceso.DISCIPULO]: { ...stageDatesByProcess[Proceso.DISCIPULO] },
+  [Proceso.EDDI2]: { ...stageDatesByProcess[Proceso.EDDI2] },
+  [Proceso.EDDI3]: { ...stageDatesByProcess[Proceso.EDDI3] },
+  [Proceso.LIDER_CELULA]: { ...stageDatesByProcess[Proceso.LIDER_CELULA] },
   [Proceso.EDEM]: { ...stageDatesByProcess[Proceso.EDEM] },
 });
 

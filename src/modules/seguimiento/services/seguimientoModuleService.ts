@@ -18,6 +18,9 @@ const toStageStatusByProcess = (snapshot: BrotherProcessSnapshot): StageStatusBy
   [Proceso.EXPERIENCIA]: getStageStatusByOrder(snapshot.currentProcess, Proceso.EXPERIENCIA),
   [Proceso.EDDI]: getStageStatusByOrder(snapshot.currentProcess, Proceso.EDDI),
   [Proceso.DISCIPULO]: getStageStatusByOrder(snapshot.currentProcess, Proceso.DISCIPULO),
+  [Proceso.EDDI2]: getStageStatusByOrder(snapshot.currentProcess, Proceso.EDDI2),
+  [Proceso.EDDI3]: getStageStatusByOrder(snapshot.currentProcess, Proceso.EDDI3),
+  [Proceso.LIDER_CELULA]: getStageStatusByOrder(snapshot.currentProcess, Proceso.LIDER_CELULA),
   [Proceso.EDEM]: getStageStatusByOrder(snapshot.currentProcess, Proceso.EDEM),
 });
 

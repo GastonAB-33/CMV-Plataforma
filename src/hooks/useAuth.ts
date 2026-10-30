@@ -6,6 +6,7 @@ import { supabaseAuditService } from '../services/supabaseAuditService';
 import { getSupabaseClient, isSupabaseConfigured } from '../services/supabaseClient';
 import { supabaseRolePermissionsService } from '../services/supabaseRolePermissionsService';
 import { supabaseUserPermissionsService } from '../services/supabaseUserPermissionsService';
+import { setOneSignalUser, logoutOneSignal } from '../services/onesignal';
 
 type AuthState = {
   user: User | null;
@@ -121,12 +122,22 @@ const applySessionUser = async (email?: string | null) => {
   if (!user) {
     const client = getSupabaseClient();
     await client?.auth.signOut();
+    if (typeof window !== 'undefined') {
+      window.sessionStorage.setItem(
+        'cmv_whitelist_error',
+        `El correo ${email} no se encuentra registrado o habilitado en la lista de aprobados de la congregación. Comunícate con tu líder o pastor para habilitar tu acceso.`
+      );
+    }
     setAuthState({
       user: null,
       isAuthenticated: false,
       isLoading: false,
     });
     return;
+  }
+
+  if (typeof window !== 'undefined') {
+    window.sessionStorage.removeItem('cmv_whitelist_error');
   }
 
   const [roleOverrides, userOverrides] = await Promise.all([
@@ -141,6 +152,7 @@ const applySessionUser = async (email?: string | null) => {
     isAuthenticated: true,
     isLoading: false,
   });
+  setOneSignalUser(user);
 };
 
 const ensureInitialized = () => {
@@ -262,6 +274,7 @@ const login = async (email: string, password: string): Promise<LoginResult> => {
     isAuthenticated: true,
     isLoading: false,
   });
+  setOneSignalUser(appUser);
 
   void supabaseAuditService.log({
     actor: { id: appUser.id, email: data.user.email, name: appUser.name },
@@ -275,12 +288,73 @@ const login = async (email: string, password: string): Promise<LoginResult> => {
   return { ok: true };
 };
 
+const loginWithGoogle = async (): Promise<LoginResult> => {
+  const client = getSupabaseClient();
+  if (!client) {
+    return { ok: false, error: 'Supabase no esta configurado.' };
+  }
+
+  const { error } = await client.auth.signInWithOAuth({
+    provider: 'google',
+    options: {
+      redirectTo: `${window.location.origin}/`,
+    },
+  });
+
+  if (error) {
+    return { ok: false, error: error.message };
+  }
+  return { ok: true };
+};
+
+const requestPasswordReset = async (email: string): Promise<LoginResult> => {
+  const client = getSupabaseClient();
+  if (!client) {
+    return { ok: false, error: 'Supabase no esta configurado.' };
+  }
+
+  const cleanEmail = email.trim().toLowerCase();
+  const appUser = await resolveUserByEmail(cleanEmail);
+  if (!appUser) {
+    return {
+      ok: false,
+      error: `El correo ${cleanEmail} no esta registrado en el padron de la iglesia. Consulta con tu lider o pastor.`,
+    };
+  }
+
+  const { error } = await client.auth.resetPasswordForEmail(cleanEmail, {
+    redirectTo: `${window.location.origin}/login?mode=recovery`,
+  });
+
+  if (error) {
+    return { ok: false, error: error.message };
+  }
+
+  return { ok: true };
+};
+
+const updatePassword = async (newPassword: string): Promise<LoginResult> => {
+  const client = getSupabaseClient();
+  if (!client) {
+    return { ok: false, error: 'Supabase no esta configurado.' };
+  }
+
+  const { error } = await client.auth.updateUser({ password: newPassword });
+  if (error) {
+    return { ok: false, error: error.message };
+  }
+
+  return { ok: true };
+};
+
 const logout = async () => {
   const actor = authState.user;
   const client = getSupabaseClient();
   await client?.auth.signOut();
+  logoutOneSignal();
   if (typeof window !== 'undefined') {
     window.localStorage.removeItem('cmv_dev_auth');
+    window.sessionStorage.removeItem('cmv_whitelist_error');
   }
   setAuthState({
     user: null,
@@ -310,6 +384,9 @@ export const useAuth = () => {
     isAuthLoading: state.isLoading,
     canManageNotifications: state.isAuthenticated ? canManageNotifications(user.role) : false,
     login,
+    loginWithGoogle,
+    requestPasswordReset,
+    updatePassword,
     logout,
   };
 };

@@ -40,6 +40,9 @@ const processLabel: Record<Proceso, string> = {
   [Proceso.EXPERIENCIA]: 'Experiencia',
   [Proceso.EDDI]: 'EDDI Escuela de Discipulados',
   [Proceso.DISCIPULO]: 'Discipulado',
+  [Proceso.EDDI2]: 'EDDI 2',
+  [Proceso.EDDI3]: 'EDDI 3',
+  [Proceso.LIDER_CELULA]: 'Líder de Célula',
   [Proceso.EDEM]: 'EDEM Escuela de Entrenamiento Ministerial',
 };
 

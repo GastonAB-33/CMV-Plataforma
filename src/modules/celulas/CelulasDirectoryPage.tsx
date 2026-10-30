@@ -3,10 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import {
   Users,
   Home,
-  Search,
   Crown,
   ArrowLeft,
-  UserCheck,
 } from 'lucide-react';
 import { brothersService } from '../../services/brothersService';
 import { supabaseCellsService, CellConfigRow } from '../../services/supabaseCellsService';
@@ -14,6 +12,13 @@ import { BrotherListItem, BrotherProfile } from '../hermanos/types';
 import { isRedApostolicaName, getCellBranding } from './cellBranding';
 import { CellDirectoryCard, CellGroupView } from './components/CellDirectoryCard';
 import { RedApostolicaSection } from './components/RedApostolicaSection';
+import {
+  LeaderDetailModal,
+  LeaderDetailData,
+  resolveLeaderDetailData,
+} from './components/LeaderDetailModal';
+import { GrupoVidaMembersModal } from './components/GrupoVidaMembersModal';
+import { CellGrupoVida } from './services/cellGruposVidaService';
 import { Role } from '../../types';
 
 // Células canónicas estándar de CMV
@@ -25,7 +30,14 @@ export const CelulasDirectoryPage: React.FC = () => {
   const [brothers, setBrothers] = useState<BrotherListItem[]>([]);
   const [fullBrothers, setFullBrothers] = useState<BrotherProfile[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
+
+  // Estado para el modal emergente de líder
+  const [selectedLeader, setSelectedLeader] = useState<LeaderDetailData | null>(null);
+  const [isLeaderModalOpen, setIsLeaderModalOpen] = useState(false);
+
+  // Estado para el modal emergente de miembros del Grupo de Vida
+  const [selectedGrupoVida, setSelectedGrupoVida] = useState<CellGrupoVida | null>(null);
+  const [isGrupoVidaModalOpen, setIsGrupoVidaModalOpen] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -195,77 +207,58 @@ export const CelulasDirectoryPage: React.FC = () => {
     };
   }, [allCellGroups, fullBrothers, brothers]);
 
-  // Células hijas propiamente dichas (excluyendo a la Red Apostólica)
+  // Células de Vida propiamente dichas (excluyendo a la Red Apostólica)
   const daughterCells = useMemo<CellGroupView[]>(() => {
-    return allCellGroups.filter((g) => !isRedApostolicaName(g.nombre));
+    return allCellGroups
+      .filter((g) => !isRedApostolicaName(g.nombre))
+      .sort((a, b) => b.totalMembers - a.totalMembers);
   }, [allCellGroups]);
 
-  // Filtrado de las células hijas por el término de búsqueda
-  const filteredDaughterCells = useMemo(() => {
-    const cleanSearch = searchTerm.trim().toLowerCase();
-    if (!cleanSearch) {
-      return [...daughterCells].sort((a, b) => b.totalMembers - a.totalMembers);
+  // Manejo de apertura de modal emergente de líder
+  const handleSelectLeader = (
+    leader: { id: string; name: string; fotoUrl?: string; role?: string },
+    cellName?: string
+  ) => {
+    const detail = resolveLeaderDetailData(leader, allCellGroups, fullBrothers);
+    if (cellName && (!detail.celulaName || detail.celulaName === 'Vida')) {
+      detail.celulaName = cellName;
     }
+    setSelectedLeader(detail);
+    setIsLeaderModalOpen(true);
+  };
 
-    return daughterCells
-      .filter((cell) => {
-        const brand = getCellBranding(cell.nombre);
-        const matchCellName =
-          cell.nombre.toLowerCase().includes(cleanSearch) ||
-          brand.displayName.toLowerCase().includes(cleanSearch) ||
-          brand.tagline.toLowerCase().includes(cleanSearch);
-        const matchLeader = cell.leaders.some((l) =>
-          l.name.toLowerCase().includes(cleanSearch)
-        );
-        const matchMember = cell.members.some((m) =>
-          m.name.toLowerCase().includes(cleanSearch)
-        );
-        return matchCellName || matchLeader || matchMember;
-      })
-      .sort((a, b) => b.totalMembers - a.totalMembers);
-  }, [daughterCells, searchTerm]);
+  // Manejo de apertura de modal emergente de hermanos del Grupo de Vida
+  const handleSelectGrupoVida = (grupo: CellGrupoVida) => {
+    setSelectedGrupoVida(grupo);
+    setIsGrupoVidaModalOpen(true);
+  };
 
-  // Determinar si la Red Apostólica coincide con la búsqueda
-  const shouldShowRedApostolica = useMemo(() => {
-    const clean = searchTerm.trim().toLowerCase();
-    if (!clean) return true;
-    if (
-      clean.includes('apostol') ||
-      clean.includes('red') ||
-      clean.includes('cobertura') ||
-      clean.includes('guillermo')
-    ) {
-      return true;
+  // Control de tarjetas desplegadas automáticamente al desplazarse desde la Red Apostólica
+  const [expandedCellKeys, setExpandedCellKeys] = useState<Record<string, boolean>>({});
+
+  // Desplazamiento suave hacia la célula indicada al hacer clic en su botón
+  const handleScrollToCell = (brandKey: string) => {
+    setExpandedCellKeys((prev) => ({ ...prev, [brandKey]: true }));
+    const element = document.getElementById(`cell-card-${brandKey}`);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      // Destello de realce visual momentáneo
+      element.classList.add('ring-4', 'ring-[#00dfa2]', 'shadow-2xl', 'shadow-cyan-500/40');
+      setTimeout(() => {
+        element.classList.remove('ring-4', 'ring-[#00dfa2]', 'shadow-2xl', 'shadow-cyan-500/40');
+      }, 2200);
     }
-    if (redApostolicaGroup) {
-      const matchLeader = redApostolicaGroup.leaders.some((l) =>
-        l.name.toLowerCase().includes(clean)
-      );
-      const matchMember = redApostolicaGroup.members.some((m) =>
-        m.name.toLowerCase().includes(clean)
-      );
-      return matchLeader || matchMember;
-    }
-    return false;
-  }, [searchTerm, redApostolicaGroup]);
-
-  const totalAssignedBrothers = useMemo(() => {
-    return brothers.filter(
-      (b) =>
-        Boolean(b.cellName && String(b.cellName).trim() !== '') &&
-        !isRedApostolicaName(b.cellName)
-    ).length;
-  }, [brothers]);
+  };
 
   return (
     <div className="w-full space-y-7 md:space-y-9 animate-in fade-in duration-500 max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-6">
-      {/* Botón Volver y Encabezado de la página ampliado */}
+      {/* Botón Volver y Encabezado de la página: TÍTULO CÉLULAS Y GRUPOS VIDA */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-cyan-500/20 dark:border-white/10">
         <div className="flex items-center gap-4">
           <button
             type="button"
             onClick={() => navigate('/')}
-            className="w-12 h-12 rounded-2xl bg-white dark:bg-[#091522] border border-cyan-500/30 dark:border-cyan-400/30 flex items-center justify-center text-slate-700 dark:text-cyan-200 hover:bg-cyan-50 hover:text-cyan-600 dark:hover:bg-cyan-950/40 transition-all shadow-md hover:scale-105"
+            className="w-12 h-12 rounded-2xl bg-white dark:bg-[#091522] border border-cyan-500/30 dark:border-cyan-400/30 flex items-center justify-center text-slate-700 dark:text-cyan-200 hover:bg-cyan-50 hover:text-cyan-600 dark:hover:bg-cyan-950/40 transition-all shadow-md hover:scale-105 cursor-pointer"
             aria-label="Volver al Portal"
           >
             <ArrowLeft size={22} />
@@ -276,7 +269,7 @@ export const CelulasDirectoryPage: React.FC = () => {
               <span>Red de Células CMV</span>
             </div>
             <h1 className="text-3xl sm:text-5xl font-black text-slate-900 dark:text-white tracking-tight leading-none mt-1.5">
-              Hermanos & Células
+              Células y Grupos Vida
             </h1>
           </div>
         </div>
@@ -285,7 +278,7 @@ export const CelulasDirectoryPage: React.FC = () => {
           <button
             type="button"
             onClick={() => navigate('/hermanos')}
-            className="px-5 py-3 rounded-2xl bg-cyan-50 hover:bg-cyan-100 dark:bg-cyan-950/40 dark:hover:bg-cyan-900/50 border border-cyan-200 dark:border-cyan-800/50 text-cyan-800 dark:text-cyan-200 text-xs sm:text-sm font-black uppercase tracking-wider transition-all shadow-sm hover:scale-[1.02] flex items-center gap-2"
+            className="px-5 py-3 rounded-2xl bg-cyan-50 hover:bg-cyan-100 dark:bg-cyan-950/40 dark:hover:bg-cyan-900/50 border border-cyan-200 dark:border-cyan-800/50 text-cyan-800 dark:text-cyan-200 text-xs sm:text-sm font-black uppercase tracking-wider transition-all shadow-sm hover:scale-[1.02] flex items-center gap-2 cursor-pointer"
           >
             <Users size={18} />
             <span>Ver Lista General</span>
@@ -293,110 +286,28 @@ export const CelulasDirectoryPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Tarjetas resumen de estadísticas flotantes con relieve tridimensional y paleta esmeralda/cian */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
-        {/* Células Hijas Activas */}
-        <div className="group relative overflow-hidden p-5 rounded-3xl bg-white dark:bg-[#091522] border border-emerald-300/60 dark:border-emerald-500/30 shadow-lg hover:shadow-2xl hover:shadow-emerald-500/15 hover:-translate-y-1.5 transition-all duration-300 flex items-center gap-4">
-          <div className="absolute inset-0 bg-gradient-to-br from-[#00dfa2]/10 via-transparent to-transparent pointer-events-none" />
-          <div className="w-14 h-14 rounded-2xl bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 shadow-inner group-hover:scale-105 transition-transform">
-            <Home size={28} />
-          </div>
-          <div>
-            <p className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white leading-none">
-              {daughterCells.length}
-            </p>
-            <p className="text-xs sm:text-sm font-black uppercase tracking-wider text-slate-500 dark:text-cyan-200/80 mt-1.5">
-              Células Hijas
-            </p>
-          </div>
+      {/* ========================================================================= */}
+      {/* 👑 SECCIÓN EXCLUSIVA: RED APOSTÓLICA (COBERTURA APOSTÓLICA CENTRAL)        */}
+      {/* ========================================================================= */}
+      <div className="space-y-3.5">
+        <div className="flex items-center gap-2.5 text-xs sm:text-sm font-black uppercase tracking-wider text-cyan-600 dark:text-cyan-300">
+          <Crown size={16} />
+          <span>Cobertura Apostólica Principal</span>
         </div>
-
-        {/* Red Apostólica (En paleta Cian/Turquesa) */}
-        <div className="group relative overflow-hidden p-5 rounded-3xl bg-white dark:bg-[#091522] border border-cyan-300/70 dark:border-cyan-400/40 shadow-lg hover:shadow-2xl hover:shadow-cyan-500/15 hover:-translate-y-1.5 transition-all duration-300 flex items-center gap-4">
-          <div className="absolute inset-0 bg-gradient-to-br from-[#06b6d4]/10 via-transparent to-transparent pointer-events-none" />
-          <div className="w-14 h-14 rounded-2xl bg-cyan-100 dark:bg-cyan-950/60 text-cyan-600 dark:text-cyan-300 flex items-center justify-center shrink-0 shadow-inner group-hover:scale-105 transition-transform">
-            <Crown size={28} />
-          </div>
-          <div>
-            <p className="text-3xl sm:text-4xl font-black text-cyan-600 dark:text-cyan-300 leading-none">
-              1 Red
-            </p>
-            <p className="text-xs sm:text-sm font-black uppercase tracking-wider text-slate-500 dark:text-cyan-200/80 mt-1.5">
-              Red Apostólica
-            </p>
-          </div>
-        </div>
-
-        {/* Hermanos Totales */}
-        <div className="group relative overflow-hidden p-5 rounded-3xl bg-white dark:bg-[#091522] border border-cyan-300/60 dark:border-cyan-500/30 shadow-lg hover:shadow-2xl hover:shadow-cyan-500/15 hover:-translate-y-1.5 transition-all duration-300 flex items-center gap-4">
-          <div className="absolute inset-0 bg-gradient-to-br from-[#38bdf8]/10 via-transparent to-transparent pointer-events-none" />
-          <div className="w-14 h-14 rounded-2xl bg-sky-100 dark:bg-sky-950/60 text-sky-600 dark:text-sky-300 flex items-center justify-center shrink-0 shadow-inner group-hover:scale-105 transition-transform">
-            <Users size={28} />
-          </div>
-          <div>
-            <p className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white leading-none">
-              {brothers.length}
-            </p>
-            <p className="text-xs sm:text-sm font-black uppercase tracking-wider text-slate-500 dark:text-cyan-200/80 mt-1.5">
-              Hermanos Totales
-            </p>
-          </div>
-        </div>
-
-        {/* En Células de Vida */}
-        <div className="group relative overflow-hidden p-5 rounded-3xl bg-white dark:bg-[#091522] border border-teal-300/60 dark:border-teal-500/30 shadow-lg hover:shadow-2xl hover:shadow-teal-500/15 hover:-translate-y-1.5 transition-all duration-300 flex items-center gap-4">
-          <div className="absolute inset-0 bg-gradient-to-br from-[#14b8a6]/10 via-transparent to-transparent pointer-events-none" />
-          <div className="w-14 h-14 rounded-2xl bg-teal-100 dark:bg-teal-950/60 text-teal-600 dark:text-teal-300 flex items-center justify-center shrink-0 shadow-inner group-hover:scale-105 transition-transform">
-            <UserCheck size={28} />
-          </div>
-          <div>
-            <p className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white leading-none">
-              {totalAssignedBrothers}
-            </p>
-            <p className="text-xs sm:text-sm font-black uppercase tracking-wider text-slate-500 dark:text-cyan-200/80 mt-1.5">
-              En Grupos de Vida
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Buscador de Célula o Hermano ampliado */}
-      <div className="relative group">
-        <Search
-          className="absolute left-4 top-1/2 -translate-y-1/2 text-cyan-500/70 dark:text-cyan-400 group-hover:scale-110 transition-transform"
-          size={22}
-        />
-        <input
-          type="text"
-          placeholder="Buscar por nombre de célula (Vida, Saetas, Maranatha...), líder o hermano..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full bg-white dark:bg-[#091522] border border-cyan-500/25 dark:border-cyan-400/30 rounded-3xl py-4 pl-13 pr-5 text-base sm:text-lg text-slate-900 dark:text-white focus:outline-none focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20 transition-all shadow-md placeholder-slate-400 dark:placeholder-slate-500"
+        <RedApostolicaSection
+          apostolicGroup={redApostolicaGroup}
+          daughterCells={daughterCells.map((c) => ({
+            id: c.id,
+            nombre: c.nombre,
+            totalMembers: c.totalMembers,
+          }))}
+          onSelectLeader={handleSelectLeader}
+          onSelectCell={handleScrollToCell}
         />
       </div>
 
       {/* ========================================================================= */}
-      {/* 👑 SECCIÓN EXCLUSIVA: RED APOSTÓLICA (NO es una célula común)              */}
-      {/* ========================================================================= */}
-      {shouldShowRedApostolica && (
-        <div className="space-y-3.5">
-          <div className="flex items-center gap-2.5 text-xs sm:text-sm font-black uppercase tracking-wider text-cyan-600 dark:text-cyan-300">
-            <Crown size={16} />
-            <span>Cobertura Apostólica Principal</span>
-          </div>
-          <RedApostolicaSection
-            apostolicGroup={redApostolicaGroup}
-            daughterCells={daughterCells.map((c) => ({
-              id: c.id,
-              nombre: c.nombre,
-              totalMembers: c.totalMembers,
-            }))}
-          />
-        </div>
-      )}
-
-      {/* ========================================================================= */}
-      {/* 🌿 LISTADO DE CÉLULAS DE VIDA (VIDA, SAETAS, MARANATHA, SION, NISSI...)   */}
+      {/* 🌿 LISTADO DE CÉLULAS DE VIDA (PANELES DESPLEGABLES CON GRUPOS DE VIDA)   */}
       {/* ========================================================================= */}
       <div className="space-y-5">
         <div className="flex items-center justify-between">
@@ -406,11 +317,11 @@ export const CelulasDirectoryPage: React.FC = () => {
               Células de Vida & Grupos Familiares
             </h3>
             <span className="text-sm font-black text-cyan-600 dark:text-cyan-300">
-              ({filteredDaughterCells.length})
+              ({daughterCells.length})
             </span>
           </div>
           <span className="text-xs sm:text-sm text-slate-500 dark:text-cyan-200/70 font-semibold hidden sm:inline">
-            Cada célula cuenta con su identidad y logo representativo
+            Despliega cada célula para ver sus Grupos de Vida activos
           </span>
         </div>
 
@@ -418,32 +329,51 @@ export const CelulasDirectoryPage: React.FC = () => {
           <div className="py-24 text-center space-y-3">
             <div className="w-12 h-12 border-4 border-cyan-400 border-t-transparent rounded-full animate-spin mx-auto" />
             <p className="text-base font-bold text-slate-500 dark:text-cyan-300">
-              Cargando células y hermanos asignados...
+              Cargando células y grupos de vida...
             </p>
           </div>
-        ) : filteredDaughterCells.length === 0 ? (
+        ) : daughterCells.length === 0 ? (
           <div className="py-20 text-center rounded-3xl bg-white dark:bg-[#091522] border border-cyan-500/20 dark:border-white/10 p-8 space-y-3 shadow-lg">
             <Home size={48} className="mx-auto text-cyan-500/60" />
             <p className="text-xl font-black text-slate-800 dark:text-white">
-              No se encontraron células ni hermanos
-            </p>
-            <p className="text-sm text-slate-500 dark:text-gray-400">
-              Intenta con otro término de búsqueda.
+              No se encontraron células registradas
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
-            {filteredDaughterCells.map((cell) => (
-              <CellDirectoryCard
-                key={cell.id}
-                cell={cell}
-                onNavigateBrother={(id) => navigate(`/hermanos/${id}`)}
-                onNavigateGeneral={() => navigate('/hermanos')}
-              />
-            ))}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 items-start">
+            {daughterCells.map((cell) => {
+              const brand = getCellBranding(cell.nombre);
+              return (
+                <CellDirectoryCard
+                  key={cell.id}
+                  cell={cell}
+                  onNavigateBrother={(id) => navigate(`/hermanos/${id}`)}
+                  onNavigateGeneral={() => navigate('/hermanos')}
+                  onSelectLeader={handleSelectLeader}
+                  onSelectGrupoVida={handleSelectGrupoVida}
+                  isInitiallyExpanded={Boolean(expandedCellKeys[brand.key])}
+                />
+              );
+            })}
           </div>
         )}
       </div>
+
+      {/* Modal emergente 1: Información completa del líder */}
+      <LeaderDetailModal
+        isOpen={isLeaderModalOpen}
+        onClose={() => setIsLeaderModalOpen(false)}
+        leader={selectedLeader}
+        onNavigateBrother={(id) => navigate(`/hermanos/${id}`)}
+      />
+
+      {/* Modal emergente 2: Lista de hermanos pertenecientes al Grupo de Vida seleccionado */}
+      <GrupoVidaMembersModal
+        isOpen={isGrupoVidaModalOpen}
+        onClose={() => setIsGrupoVidaModalOpen(false)}
+        grupo={selectedGrupoVida}
+        onNavigateBrother={(id) => navigate(`/hermanos/${id}`)}
+      />
     </div>
   );
 };

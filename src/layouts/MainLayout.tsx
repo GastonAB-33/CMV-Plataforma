@@ -1,8 +1,9 @@
 import { ReactNode, useMemo, useState } from 'react';
-import { Users, LineChart, Menu, X, MoreHorizontal, Settings, FileSpreadsheet, GraduationCap, Award, Home, Layers } from 'lucide-react';
+import { Users, LineChart, Menu, X, MoreHorizontal, Settings, FileSpreadsheet, GraduationCap, Award, Home, Layers, Calendar, LogOut, Footprints } from 'lucide-react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { Role, User } from '../types';
 import { ThemeToggle } from '../components/ui/ThemeToggle';
+import { NotificationBell } from '../components/notifications/NotificationBell';
 import { AppFeatureKey, hasPermissionAtLeastForUser } from '../lib/permissionsMatrix';
 import { useAuth } from '../hooks/useAuth';
 
@@ -19,18 +20,17 @@ export const MainLayout = ({ children, user }: MainLayoutProps) => {
   const { logout } = useAuth();
   const role = user.role;
   const roleLabel = role.replace(/_/g, ' ').toLowerCase();
-  const canManageUsers = role === Role.APOSTOL || role === Role.SUPERADMIN;
+  const canManageUsers = role === Role.APOSTOL || role === Role.SUPERADMIN || role === Role.PASTOR;
   const canUseImporter = role === Role.SUPERADMIN;
+
   const navItems = [
     { id: 'home', feature: 'dashboard' as AppFeatureKey, path: '/', icon: <Home size={22} />, label: 'Inicio', shortLabel: 'Inicio', primaryMobile: true },
     { id: 'brothers', feature: 'hermanos' as AppFeatureKey, path: '/hermanos', icon: <Users size={22} />, label: 'Visión CMV', shortLabel: 'Visión CMV', primaryMobile: true },
+    { id: 'primeros-pasos', feature: 'hermanos' as AppFeatureKey, path: '/primeros-pasos', icon: <Footprints size={22} />, label: 'Primeros Pasos', shortLabel: '1º Pasos', primaryMobile: true },
     { id: 'celulas', feature: 'hermanos' as AppFeatureKey, path: '/celulas', icon: <Layers size={22} />, label: 'Células', shortLabel: 'Células', primaryMobile: true },
-    { id: 'tracking', feature: 'seguimiento' as AppFeatureKey, path: '/tracking', icon: <LineChart size={22} />, label: 'Seguimiento', shortLabel: 'Seguimiento', primaryMobile: true },
-    { id: 'eddi', feature: 'escuela_eddi' as AppFeatureKey, path: '/escuela-eddi', icon: <GraduationCap size={22} />, label: 'Escuela EDDI', shortLabel: 'EDDI', primaryMobile: false },
-    { id: 'edem', feature: 'escuela_edem' as AppFeatureKey, path: '/escuela-edem', icon: <Award size={22} />, label: 'Escuela EDEM', shortLabel: 'EDEM', primaryMobile: false },
-    ...(canManageUsers
-      ? [{ id: 'config-users', feature: 'dashboard' as AppFeatureKey, path: '/configuracion/usuarios', icon: <Settings size={22} />, label: 'Configuracion', shortLabel: 'Config', primaryMobile: true }]
-      : []),
+    { id: 'tracking', feature: 'seguimiento' as AppFeatureKey, path: '/tracking', icon: <LineChart size={22} />, label: 'Estadísticas', shortLabel: 'Estadísticas', primaryMobile: true },
+    { id: 'events', feature: 'eventos' as AppFeatureKey, path: '/events', icon: <Calendar size={22} />, label: 'Eventos', shortLabel: 'Eventos', primaryMobile: true },
+    { id: 'escuelas', feature: 'escuela_eddi' as AppFeatureKey, path: '/escuelas', icon: <GraduationCap size={22} />, label: 'Escuelas', shortLabel: 'Escuelas', primaryMobile: true },
     ...(canUseImporter
       ? [{ id: 'importador', feature: 'hermanos' as AppFeatureKey, path: '/importador', icon: <FileSpreadsheet size={22} />, label: 'Importador', shortLabel: 'Importar', primaryMobile: true }]
       : []),
@@ -54,11 +54,10 @@ export const MainLayout = ({ children, user }: MainLayoutProps) => {
 
   return (
     <div className="flex min-h-screen md:h-screen bg-white dark:bg-black text-black dark:text-white overflow-hidden transition-colors">
-      {location.pathname !== '/' && (
-        <div className="hidden md:block fixed top-4 right-4 z-[60]">
-          <ThemeToggle />
-        </div>
-      )}
+      <div className="hidden md:flex items-center gap-3 fixed top-4 right-4 z-[60]">
+        <NotificationBell />
+        {location.pathname !== '/' && <ThemeToggle />}
+      </div>
 
       <aside className="hidden md:flex w-80 bg-white dark:bg-black backdrop-blur-2xl flex-col border-r border-slate-200/90 dark:border-white/10 shadow-2xl relative z-20 transition-colors">
         {/* Recuadro CMV Verde con logo gigante exactamente como en la imagen de referencia */}
@@ -107,11 +106,13 @@ export const MainLayout = ({ children, user }: MainLayoutProps) => {
             </NavLink>
           ))}
         </nav>
+
+        {/* BOTÓN DE PERFIL INFERIOR IZQUIERDO */}
         <div className="p-4 border-t border-slate-200 dark:border-white/10 mt-auto transition-colors relative">
           <button
             type="button"
             onClick={() => setIsProfileMenuOpen((previous) => !previous)}
-            className="w-full flex items-center gap-3 p-2 rounded-xl hover:bg-emerald-500/10 transition-colors text-left"
+            className="w-full flex items-center gap-3 p-2 rounded-xl hover:bg-emerald-500/10 transition-colors text-left cursor-pointer"
           >
             <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center text-white font-bold text-xs shadow-sm">
               {String(role).charAt(0)}
@@ -121,14 +122,30 @@ export const MainLayout = ({ children, user }: MainLayoutProps) => {
               <span className="text-[10px] text-slate-500 dark:text-gray-500">Sesion activa</span>
             </div>
           </button>
+
+          {/* POPUP DE PERFIL CON CONFIGURACIÓN Y CERRAR SESIÓN */}
           {isProfileMenuOpen && (
-            <div className="absolute left-4 right-4 bottom-[78px] rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#111111] p-2 shadow-xl">
+            <div className="absolute left-4 right-4 bottom-[78px] rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#111111] p-1.5 shadow-2xl space-y-1 z-30 animate-in fade-in zoom-in-95 duration-150">
+              {canManageUsers && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsProfileMenuOpen(false);
+                    navigate('/configuracion/usuarios');
+                  }}
+                  className="w-full flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-xs uppercase tracking-wider font-bold text-left text-slate-700 dark:text-gray-200 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-[#c5a059] transition-colors cursor-pointer"
+                >
+                  <Settings size={16} className="text-[#c5a059]" />
+                  <span>Configuración</span>
+                </button>
+              )}
               <button
                 type="button"
                 onClick={() => void handleLogout()}
-                className="w-full rounded-lg px-3 py-2 text-xs uppercase tracking-wider font-black text-left text-rose-600 dark:text-rose-400 hover:bg-rose-500/10 transition-colors"
+                className="w-full flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-xs uppercase tracking-wider font-black text-left text-rose-600 dark:text-rose-400 hover:bg-rose-500/10 transition-colors cursor-pointer"
               >
-                Cerrar sesion
+                <LogOut size={16} />
+                <span>Cerrar sesión</span>
               </button>
             </div>
           )}
@@ -224,13 +241,30 @@ export const MainLayout = ({ children, user }: MainLayoutProps) => {
               ))}
             </nav>
             <div className="mt-4 pt-4 border-t border-slate-200 dark:border-white/10">
+              {canManageUsers && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    navigate('/configuracion/usuarios');
+                  }}
+                  className="w-full flex items-center gap-2.5 rounded-xl border border-[#c5a059]/30 bg-[#c5a059]/10 px-3 py-2.5 text-xs uppercase tracking-wider font-bold text-slate-800 dark:text-gray-200 mb-2 cursor-pointer"
+                >
+                  <Settings size={16} className="text-[#c5a059]" />
+                  <span>Configuración</span>
+                </button>
+              )}
               <button
                 type="button"
                 onClick={() => void handleLogout()}
-                className="w-full rounded-xl border border-rose-400/30 bg-rose-500/10 px-3 py-2 text-xs uppercase tracking-wider font-black text-rose-600 dark:text-rose-300 mb-3"
+                className="w-full rounded-xl border border-rose-400/30 bg-rose-500/10 px-3 py-2 text-xs uppercase tracking-wider font-black text-rose-600 dark:text-rose-300 mb-3 cursor-pointer"
               >
-                Cerrar sesion
+                Cerrar sesión
               </button>
+              <div className="mb-3">
+                <p className="text-[10px] uppercase tracking-widest font-black text-slate-500 dark:text-gray-400 mb-2">Notificaciones</p>
+                <NotificationBell />
+              </div>
               <p className="text-[10px] uppercase tracking-widest font-black text-slate-500 dark:text-gray-400 mb-2">Apariencia</p>
               <ThemeToggle />
             </div>

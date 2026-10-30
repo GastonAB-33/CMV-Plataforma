@@ -23,6 +23,83 @@ const normalizeRole = (value?: string): Role => {
 };
 
 export const supabaseUsersService = {
+  async sendPasswordSetupEmail(email: string): Promise<{ ok: boolean; error?: string }> {
+    const client = getSupabaseClient();
+    if (!client) {
+      return { ok: false, error: 'Supabase no esta configurado.' };
+    }
+    const cleanEmail = email.trim().toLowerCase();
+    const { error } = await client.auth.resetPasswordForEmail(cleanEmail, {
+      redirectTo: `${window.location.origin}/login?mode=recovery`,
+    });
+    if (error) {
+      return { ok: false, error: error.message };
+    }
+    return { ok: true };
+  },
+
+  async provisionUserWithInvite(
+    email: string,
+  ): Promise<{ ok: boolean; userId?: string; error?: string }> {
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+    const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+    if (!supabaseUrl || !anonKey) {
+      return { ok: true };
+    }
+
+    const cleanEmail = email.trim().toLowerCase();
+    const tempPassword = `Cmv!${crypto.randomUUID()}Aa9*`;
+    const isolatedClient = createClient(supabaseUrl, anonKey, {
+      auth: {
+        persistSession: false,
+        autoRefreshToken: false,
+      },
+    });
+
+    const { data } = await isolatedClient.auth.signUp({
+      email: cleanEmail,
+      password: tempPassword,
+    });
+
+    const userId = data?.user?.id;
+    await isolatedClient.auth.signOut();
+
+    // Enviar correo de establecimiento de clave de forma asíncrona
+    void this.sendPasswordSetupEmail(cleanEmail);
+
+    return { ok: true, userId };
+  },
+
+  async activateBrotherAccess(
+    brother: {
+      name: string;
+      email: string;
+      role: Role;
+      celulaId?: string | null;
+    },
+    actor?: AuditActor,
+  ): Promise<{ ok: boolean; id?: string; error?: string }> {
+    const cleanEmail = brother.email.trim().toLowerCase();
+    if (!cleanEmail || !cleanEmail.includes('@')) {
+      return { ok: false, error: 'El hermano no posee un email valido para activar su cuenta.' };
+    }
+
+    // 1. Aprovisionar usuario para que pueda crear su clave por email
+    await this.provisionUserWithInvite(cleanEmail);
+
+    // 2. Dar de alta en la tabla 'usuarios' (whitelist activa)
+    return this.upsertUser(
+      {
+        nombre: brother.name.trim(),
+        email: cleanEmail,
+        rol: brother.role,
+        activo: true,
+        celulaId: brother.celulaId ?? null,
+      },
+      actor,
+    );
+  },
+
   async provisionAuthUser(
     email: string,
     password: string,

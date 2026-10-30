@@ -20,7 +20,10 @@ export enum Proceso {
   GRUPO = 'Grupo',
   EXPERIENCIA = 'Experiencia',
   EDDI = 'EDDI',
+  EDDI2 = 'EDDI 2',
+  EDDI3 = 'EDDI 3',
   DISCIPULO = 'Discípulo',
+  LIDER_CELULA = 'Líder de Célula',
   EDEM = 'EDEM',
 }
 
@@ -118,9 +121,16 @@ export interface Observation {
   text: string;
 }
 
+export interface LiderCelulaStage {
+  fechaInicio?: string;
+  fechaFin?: string;
+  observaciones?: ProcessObservation[];
+}
+
 export interface Brother {
   id: string;
   name: string;
+  email?: string;
   fotoUrl?: string;
   edad?: number;
   fechaNacimiento?: string;
@@ -134,6 +144,11 @@ export interface Brother {
   bautismo?: BautismoStage;
   eddi?: EDDIStage;
   discipulo?: DiscipuloStage;
+  eddi2?: EDDIStage;
+  eddi3?: EDDIStage;
+  experienciaEnvio?: ExperienciaEnvioStage;
+  liderCelula?: LiderCelulaStage;
+  edem?: EDEMStage;
   observations: Observation[];
   disciples?: string[];
 }
