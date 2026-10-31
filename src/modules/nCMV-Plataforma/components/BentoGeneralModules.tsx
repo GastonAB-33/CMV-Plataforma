@@ -44,7 +44,7 @@ const MODULES: ModuleConfig[] = [
   {
     id: 'seguimiento',
     label: 'Estadísticas',
-    sublabel: 'Pipeline y etapas espirituales',
+    sublabel: 'Métricas y etapas de crecimiento',
     path: '/tracking',
     icon: <LineChart size={20} />,
     bgLight: 'bg-sky-50/90',

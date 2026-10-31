@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Phone, MessageCircle, Calendar, User, Users, Heart, FileText, CheckCircle2, Clock, Send, Sparkles } from 'lucide-react';
+import { X, Phone, MessageCircle, Calendar, User, Users, Heart, FileText, CheckCircle2, Clock, Send, HeartHandshake } from 'lucide-react';
 import { FichaBienvenida } from '../types';
 
 interface FichaDetalleModalProps {
@@ -38,44 +38,52 @@ export const FichaDetalleModal: React.FC<FichaDetalleModalProps> = ({
             <X size={18} />
           </button>
 
-          <div className="text-center space-y-1 pr-6">
-            <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-white/20 backdrop-blur-md text-[10px] uppercase font-black tracking-widest text-emerald-100">
-              <Sparkles size={12} className="text-amber-300" />
-              <span>Plataforma Pastoral CMV</span>
+          <div className="text-center space-y-1.5 pr-6">
+            <div className="inline-flex items-center justify-center px-3 py-1 rounded-full bg-white/20 backdrop-blur-md text-white shadow-sm">
+              <HeartHandshake size={18} className="text-white" />
             </div>
             <h2 className="text-2xl sm:text-3xl font-black uppercase tracking-tight text-white drop-shadow-sm">
               FICHA DE BIENVENIDA
             </h2>
-            <p className="text-xs sm:text-sm text-emerald-100 font-medium">
+            <p className="text-sm sm:text-base text-emerald-100 font-medium">
               Cristo Manantial de Vida · Queremos conocerte y acompañarte
             </p>
           </div>
         </div>
 
-        {/* Estado actual de la derivación */}
-        <div className="px-6 py-3 bg-slate-50 dark:bg-white/5 border-b border-slate-200 dark:border-white/10 flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-2">
-            <span className="text-[10px] uppercase font-black tracking-wider text-slate-500 dark:text-gray-400">
-              Estado:
-            </span>
-            {ficha.estadoDerivacion === 'derivado' ? (
-              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 text-xs font-black uppercase tracking-wider">
-                <CheckCircle2 size={13} />
-                Derivado a {ficha.derivadoA?.nombre} ({ficha.derivadoA?.rol})
+        {/* Estado actual de la derivación y recepción */}
+        <div className="px-6 py-4 bg-slate-50 dark:bg-[#141414] border-b border-slate-200 dark:border-white/10 space-y-2.5">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-2.5">
+              <span className="text-xs sm:text-sm uppercase font-black tracking-wider text-slate-500 dark:text-gray-400">
+                ESTADO:
               </span>
-            ) : (
-              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30 text-xs font-black uppercase tracking-wider animate-pulse">
-                <Clock size={13} />
-                Pendiente de derivación
+              {ficha.estadoDerivacion === 'derivado' ? (
+                <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 text-xs sm:text-sm font-black uppercase tracking-wider">
+                  <CheckCircle2 size={15} />
+                  DERIVADO A {ficha.derivadoA?.nombre?.toUpperCase()} ({ficha.derivadoA?.rol?.toUpperCase()})
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-amber-500/15 text-amber-500 dark:text-amber-400 border border-amber-500/30 text-xs sm:text-sm font-black uppercase tracking-wider">
+                  <Clock size={15} />
+                  PENDIENTE DE DERIVACIÓN
+                </span>
+              )}
+            </div>
+
+            {ficha.fechaDerivacion && (
+              <span className="text-xs sm:text-sm text-slate-400 dark:text-gray-500 font-medium">
+                Derivado el: {new Date(ficha.fechaDerivacion).toLocaleDateString()}
               </span>
             )}
           </div>
 
-          {ficha.fechaDerivacion && (
-            <span className="text-[11px] text-slate-400 dark:text-gray-500 font-medium">
-              Derivado el: {new Date(ficha.fechaDerivacion).toLocaleDateString()}
+          <div className="text-xs sm:text-sm font-black tracking-wider uppercase text-slate-500 dark:text-gray-400 flex items-center gap-2">
+            <span>RECEPCION:</span>
+            <span className="text-base sm:text-lg text-slate-900 dark:text-white font-black">
+              {ficha.creadoPor?.nombre?.toUpperCase() || 'DIEGO SOSA'}
             </span>
-          )}
+          </div>
         </div>
 
         {/* Cuerpo de la ficha en formato de tabla o recuadros como el original */}
@@ -83,23 +91,23 @@ export const FichaDetalleModal: React.FC<FichaDetalleModalProps> = ({
           <div className="border border-slate-300 dark:border-white/15 rounded-2xl overflow-hidden divide-y divide-slate-300 dark:divide-white/15 shadow-sm">
             {/* Fila 1: Nombre y Apellido + Edad */}
             <div className="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-slate-300 dark:divide-white/15">
-              <div className="sm:col-span-2 p-3 sm:p-4 bg-white dark:bg-black/30">
-                <p className="text-[10px] uppercase font-black tracking-widest text-slate-500 dark:text-gray-400">
+              <div className="sm:col-span-2 p-4 sm:p-5 bg-white dark:bg-black/30">
+                <p className="text-xs sm:text-sm uppercase font-black tracking-wider text-slate-500 dark:text-gray-400">
                   Nombre y apellido:
                 </p>
-                <p className="text-base sm:text-lg font-black text-slate-900 dark:text-white mt-0.5">
+                <p className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white mt-1">
                   {ficha.nombreCompleto}
                 </p>
               </div>
-              <div className="p-3 sm:p-4 bg-white dark:bg-black/30">
-                <p className="text-[10px] uppercase font-black tracking-widest text-slate-500 dark:text-gray-400">
+              <div className="p-4 sm:p-5 bg-white dark:bg-black/30">
+                <p className="text-xs sm:text-sm uppercase font-black tracking-wider text-slate-500 dark:text-gray-400">
                   Edad actual:
                 </p>
-                <p className="text-base sm:text-lg font-black text-slate-900 dark:text-white mt-0.5">
+                <p className="text-lg sm:text-xl font-black text-slate-900 dark:text-white mt-1">
                   {ficha.edad ? `${ficha.edad} años` : '-'}
                 </p>
                 {ficha.fechaNacimiento && (
-                  <p className="text-[10px] text-slate-400 dark:text-gray-500 font-semibold mt-0.5">
+                  <p className="text-xs sm:text-sm text-slate-400 dark:text-gray-400 font-bold mt-1">
                     Nacimiento: {ficha.fechaNacimiento}
                   </p>
                 )}
@@ -108,86 +116,86 @@ export const FichaDetalleModal: React.FC<FichaDetalleModalProps> = ({
 
             {/* Fila 2: Teléfono + Fecha de Llegada */}
             <div className="grid grid-cols-1 sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x divide-slate-300 dark:divide-white/15">
-              <div className="p-3 sm:p-4 bg-white dark:bg-black/30 flex items-center justify-between">
+              <div className="p-4 sm:p-5 bg-white dark:bg-black/30 flex items-center justify-between">
                 <div>
-                  <p className="text-[10px] uppercase font-black tracking-widest text-slate-500 dark:text-gray-400">
+                  <p className="text-xs sm:text-sm uppercase font-black tracking-wider text-slate-500 dark:text-gray-400">
                     Teléfono:
                   </p>
-                  <p className="text-sm sm:text-base font-black text-slate-900 dark:text-white mt-0.5">
+                  <p className="text-lg sm:text-xl font-black text-slate-900 dark:text-white mt-1">
                     {ficha.telefono}
                   </p>
                 </div>
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-2">
                   {waLink && (
                     <a
                       href={waLink}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="p-2 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20 transition-colors"
+                      className="p-2.5 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20 transition-colors"
                       title="Abrir WhatsApp"
                     >
-                      <MessageCircle size={18} />
+                      <MessageCircle size={20} />
                     </a>
                   )}
                   <a
                     href={`tel:${ficha.telefono}`}
-                    className="p-2 rounded-xl bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-gray-300 hover:bg-slate-200 transition-colors"
+                    className="p-2.5 rounded-xl bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-gray-300 hover:bg-slate-200 transition-colors"
                     title="Llamar"
                   >
-                    <Phone size={18} />
+                    <Phone size={20} />
                   </a>
                 </div>
               </div>
 
-              <div className="p-3 sm:p-4 bg-white dark:bg-black/30">
-                <p className="text-[10px] uppercase font-black tracking-widest text-slate-500 dark:text-gray-400">
+              <div className="p-4 sm:p-5 bg-white dark:bg-black/30">
+                <p className="text-xs sm:text-sm uppercase font-black tracking-wider text-slate-500 dark:text-gray-400">
                   Fecha de llegada (Registro):
                 </p>
-                <p className="text-sm sm:text-base font-black text-slate-900 dark:text-white mt-0.5">
+                <p className="text-base sm:text-lg font-black text-slate-900 dark:text-white mt-1">
                   {ficha.fecha}
                 </p>
               </div>
             </div>
 
             {/* Fila 3: Célula que lo/la recibe */}
-            <div className="p-3 sm:p-4 bg-white dark:bg-black/30">
-              <p className="text-[10px] uppercase font-black tracking-widest text-slate-500 dark:text-gray-400">
+            <div className="p-4 sm:p-5 bg-white dark:bg-black/30">
+              <p className="text-xs sm:text-sm uppercase font-black tracking-wider text-slate-500 dark:text-gray-400">
                 Célula que lo/la recibe:
               </p>
-              <p className="text-sm sm:text-base font-black text-emerald-600 dark:text-emerald-400 mt-0.5">
+              <p className="text-lg sm:text-xl font-black text-emerald-600 dark:text-emerald-400 mt-1">
                 {ficha.celulaRecibe}
               </p>
             </div>
 
             {/* Fila 4: ¿Cómo llegó a la iglesia? */}
-            <div className="p-3 sm:p-4 bg-white dark:bg-black/30">
-              <p className="text-[10px] uppercase font-black tracking-widest text-slate-500 dark:text-gray-400">
+            <div className="p-4 sm:p-5 bg-white dark:bg-black/30">
+              <p className="text-xs sm:text-sm uppercase font-black tracking-wider text-slate-500 dark:text-gray-400">
                 ¿Cómo llegó a la iglesia?
               </p>
-              <p className="text-sm sm:text-base font-bold text-slate-800 dark:text-gray-100 mt-0.5">
+              <p className="text-base sm:text-lg font-bold text-slate-800 dark:text-gray-100 mt-1">
                 {ficha.comoLlego || '-'}
               </p>
             </div>
 
             {/* Fila 5: ¿Desea que lo/la contactemos? */}
-            <div className="p-3 sm:p-4 bg-white dark:bg-black/30 flex items-center justify-between">
-              <span className="text-xs uppercase font-black tracking-wider text-slate-700 dark:text-gray-300">
+            <div className="p-4 sm:p-5 bg-white dark:bg-black/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <span className="text-sm sm:text-base uppercase font-black tracking-wider text-slate-700 dark:text-gray-300">
                 ¿Desea que lo/la contactemos?
               </span>
               <div className="flex items-center gap-3">
                 <span
-                  className={`px-3 py-1 rounded-lg text-xs font-black uppercase tracking-wider ${
+                  className={`px-4 py-1.5 rounded-xl text-sm font-black uppercase tracking-wider ${
                     ficha.deseaContacto
-                      ? 'bg-emerald-600 text-white'
+                      ? 'btn-3d-emerald text-white shadow-sm'
                       : 'bg-slate-200 dark:bg-white/10 text-slate-500 dark:text-gray-400'
                   }`}
                 >
                   Sí {ficha.deseaContacto ? '■' : '□'}
                 </span>
                 <span
-                  className={`px-3 py-1 rounded-lg text-xs font-black uppercase tracking-wider ${
+                  className={`px-4 py-1.5 rounded-xl text-sm font-black uppercase tracking-wider ${
                     !ficha.deseaContacto
-                      ? 'bg-rose-600 text-white'
+                      ? 'bg-rose-600 text-white shadow-sm'
                       : 'bg-slate-200 dark:bg-white/10 text-slate-500 dark:text-gray-400'
                   }`}
                 >
@@ -197,23 +205,23 @@ export const FichaDetalleModal: React.FC<FichaDetalleModalProps> = ({
             </div>
 
             {/* Fila 6: Motivo de oración (opcional) */}
-            <div className="p-3 sm:p-4 bg-white dark:bg-black/30">
-              <p className="text-[10px] uppercase font-black tracking-widest text-slate-500 dark:text-gray-400 flex items-center gap-1.5">
-                <Heart size={12} className="text-rose-500" />
+            <div className="p-4 sm:p-5 bg-white dark:bg-black/30">
+              <p className="text-xs sm:text-sm uppercase font-black tracking-wider text-slate-500 dark:text-gray-400 flex items-center gap-1.5">
+                <Heart size={14} className="text-rose-500" />
                 Motivo de oración (opcional):
               </p>
-              <p className="text-sm font-medium text-slate-800 dark:text-gray-200 mt-1 italic">
+              <p className="text-base sm:text-lg font-medium text-slate-800 dark:text-gray-200 mt-1.5 italic">
                 {ficha.motivoOracion ? `"${ficha.motivoOracion}"` : 'Sin motivo registrado'}
               </p>
             </div>
 
             {/* Fila 7: Observaciones */}
-            <div className="p-3 sm:p-4 bg-white dark:bg-black/30">
-              <p className="text-[10px] uppercase font-black tracking-widest text-slate-500 dark:text-gray-400 flex items-center gap-1.5">
-                <FileText size={12} className="text-emerald-500" />
+            <div className="p-4 sm:p-5 bg-white dark:bg-black/30">
+              <p className="text-xs sm:text-sm uppercase font-black tracking-wider text-slate-500 dark:text-gray-400 flex items-center gap-1.5">
+                <FileText size={14} className="text-emerald-500" />
                 Observaciones:
               </p>
-              <p className="text-sm font-semibold text-slate-800 dark:text-gray-200 mt-1">
+              <p className="text-base sm:text-lg font-semibold text-slate-800 dark:text-gray-200 mt-1.5">
                 {ficha.observaciones || 'Sin observaciones'}
               </p>
             </div>
@@ -221,11 +229,11 @@ export const FichaDetalleModal: React.FC<FichaDetalleModalProps> = ({
 
           {/* Notas de derivación si ya fue derivado */}
           {ficha.notasDerivacion && (
-            <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-xs">
+            <div className="p-4 sm:p-5 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-sm">
               <p className="font-black uppercase tracking-wider text-emerald-700 dark:text-emerald-300">
                 Instrucciones pastorales adjuntas:
               </p>
-              <p className="text-slate-700 dark:text-gray-300 mt-1 italic">
+              <p className="text-slate-700 dark:text-gray-300 mt-1 italic text-base">
                 "{ficha.notasDerivacion}"
               </p>
             </div>
@@ -233,7 +241,7 @@ export const FichaDetalleModal: React.FC<FichaDetalleModalProps> = ({
 
           {/* Pie idéntico a la cartilla física */}
           <div className="text-center pt-2">
-            <p className="text-xs text-slate-500 dark:text-gray-400 font-medium italic">
+            <p className="text-sm sm:text-base text-slate-500 dark:text-gray-400 font-medium italic">
               Gracias por visitarnos. ¡Esperamos volver a verte!
             </p>
           </div>
@@ -243,7 +251,7 @@ export const FichaDetalleModal: React.FC<FichaDetalleModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 text-xs font-bold uppercase tracking-wider hover:bg-slate-100 dark:hover:bg-white/5 transition-colors"
+              className="px-5 py-3 rounded-xl border border-slate-200 dark:border-white/10 text-sm font-bold uppercase tracking-wider hover:bg-slate-100 dark:hover:bg-white/5 transition-colors cursor-pointer"
             >
               Cerrar
             </button>
@@ -254,9 +262,9 @@ export const FichaDetalleModal: React.FC<FichaDetalleModalProps> = ({
                 onClose();
                 onOpenDerivar(ficha);
               }}
-              className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-black uppercase tracking-wider shadow-md transition-all flex items-center gap-2 active:scale-95"
+              className="px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-sm sm:text-base font-black uppercase tracking-wider shadow-md transition-all flex items-center gap-2 active:scale-95 cursor-pointer"
             >
-              <Send size={15} />
+              <Send size={16} />
               <span>{ficha.estadoDerivacion === 'derivado' ? 'Re-derivar a otro Líder' : 'Derivar a Líder o Pastor'}</span>
             </button>
           </div>

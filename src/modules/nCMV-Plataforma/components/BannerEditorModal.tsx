@@ -249,21 +249,21 @@ export const BannerEditorModal: React.FC<BannerEditorModalProps> = ({
 
               {/* Muestra de texto simulado */}
               <div className="absolute inset-0 p-4 sm:p-5 flex flex-col justify-end text-white">
-                <span className="text-[10px] uppercase font-black tracking-widest text-[#00dfa2]">
-                  CMV PLATAFORMA
-                </span>
-                <p className="font-cursive-legend text-xl sm:text-2xl text-cyan-200 drop-shadow">
-                  CMV, el manantial que nunca se seca
+                <p className="font-cursive-motto text-lg sm:text-2xl text-white drop-shadow leading-tight line-clamp-2 max-w-xl">
+                  Llevar las aguas de este manantial a cada hogar, ciudad, nación hasta lo último de la tierra en el poder del Espíritu Santo
                 </p>
-                <div className="flex items-center gap-2 mt-1">
-                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-black/40 border border-emerald-400/30 text-emerald-300 font-bold">
-                    Ganar
+                <div className="flex items-center gap-1.5 mt-2 overflow-hidden">
+                  <span className="text-[9px] px-2 py-0.5 rounded-full bg-black/60 border border-cyan-500/30 text-white font-bold uppercase">
+                    GANAR
                   </span>
-                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-black/40 border border-cyan-400/30 text-cyan-300 font-bold">
-                    Discipular
+                  <span className="text-[9px] px-2 py-0.5 rounded-full bg-black/60 border border-cyan-500/30 text-white font-bold uppercase">
+                    CONSOLIDAR
                   </span>
-                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-black/40 border border-teal-400/30 text-teal-300 font-bold">
-                    Enviar
+                  <span className="text-[9px] px-2 py-0.5 rounded-full bg-black/60 border border-cyan-500/30 text-white font-bold uppercase">
+                    DISCIPULAR
+                  </span>
+                  <span className="text-[9px] px-2 py-0.5 rounded-full bg-black/60 border border-cyan-500/30 text-white font-bold uppercase">
+                    ENVIAR
                   </span>
                 </div>
               </div>

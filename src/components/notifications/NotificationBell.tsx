@@ -64,7 +64,7 @@ export const NotificationBell: React.FC = () => {
               ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30'
               : permission === 'denied'
                 ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30'
-                : 'bg-emerald-600 text-white hover:bg-emerald-700 border-transparent shadow-sm hover:scale-[1.02]'
+                : 'btn-3d-emerald text-white border-transparent shadow-sm hover:scale-[1.02]'
           }`}
         >
           {isLoading ? (
@@ -116,7 +116,7 @@ export const NotificationBell: React.FC = () => {
             <button
               type="button"
               onClick={() => setShowIOSHelp(false)}
-              className="w-full py-2.5 rounded-xl bg-emerald-600 text-white font-bold text-xs uppercase tracking-wider hover:bg-emerald-700 transition-colors"
+              className="w-full py-2.5 rounded-xl btn-3d-emerald text-white font-bold text-xs uppercase tracking-wider"
             >
               Entendido
             </button>

@@ -12,8 +12,8 @@ test('verifica los nombres de los módulos en la barra de navegación lateral', 
 
   const navLinks = page.locator('aside nav a');
 
-  // 1. Visión CMV
-  await expect(navLinks.filter({ hasText: 'Visión CMV' })).toBeVisible();
+  // 1. Línea de Vida (reemplazó a Visión CMV)
+  await expect(navLinks.filter({ hasText: 'Línea de Vida' })).toBeVisible();
 
   // 2. Estadísticas (reemplazó a Seguimiento)
   await expect(navLinks.filter({ hasText: 'Estadísticas' })).toBeVisible();

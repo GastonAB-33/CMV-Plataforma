@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Search, ChevronRight, UserPlus, Filter, Sparkles, ChevronDown } from 'lucide-react';
+import { Search, ChevronRight, UserPlus, Filter, Sparkles, ChevronDown, BookOpen } from 'lucide-react';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { brothersService } from '../../services/brothersService';
@@ -11,6 +11,7 @@ import { Toast } from '../../components/ui/Toast';
 import { BrotherNameTrigger } from '../../components/brothers/BrotherNameTrigger';
 import { getAvatarForBrother } from '../../services/avatarService';
 import { BrotherListItem } from './types';
+import { RecursosModal } from './components/RecursosModal';
 
 const STAGES = ['Todas', Proceso.ALTAR, Proceso.GRUPO, Proceso.EXPERIENCIA, Proceso.EDDI, Proceso.DISCIPULO] as const;
 
@@ -49,6 +50,7 @@ export const BrotherList = () => {
   const [isSummaryModalOpen, setIsSummaryModalOpen] = useState(false);
   const [isStageFilterModalOpen, setIsStageFilterModalOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isRecursosModalOpen, setIsRecursosModalOpen] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('Alta de hermano procesada correctamente.');
   const [toastType, setToastType] = useState<ToastType>('success');
@@ -223,25 +225,16 @@ export const BrotherList = () => {
           {/* Contenido con padding optimizado */}
           <header className="relative z-10 w-full px-6 sm:px-10 md:px-12 pt-12 sm:pt-16 md:pt-18 pb-10 sm:pb-12 md:pb-14 flex flex-col md:flex-row md:items-end justify-between gap-6 md:gap-8">
             <div className="space-y-3 max-w-2xl">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-black/30 dark:bg-white/15 backdrop-blur-md border border-white/25 text-white text-[11px] font-extrabold uppercase tracking-widest shadow-sm">
-                <Sparkles className="text-amber-300" size={13} />
-                <span>Plataforma Pastoral CMV</span>
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-black/30 dark:bg-white/15 backdrop-blur-md border border-white/25 text-white text-xs font-black uppercase tracking-widest shadow-sm">
+                <Sparkles className="text-amber-300" size={14} />
+                <span>PLATAFORMA VISION CMV</span>
               </div>
-              <h1 className="text-3xl sm:text-5xl md:text-6xl font-black text-white tracking-tight drop-shadow-lg leading-none">
-                Hermanos
+              <h1 className="text-4xl sm:text-6xl md:text-7xl font-black text-white tracking-tight drop-shadow-lg leading-none">
+                Linea de vida
               </h1>
-              <p className="text-sm sm:text-base text-emerald-50 dark:text-cyan-100 font-medium drop-shadow-sm leading-relaxed">
-                Seguimiento y gestión espiritual de la congregación.
+              <p className="text-base sm:text-lg md:text-xl text-emerald-50 dark:text-cyan-100 font-medium drop-shadow-sm leading-relaxed">
+                Seguimiento y gestión espiritual de la Comunidad.
               </p>
-            </div>
-            <div className="shrink-0 pt-2 md:pt-0">
-              <button
-                onClick={() => setIsModalOpen(true)}
-                className="w-full sm:w-auto justify-center btn-3d-emerald text-white px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl font-black flex items-center gap-2 uppercase tracking-wider text-xs shadow-xl"
-              >
-                <UserPlus size={18} />
-                <span>NUEVO HERMANO</span>
-              </button>
             </div>
           </header>
         </div>
@@ -251,31 +244,33 @@ export const BrotherList = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 space-y-6 md:space-y-8">
         {/* Controles móviles */}
         <div className="md:hidden space-y-3">
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-2 gap-2.5">
             <button
               type="button"
               onClick={() => setIsModalOpen(true)}
-              className="justify-center btn-3d-emerald text-white px-4 py-3 rounded-xl text-xs font-black flex items-center gap-2 uppercase tracking-wider shadow-md"
+              className="w-full justify-center btn-3d-emerald text-white px-3 py-3.5 rounded-xl text-xs sm:text-sm font-black flex items-center gap-2 uppercase tracking-wider shadow-md active:scale-95 transition-all"
             >
-              <UserPlus size={16} />
-              Nuevo hermano
+              <UserPlus size={18} />
+              <span>NUEVO</span>
             </button>
+
             <button
               type="button"
-              onClick={() => setIsSummaryModalOpen(true)}
-              className="justify-center btn-3d-pill-inactive text-slate-700 dark:text-gray-200 px-4 py-3 rounded-xl text-xs font-black flex items-center gap-2 uppercase tracking-wider"
+              onClick={() => setIsRecursosModalOpen(true)}
+              className="w-full justify-center btn-3d-emerald text-white px-3 py-3.5 rounded-xl text-xs sm:text-sm font-black flex items-center gap-2 uppercase tracking-wider shadow-md active:scale-95 transition-all"
             >
-              Resumen
+              <BookOpen size={18} />
+              <span>RECURSOS</span>
             </button>
           </div>
 
           <div className="flex items-center gap-2">
             <div className="relative flex-1 group">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-gray-400 group-focus-within:text-emerald-500 transition-colors" size={16} />
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-gray-400 group-focus-within:text-emerald-500 transition-colors" size={18} />
               <input
                 type="text"
                 placeholder="Buscar por nombre o ID..."
-                className="w-full bg-gradient-to-r from-white/95 via-sky-50/40 to-white/95 dark:from-[#0d192c]/95 dark:via-[#091220]/95 dark:to-[#060c17]/95 backdrop-blur-md border border-slate-200/90 dark:border-white/10 focus:border-emerald-500/60 rounded-xl py-3 pl-10 pr-3 text-sm text-slate-900 dark:text-white focus:outline-none transition-all shadow-sm"
+                className="w-full bg-gradient-to-r from-white/95 via-sky-50/40 to-white/95 dark:from-[#0d192c]/95 dark:via-[#091220]/95 dark:to-[#060c17]/95 backdrop-blur-md border border-slate-200/90 dark:border-white/10 focus:border-emerald-500/60 rounded-xl py-3.5 pl-11 pr-3 text-base text-slate-900 dark:text-white focus:outline-none transition-all shadow-sm"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
@@ -283,43 +278,59 @@ export const BrotherList = () => {
             <button
               type="button"
               onClick={() => setIsStageFilterModalOpen(true)}
-              className="h-11 w-11 shrink-0 rounded-xl btn-3d-pill-inactive text-slate-600 dark:text-gray-300 flex items-center justify-center"
+              className="h-12 w-12 shrink-0 rounded-xl btn-3d-pill-inactive text-slate-600 dark:text-gray-300 flex items-center justify-center hover:border-emerald-500/40 hover:text-emerald-400 transition-colors"
               aria-label="Abrir filtros"
             >
-              <Filter size={16} />
+              <Filter size={18} />
             </button>
           </div>
         </div>
 
         {/* Barra de búsqueda y selector de etapas escritorio */}
-        <div className="hidden md:block space-y-4 md:space-y-6">
-          <div className="flex flex-col md:flex-row gap-4">
+        <div className="hidden md:block space-y-4">
+          <div className="flex items-center gap-3">
             <div className="relative flex-1 group">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-gray-400 group-focus-within:text-emerald-500 transition-colors" size={20} />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-gray-400 group-focus-within:text-emerald-500 transition-colors" size={22} />
               <input
                 type="text"
                 placeholder="Buscar por nombre o ID..."
-                className="w-full bg-gradient-to-r from-white/90 via-sky-50/60 to-white/90 dark:from-[#0d192c]/90 dark:via-[#091220]/90 dark:to-[#060c17]/90 backdrop-blur-xl border border-white/60 dark:border-white/15 focus:border-emerald-500/60 rounded-xl py-3.5 md:py-4 pl-12 pr-4 text-slate-900 dark:text-white focus:outline-none transition-all shadow-[0_10px_30px_-5px_rgba(2,132,199,0.08)] dark:shadow-[0_12px_35px_rgba(0,0,0,0.5)] text-base"
+                className="w-full bg-gradient-to-r from-white/90 via-sky-50/60 to-white/90 dark:from-[#0d192c]/90 dark:via-[#091220]/90 dark:to-[#060c17]/90 backdrop-blur-xl border border-white/60 dark:border-white/15 focus:border-emerald-500/60 rounded-xl py-3.5 pl-13 pr-4 text-slate-900 dark:text-white focus:outline-none transition-all shadow-[0_10px_30px_-5px_rgba(2,132,199,0.08)] dark:shadow-[0_12px_35px_rgba(0,0,0,0.5)] text-base lg:text-lg"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
 
-            <div className="flex gap-2.5 overflow-x-auto pb-1 no-scrollbar md:pb-0">
-              {STAGES.map((stage) => (
-                <button
-                  key={stage}
-                  onClick={() => setSelectedStage(stage)}
-                  className={`px-6 md:px-8 py-3 md:py-3.5 rounded-xl text-sm md:text-base font-extrabold whitespace-nowrap transition-all uppercase tracking-wider ${
-                    selectedStage === stage
-                      ? 'btn-3d-pill-active'
-                      : 'btn-3d-pill-inactive text-slate-700 dark:text-gray-200 hover:text-emerald-700 dark:hover:text-emerald-400'
-                  }`}
-                >
-                  {stage}
-                </button>
-              ))}
-            </div>
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="justify-center btn-3d-emerald text-white px-6 py-3.5 rounded-xl text-sm md:text-base font-black flex items-center gap-2 uppercase tracking-wider shadow-md shrink-0 active:scale-95 transition-all"
+            >
+              <UserPlus size={20} />
+              <span>NUEVO</span>
+            </button>
+
+            <button
+              onClick={() => setIsRecursosModalOpen(true)}
+              className="justify-center btn-3d-emerald text-white px-6 py-3.5 rounded-xl text-sm md:text-base font-black flex items-center gap-2 uppercase tracking-wider shadow-md shrink-0 active:scale-95 transition-all"
+            >
+              <BookOpen size={20} />
+              <span>RECURSOS</span>
+            </button>
+          </div>
+
+          <div className="flex gap-2.5 overflow-x-auto pb-1 no-scrollbar shrink-0">
+            {STAGES.map((stage) => (
+              <button
+                key={stage}
+                onClick={() => setSelectedStage(stage)}
+                className={`px-6 py-2.5 rounded-xl text-sm md:text-base font-black whitespace-nowrap transition-all uppercase tracking-wider ${
+                  selectedStage === stage
+                    ? 'btn-3d-pill-active'
+                    : 'btn-3d-pill-inactive text-slate-700 dark:text-gray-200 hover:text-emerald-700 dark:hover:text-emerald-400'
+                }`}
+              >
+                {stage}
+              </button>
+            ))}
           </div>
         </div>
 
@@ -346,8 +357,8 @@ export const BrotherList = () => {
                     }}
                     className="w-full text-left"
                   >
-                    <div className="flex items-start gap-3.5">
-                      <div className="w-13 h-13 rounded-xl overflow-hidden border border-white/70 dark:border-white/20 shadow-md shrink-0 bg-slate-200 dark:bg-slate-800 relative">
+                    <div className="flex items-start gap-4">
+                      <div className="w-16 h-16 sm:w-[68px] sm:h-[68px] rounded-2xl overflow-hidden border border-white/70 dark:border-white/20 shadow-md shrink-0 bg-slate-200 dark:bg-slate-800 relative">
                         <img
                           src={brother.fotoUrl || getAvatarForBrother(brother.name)}
                           alt={brother.name}
@@ -360,18 +371,18 @@ export const BrotherList = () => {
                       <div className="min-w-0 flex-1">
                         <BrotherNameTrigger
                           name={brother.name}
-                          className="font-black text-slate-900 dark:text-white text-lg leading-tight"
-                          fallbackClassName="font-black text-slate-900 dark:text-white text-lg leading-tight"
+                          className="font-black text-slate-900 dark:text-white text-xl sm:text-2xl leading-tight"
+                          fallbackClassName="font-black text-slate-900 dark:text-white text-xl sm:text-2xl leading-tight"
                         />
-                        <p className="text-[11px] text-slate-500 dark:text-gray-400 font-bold tracking-wider mt-1 uppercase">Miembro activo</p>
+                        <p className="text-xs sm:text-sm text-slate-500 dark:text-gray-400 font-extrabold tracking-wider mt-1 uppercase">Miembro activo</p>
                         <div className="mt-2.5">
-                          <span className={`inline-flex px-3.5 py-1.5 rounded-lg text-xs uppercase tracking-wider font-black border shadow-sm ${STAGE_COLORS[brother.procesoActual]}`}>
+                          <span className={`inline-flex px-4 py-2 rounded-xl text-xs sm:text-sm uppercase tracking-wider font-black border shadow-sm ${STAGE_COLORS[brother.procesoActual]}`}>
                             {brother.procesoActual}
                           </span>
                         </div>
                       </div>
                       <ChevronDown
-                        size={20}
+                        size={22}
                         className={`shrink-0 mt-1 text-slate-400 dark:text-gray-500 transition-transform ${isExpanded ? 'rotate-180 text-emerald-500' : ''}`}
                       />
                     </div>
@@ -382,26 +393,26 @@ export const BrotherList = () => {
                       isExpanded ? 'grid-rows-[1fr] opacity-100 mt-4' : 'grid-rows-[0fr] opacity-0 mt-0'
                     }`}
                   >
-                    <div className="overflow-hidden border-t border-slate-200/80 dark:border-white/10 pt-3 space-y-2">
-                      <p className="text-xs text-slate-600 dark:text-gray-300">
-                        Celula: <span className="font-semibold text-slate-700 dark:text-gray-200">{brother.cellName}</span>
+                    <div className="overflow-hidden border-t border-slate-200/80 dark:border-white/10 pt-3.5 space-y-2.5">
+                      <p className="text-sm text-slate-600 dark:text-gray-300">
+                        Celula: <span className="font-extrabold text-slate-800 dark:text-gray-100">{brother.cellName}</span>
                       </p>
-                      <p className="text-xs text-slate-600 dark:text-gray-300">
+                      <p className="text-sm text-slate-600 dark:text-gray-300">
                         Responsable:{' '}
                         <BrotherNameTrigger
                           name={brother.acompananteName || 'No asig.'}
-                          className="font-semibold text-slate-700 dark:text-gray-200"
-                          fallbackClassName="font-semibold text-slate-700 dark:text-gray-200"
+                          className="font-extrabold text-slate-800 dark:text-gray-100"
+                          fallbackClassName="font-extrabold text-slate-800 dark:text-gray-100"
                         />
                       </p>
 
                       <button
                         type="button"
                         onClick={() => navigate(`/hermanos/${brother.id}`)}
-                        className="mt-2 inline-flex items-center gap-2 text-xs uppercase tracking-wider font-extrabold text-emerald-600 dark:text-emerald-400 hover:text-emerald-500"
+                        className="mt-2 inline-flex items-center gap-2 text-sm uppercase tracking-wider font-black text-emerald-600 dark:text-emerald-400 hover:text-emerald-500"
                       >
                         Ver ficha
-                        <ChevronRight size={16} />
+                        <ChevronRight size={18} />
                       </button>
                     </div>
                   </div>
@@ -413,7 +424,7 @@ export const BrotherList = () => {
               <button
                 type="button"
                 onClick={() => setVisibleCount((current) => current + 6)}
-                className="w-full rounded-xl btn-3d-pill-inactive py-3.5 text-xs uppercase tracking-wider font-extrabold text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10 shadow-sm"
+                className="w-full rounded-xl btn-3d-pill-inactive py-4 text-sm uppercase tracking-wider font-black text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10 shadow-sm"
               >
                 Cargar mas hermanos
               </button>
@@ -424,7 +435,7 @@ export const BrotherList = () => {
             <div className="overflow-x-auto no-scrollbar">
               <table className="w-full text-left border-collapse min-w-[800px]">
                 <thead>
-                  <tr className="bg-slate-100/90 dark:bg-black/50 text-slate-600 dark:text-gray-300 text-xs uppercase tracking-wider font-black border-b border-slate-200/80 dark:border-white/10">
+                  <tr className="bg-slate-100/90 dark:bg-black/50 text-slate-600 dark:text-gray-300 text-sm uppercase tracking-wider font-black border-b border-slate-200/80 dark:border-white/10">
                     <th className="px-8 py-5">Líder / Hermano</th>
                     <th className="px-8 py-5">Ubicación / Célula</th>
                     <th className="px-8 py-5">Etapa espiritual</th>
@@ -435,9 +446,9 @@ export const BrotherList = () => {
                 <tbody className="divide-y divide-slate-200/80 dark:divide-white/5">
                   {filteredBrothers.map((brother) => (
                     <tr key={brother.id} onClick={() => navigate(`/hermanos/${brother.id}`)} className="hover:bg-emerald-500/5 dark:hover:bg-emerald-500/10 transition-all cursor-pointer group">
-                      <td className="px-8 py-5">
+                      <td className="px-8 py-6">
                         <div className="flex items-center gap-5">
-                          <div className="w-13 h-13 rounded-xl overflow-hidden border border-white/70 dark:border-white/20 shadow-md shrink-0 bg-slate-200 dark:bg-slate-800 relative group-hover:scale-105 transition-transform">
+                          <div className="w-16 h-16 md:w-[68px] md:h-[68px] rounded-2xl overflow-hidden border border-white/70 dark:border-white/20 shadow-md shrink-0 bg-slate-200 dark:bg-slate-800 relative group-hover:scale-105 transition-transform">
                             <img
                               src={brother.fotoUrl || getAvatarForBrother(brother.name)}
                               alt={brother.name}
@@ -450,37 +461,37 @@ export const BrotherList = () => {
                           <div>
                             <BrotherNameTrigger
                               name={brother.name}
-                              className="font-black text-slate-900 dark:text-white text-xl leading-tight group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors"
-                              fallbackClassName="font-black text-slate-900 dark:text-white text-xl leading-tight"
+                              className="font-black text-slate-900 dark:text-white text-2xl leading-tight group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors"
+                              fallbackClassName="font-black text-slate-900 dark:text-white text-2xl leading-tight"
                             />
-                            <p className="text-[11px] text-slate-500 dark:text-gray-400 font-extrabold tracking-wider mt-0.5 uppercase">Miembro activo</p>
+                            <p className="text-xs text-slate-500 dark:text-gray-400 font-extrabold tracking-wider mt-1 uppercase">Miembro activo</p>
                           </div>
                         </div>
                       </td>
-                      <td className="px-8 py-5 text-slate-600 dark:text-gray-300">
+                      <td className="px-8 py-6 text-slate-600 dark:text-gray-300">
                         <div className="flex flex-col">
-                          <span className="font-extrabold text-slate-800 dark:text-gray-100 text-base">{brother.cellName}</span>
-                          <span className="text-[11px] uppercase font-bold text-slate-500 dark:text-gray-400 tracking-wider">Zona Norte - CMV</span>
+                          <span className="font-extrabold text-slate-800 dark:text-gray-100 text-lg">{brother.cellName}</span>
+                          <span className="text-xs uppercase font-extrabold text-slate-500 dark:text-gray-400 tracking-wider">Zona Norte - CMV</span>
                         </div>
                       </td>
-                      <td className="px-8 py-5">
-                        <span className={`px-4.5 py-2 rounded-xl text-xs uppercase tracking-wider font-black border transition-all duration-300 shadow-sm ${STAGE_COLORS[brother.procesoActual]}`}>
+                      <td className="px-8 py-6">
+                        <span className={`px-5 py-2.5 rounded-xl text-sm uppercase tracking-wider font-black border transition-all duration-300 shadow-sm ${STAGE_COLORS[brother.procesoActual]}`}>
                           {brother.procesoActual}
                         </span>
                       </td>
-                      <td className="px-8 py-5">
+                      <td className="px-8 py-6">
                         <div className="flex items-center gap-2.5">
-                          <div className="w-3 h-3 rounded-full bg-emerald-500 shadow-[0_0_10px_#10b981]" />
+                          <div className="w-3.5 h-3.5 rounded-full bg-emerald-500 shadow-[0_0_10px_#10b981]" />
                           <BrotherNameTrigger
                             name={brother.acompananteName || 'No asig.'}
-                            className="text-slate-700 dark:text-gray-200 text-sm font-black uppercase tracking-wider hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
-                            fallbackClassName="text-slate-700 dark:text-gray-200 text-sm font-black uppercase tracking-wider"
+                            className="text-slate-700 dark:text-gray-200 text-base font-black uppercase tracking-wider hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
+                            fallbackClassName="text-slate-700 dark:text-gray-200 text-base font-black uppercase tracking-wider"
                           />
                         </div>
                       </td>
-                      <td className="px-8 py-5 text-right">
-                        <div className="w-11 h-11 rounded-xl flex items-center justify-center btn-3d-pill-inactive text-slate-500 dark:text-gray-400 group-hover:bg-[#059669] group-hover:text-white transition-all shadow-sm">
-                          <ChevronRight size={20} />
+                      <td className="px-8 py-6 text-right">
+                        <div className="w-12 h-12 rounded-xl flex items-center justify-center btn-3d-pill-inactive text-slate-500 dark:text-gray-400 group-hover:bg-[#059669] group-hover:text-white transition-all shadow-sm">
+                          <ChevronRight size={22} />
                         </div>
                       </td>
                     </tr>
@@ -549,27 +560,30 @@ export const BrotherList = () => {
         </div>
       </Modal>
 
-      <Modal isOpen={isStageFilterModalOpen} onClose={() => setIsStageFilterModalOpen(false)} title="Filtros">
-        <div className="space-y-3">
-          <p className="text-xs text-slate-500 dark:text-gray-300">Selecciona la etiqueta de filtrado.</p>
-          <div className="grid grid-cols-2 gap-2">
-            {STAGES.map((stage) => (
-              <button
-                key={stage}
-                type="button"
-                onClick={() => {
-                  setSelectedStage(stage);
-                  setIsStageFilterModalOpen(false);
-                }}
-                className={`px-3 py-2 rounded-xl text-[11px] font-black uppercase tracking-widest border transition-all ${
-                  selectedStage === stage
-                    ? 'bg-[#c5a059] text-black border-[#c5a059]'
-                    : 'bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-gray-300 border-slate-200 dark:border-white/10'
-                }`}
-              >
-                {stage}
-              </button>
-            ))}
+      <Modal isOpen={isStageFilterModalOpen} onClose={() => setIsStageFilterModalOpen(false)} title="Filtros" size="sm">
+        <div className="space-y-4 py-1">
+          <p className="text-sm text-slate-500 dark:text-gray-400 font-medium">Selecciona la etiqueta de filtrado.</p>
+          <div className="grid grid-cols-2 gap-3">
+            {STAGES.map((stage) => {
+              const isSelected = selectedStage === stage;
+              return (
+                <button
+                  key={stage}
+                  type="button"
+                  onClick={() => {
+                    setSelectedStage(stage);
+                    setIsStageFilterModalOpen(false);
+                  }}
+                  className={`px-4 py-3.5 rounded-xl text-sm font-black uppercase tracking-wider transition-all duration-200 ${
+                    isSelected
+                      ? 'btn-3d-pill-active shadow-lg shadow-emerald-500/25'
+                      : 'btn-3d-pill-inactive text-slate-700 dark:text-gray-300 hover:text-emerald-500 dark:hover:text-emerald-400 hover:border-emerald-500/40'
+                  }`}
+                >
+                  {stage}
+                </button>
+              );
+            })}
           </div>
         </div>
       </Modal>
@@ -578,41 +592,41 @@ export const BrotherList = () => {
         <form onSubmit={handleSaveBrother} className="space-y-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="space-y-3">
-              <label className="text-[10px] uppercase tracking-widest font-black text-[#c5a059]">Nombre completo</label>
+              <label className="text-xs uppercase tracking-wider font-black text-emerald-600 dark:text-emerald-400">Nombre completo</label>
               <input
                 type="text"
                 placeholder="Ej: David Livingstone"
                 required
                 value={newBrotherName}
                 onChange={(event) => setNewBrotherName(event.target.value)}
-                className="w-full bg-slate-100 dark:bg-white/5 border border-white/10 rounded-[1.2rem] p-5 text-slate-900 dark:text-white focus:outline-none focus:border-[#c5a059] transition-all"
+                className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-[1.2rem] p-4.5 sm:p-5 text-base font-medium text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 transition-all"
               />
             </div>
             <div className="space-y-3">
-              <label className="text-[10px] uppercase tracking-widest font-black text-[#c5a059]">Fecha de nacimiento</label>
+              <label className="text-xs uppercase tracking-wider font-black text-emerald-600 dark:text-emerald-400">Fecha de nacimiento</label>
               <input
                 type="date"
                 value={newBrotherBirthDate}
                 onChange={(event) => setNewBrotherBirthDate(event.target.value)}
-                className="w-full bg-slate-100 dark:bg-white/5 border border-white/10 rounded-[1.2rem] p-5 text-slate-900 dark:text-white focus:outline-none focus:border-[#c5a059] transition-all"
+                className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-[1.2rem] p-4.5 sm:p-5 text-base font-medium text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 transition-all"
               />
             </div>
             <div className="space-y-3">
-              <label className="text-[10px] uppercase tracking-widest font-black text-[#c5a059]">Fecha de ingreso</label>
+              <label className="text-xs uppercase tracking-wider font-black text-emerald-600 dark:text-emerald-400">Fecha de ingreso</label>
               <input
                 type="date"
                 required
                 value={newBrotherDate}
                 onChange={(event) => setNewBrotherDate(event.target.value)}
-                className="w-full bg-slate-100 dark:bg-white/5 border border-white/10 rounded-[1.2rem] p-5 text-slate-900 dark:text-white focus:outline-none focus:border-[#c5a059] transition-all"
+                className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-[1.2rem] p-4.5 sm:p-5 text-base font-medium text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 transition-all"
               />
             </div>
             <div className="space-y-3">
-              <label className="text-[10px] uppercase tracking-widest font-black text-[#c5a059]">Celula asignada</label>
+              <label className="text-xs uppercase tracking-wider font-black text-emerald-600 dark:text-emerald-400">Celula asignada</label>
               <select
                 value={newBrotherCell}
                 onChange={(event) => setNewBrotherCell(event.target.value)}
-                className="w-full bg-slate-100 dark:bg-white/5 border border-white/10 rounded-[1.2rem] p-5 text-slate-900 dark:text-white focus:outline-none focus:border-[#c5a059] transition-all appearance-none"
+                className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-[1.2rem] p-4.5 sm:p-5 text-base font-medium text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 transition-all appearance-none"
               >
                 {cellOptions.map((cell) => (
                   <option key={cell} value={cell}>
@@ -622,11 +636,11 @@ export const BrotherList = () => {
               </select>
             </div>
             <div className="space-y-3">
-              <label className="text-[10px] uppercase tracking-widest font-black text-[#c5a059]">Etapa inicial</label>
+              <label className="text-xs uppercase tracking-wider font-black text-emerald-600 dark:text-emerald-400">Etapa inicial</label>
               <select
                 value={newBrotherStage}
                 onChange={(event) => setNewBrotherStage(event.target.value as InitialStage)}
-                className="w-full bg-slate-100 dark:bg-white/5 border border-white/10 rounded-[1.2rem] p-5 text-slate-900 dark:text-white focus:outline-none focus:border-[#c5a059] transition-all appearance-none"
+                className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-[1.2rem] p-4.5 sm:p-5 text-base font-medium text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 transition-all appearance-none"
               >
                 <option value="Altar">Altar</option>
                 <option value="Grupo">Grupo</option>
@@ -639,13 +653,23 @@ export const BrotherList = () => {
             <button
               type="submit"
               disabled={isSavingBrother}
-              className="w-full py-5 bg-[#c5a059] text-black font-black rounded-[1.5rem] hover:bg-[#d4b375] hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl uppercase tracking-widest"
+              className="w-full py-4.5 btn-3d-emerald text-white text-base font-black rounded-2xl hover:brightness-105 active:scale-[0.98] transition-all shadow-xl uppercase tracking-widest"
             >
               {isSavingBrother ? 'Guardando...' : 'Confirmar alta en el sistema'}
             </button>
           </div>
         </form>
       </Modal>
+
+      <RecursosModal
+        isOpen={isRecursosModalOpen}
+        onClose={() => setIsRecursosModalOpen(false)}
+        onNotify={(msg, type = 'success') => {
+          setToastMessage(msg);
+          setToastType(type);
+          setShowToast(true);
+        }}
+      />
 
       <Toast isVisible={showToast} onClose={() => setShowToast(false)} message={toastMessage} type={toastType} />
     </div>

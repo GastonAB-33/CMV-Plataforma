@@ -1,9 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  Users,
   Home,
-  Crown,
   ArrowLeft,
 } from 'lucide-react';
 import { brothersService } from '../../services/brothersService';
@@ -18,11 +16,12 @@ import {
   resolveLeaderDetailData,
 } from './components/LeaderDetailModal';
 import { GrupoVidaMembersModal } from './components/GrupoVidaMembersModal';
+import { CellDetailModal } from './components/CellDetailModal';
 import { CellGrupoVida } from './services/cellGruposVidaService';
 import { Role } from '../../types';
 
-// Células canónicas estándar de CMV
-const CANONICAL_CELL_NAMES = ['Vida', 'Saetas', 'Maranatha', 'Sion', 'Nissi', 'Alfa y Omega'];
+// Células canónicas estándar de CMV (incluyendo la Célula Red Apostólica)
+const CANONICAL_CELL_NAMES = ['Red Apostólica', 'Vida', 'Saetas', 'Maranatha', 'Sion', 'Nissi', 'Alfa y Omega'];
 
 export const CelulasDirectoryPage: React.FC = () => {
   const navigate = useNavigate();
@@ -38,6 +37,10 @@ export const CelulasDirectoryPage: React.FC = () => {
   // Estado para el modal emergente de miembros del Grupo de Vida
   const [selectedGrupoVida, setSelectedGrupoVida] = useState<CellGrupoVida | null>(null);
   const [isGrupoVidaModalOpen, setIsGrupoVidaModalOpen] = useState(false);
+
+  // Estado para el modal emergente de información completa de la Célula (Grupos de Vida y Discípulos)
+  const [selectedCellForModal, setSelectedCellForModal] = useState<CellGroupView | null>(null);
+  const [isCellModalOpen, setIsCellModalOpen] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -159,56 +162,35 @@ export const CelulasDirectoryPage: React.FC = () => {
     return Array.from(groupsByBrandKey.values());
   }, [cells, brothers, fullBrothers]);
 
-  // SEPARACIÓN CLAVE:
-  // Red Apostólica NO es una célula común, sino la Cobertura Central de todas las células.
+  // Red Apostólica es una Célula que congrega a los 15 líderes bajo formación
+  // de los líderes apostólicos: Apóstol José Hernández y Gabriela Castro.
   const redApostolicaGroup = useMemo<CellGroupView | undefined>(() => {
+    const apostolicLeaders = [
+      { id: 'apostol-jose-hernandez', name: 'Apóstol José Hernández', role: 'Apóstol Principal' },
+      { id: 'apostol-gabriela-castro', name: 'Apóstol Gabriela Castro', role: 'Apóstol' },
+    ];
+
     const found = allCellGroups.find((g) => isRedApostolicaName(g.nombre));
     if (found) {
-      if (found.leaders.length === 0) {
-        const apostles = fullBrothers.filter(
-          (fb) =>
-            fb.role === Role.APOSTOL ||
-            isRedApostolicaName(fb.acompanamiento.celulaName)
-        );
-        return {
-          ...found,
-          leaders: apostles.map((a) => ({
-            id: a.id,
-            name: a.name,
-            fotoUrl: a.fotoUrl,
-            role: 'Apóstol',
-          })),
-        };
-      }
-      return found;
+      return {
+        ...found,
+        leaders: apostolicLeaders,
+        totalMembers: 15,
+      };
     }
 
-    const apostolBrothers = fullBrothers.filter(
-      (fb) =>
-        fb.role === Role.APOSTOL ||
-        isRedApostolicaName(fb.acompanamiento.celulaName)
-    );
-    const apostolMembers = brothers.filter((b) =>
-      isRedApostolicaName(b.cellName)
-    );
-
     return {
-      id: 'red-apostolica-cobertura',
+      id: 'celula-red-apostolica',
       nombre: 'Red Apostólica',
       activa: true,
-      leaders: apostolBrothers.map((a) => ({
-        id: a.id,
-        name: a.name,
-        fotoUrl: a.fotoUrl,
-        role: 'Apóstol',
-      })),
-      members: apostolMembers,
-      totalMembers: apostolMembers.length,
+      leaders: apostolicLeaders,
+      members: [],
+      totalMembers: 15,
     };
-  }, [allCellGroups, fullBrothers, brothers]);
+  }, [allCellGroups]);
 
-  // Células de Vida propiamente dichas (excluyendo a la Red Apostólica)
-  const daughterCells = useMemo<CellGroupView[]>(() => {
+  // Células de la Red CMV donde estos líderes tienen a cargo discípulos (Vida, Saetas, etc.)
+  const communityCells = useMemo<CellGroupView[]>(() => {
     return allCellGroups
       .filter((g) => !isRedApostolicaName(g.nombre))
       .sort((a, b) => b.totalMembers - a.totalMembers);
@@ -233,6 +215,12 @@ export const CelulasDirectoryPage: React.FC = () => {
     setIsGrupoVidaModalOpen(true);
   };
 
+  // Manejo de apertura de modal emergente de la célula completa (con grupos de vida y discípulos)
+  const handleOpenCellModal = (cell: CellGroupView) => {
+    setSelectedCellForModal(cell);
+    setIsCellModalOpen(true);
+  };
+
   // Control de tarjetas desplegadas automáticamente al desplazarse desde la Red Apostólica
   const [expandedCellKeys, setExpandedCellKeys] = useState<Record<string, boolean>>({});
 
@@ -253,58 +241,34 @@ export const CelulasDirectoryPage: React.FC = () => {
   return (
     <div className="w-full space-y-7 md:space-y-9 animate-in fade-in duration-500 max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-6">
       {/* Botón Volver y Encabezado de la página: TÍTULO CÉLULAS Y GRUPOS VIDA */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-cyan-500/20 dark:border-white/10">
-        <div className="flex items-center gap-4">
-          <button
-            type="button"
-            onClick={() => navigate('/')}
-            className="w-12 h-12 rounded-2xl bg-white dark:bg-[#091522] border border-cyan-500/30 dark:border-cyan-400/30 flex items-center justify-center text-slate-700 dark:text-cyan-200 hover:bg-cyan-50 hover:text-cyan-600 dark:hover:bg-cyan-950/40 transition-all shadow-md hover:scale-105 cursor-pointer"
-            aria-label="Volver al Portal"
-          >
-            <ArrowLeft size={22} />
-          </button>
-          <div>
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-cyan-50 dark:bg-cyan-950/60 border border-cyan-200 dark:border-cyan-800/60 text-cyan-700 dark:text-cyan-300 text-xs font-black uppercase tracking-wider">
-              <Home size={13} className="text-emerald-500" />
-              <span>Red de Células CMV</span>
-            </div>
-            <h1 className="text-3xl sm:text-5xl font-black text-slate-900 dark:text-white tracking-tight leading-none mt-1.5">
-              Células y Grupos Vida
-            </h1>
+      <div className="flex items-center gap-4 pb-5 border-b border-cyan-500/20 dark:border-white/10">
+        <button
+          type="button"
+          onClick={() => navigate('/')}
+          className="w-12 h-12 rounded-2xl bg-white dark:bg-[#091522] border border-cyan-500/30 dark:border-cyan-400/30 flex items-center justify-center text-slate-700 dark:text-cyan-200 hover:bg-cyan-50 hover:text-cyan-600 dark:hover:bg-cyan-950/40 transition-all shadow-md hover:scale-105 cursor-pointer shrink-0"
+          aria-label="Volver al Portal"
+        >
+          <ArrowLeft size={22} />
+        </button>
+        <div>
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-cyan-50 dark:bg-cyan-950/60 border border-cyan-200 dark:border-cyan-800/60 text-cyan-700 dark:text-cyan-300 text-xs font-black uppercase tracking-wider">
+            <Home size={13} className="text-emerald-500" />
+            <span>Red de Células CMV</span>
           </div>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <button
-            type="button"
-            onClick={() => navigate('/hermanos')}
-            className="px-5 py-3 rounded-2xl bg-cyan-50 hover:bg-cyan-100 dark:bg-cyan-950/40 dark:hover:bg-cyan-900/50 border border-cyan-200 dark:border-cyan-800/50 text-cyan-800 dark:text-cyan-200 text-xs sm:text-sm font-black uppercase tracking-wider transition-all shadow-sm hover:scale-[1.02] flex items-center gap-2 cursor-pointer"
-          >
-            <Users size={18} />
-            <span>Ver Lista General</span>
-          </button>
+          <h1 className="text-3xl sm:text-5xl font-black text-slate-900 dark:text-white tracking-tight leading-none mt-1.5">
+            Células y Grupos de Vida
+          </h1>
         </div>
       </div>
 
       {/* ========================================================================= */}
-      {/* 👑 SECCIÓN EXCLUSIVA: RED APOSTÓLICA (COBERTURA APOSTÓLICA CENTRAL)        */}
+      {/* 👑 SECCIÓN EXCLUSIVA: CÉLULA RED APOSTÓLICA (15 LÍDERES EN FORMACIÓN)     */}
       {/* ========================================================================= */}
-      <div className="space-y-3.5">
-        <div className="flex items-center gap-2.5 text-xs sm:text-sm font-black uppercase tracking-wider text-cyan-600 dark:text-cyan-300">
-          <Crown size={16} />
-          <span>Cobertura Apostólica Principal</span>
-        </div>
-        <RedApostolicaSection
-          apostolicGroup={redApostolicaGroup}
-          daughterCells={daughterCells.map((c) => ({
-            id: c.id,
-            nombre: c.nombre,
-            totalMembers: c.totalMembers,
-          }))}
-          onSelectLeader={handleSelectLeader}
-          onSelectCell={handleScrollToCell}
-        />
-      </div>
+      <RedApostolicaSection
+        daughterCells={communityCells}
+        onSelectLeader={handleSelectLeader}
+        onSelectCell={handleOpenCellModal}
+      />
 
       {/* ========================================================================= */}
       {/* 🌿 LISTADO DE CÉLULAS DE VIDA (PANELES DESPLEGABLES CON GRUPOS DE VIDA)   */}
@@ -314,10 +278,10 @@ export const CelulasDirectoryPage: React.FC = () => {
           <div className="flex items-center gap-3">
             <span className="w-3.5 h-3.5 rounded-full bg-[#00dfa2] shadow-sm shadow-emerald-400" />
             <h3 className="text-xl sm:text-2xl md:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
-              Células de Vida & Grupos Familiares
+              Células bajo cobertura
             </h3>
             <span className="text-sm font-black text-cyan-600 dark:text-cyan-300">
-              ({daughterCells.length})
+              ({communityCells.length})
             </span>
           </div>
           <span className="text-xs sm:text-sm text-slate-500 dark:text-cyan-200/70 font-semibold hidden sm:inline">
@@ -332,7 +296,7 @@ export const CelulasDirectoryPage: React.FC = () => {
               Cargando células y grupos de vida...
             </p>
           </div>
-        ) : daughterCells.length === 0 ? (
+        ) : communityCells.length === 0 ? (
           <div className="py-20 text-center rounded-3xl bg-white dark:bg-[#091522] border border-cyan-500/20 dark:border-white/10 p-8 space-y-3 shadow-lg">
             <Home size={48} className="mx-auto text-cyan-500/60" />
             <p className="text-xl font-black text-slate-800 dark:text-white">
@@ -341,7 +305,7 @@ export const CelulasDirectoryPage: React.FC = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 items-start">
-            {daughterCells.map((cell) => {
+            {communityCells.map((cell) => {
               const brand = getCellBranding(cell.nombre);
               return (
                 <CellDirectoryCard
@@ -373,6 +337,17 @@ export const CelulasDirectoryPage: React.FC = () => {
         onClose={() => setIsGrupoVidaModalOpen(false)}
         grupo={selectedGrupoVida}
         onNavigateBrother={(id) => navigate(`/hermanos/${id}`)}
+      />
+
+      {/* Modal emergente 3: Información completa de la Célula, Grupos de Vida y Discípulos */}
+      <CellDetailModal
+        isOpen={isCellModalOpen}
+        onClose={() => setIsCellModalOpen(false)}
+        cell={selectedCellForModal}
+        onNavigateBrother={(id) => navigate(`/hermanos/${id}`)}
+        onSelectLeader={handleSelectLeader}
+        onSelectGrupoVida={handleSelectGrupoVida}
+        onScrollToCellCard={handleScrollToCell}
       />
     </div>
   );

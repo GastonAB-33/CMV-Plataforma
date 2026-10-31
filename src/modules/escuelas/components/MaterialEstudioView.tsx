@@ -192,7 +192,7 @@ export const MaterialEstudioView: React.FC<MaterialEstudioViewProps> = ({
           <button
             type="button"
             onClick={() => setIsAddModalOpen(true)}
-            className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-teal-600 hover:bg-teal-500 text-white font-black text-xs uppercase tracking-wider shadow-lg shadow-teal-950/20 active:scale-95 transition-all shrink-0"
+            className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl btn-3d-emerald text-white font-black text-xs uppercase tracking-wider shadow-lg active:scale-95 transition-all shrink-0"
           >
             <Plus size={16} />
             <span>SUBIR NUEVO MATERIAL</span>
@@ -345,7 +345,7 @@ export const MaterialEstudioView: React.FC<MaterialEstudioViewProps> = ({
           <button
             type="button"
             onClick={() => setSelectedCategory('TODOS')}
-            className="px-4 py-2 rounded-xl bg-teal-600 text-white font-extrabold text-xs uppercase tracking-wider inline-flex items-center gap-1.5 shadow-sm"
+            className="px-4 py-2 rounded-xl btn-3d-emerald text-white font-extrabold text-xs uppercase tracking-wider inline-flex items-center gap-1.5 shadow-sm"
           >
             <span>Ver Todos los Materiales</span>
           </button>
@@ -435,7 +435,7 @@ export const MaterialEstudioView: React.FC<MaterialEstudioViewProps> = ({
                   handleDownload(selectedMaterialForReading);
                   setSelectedMaterialForReading(null);
                 }}
-                className="px-5 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-black text-xs uppercase tracking-wider shadow-sm transition-all inline-flex items-center gap-1.5"
+                className="px-5 py-2.5 rounded-xl btn-3d-emerald text-white font-black text-xs uppercase tracking-wider shadow-sm transition-all inline-flex items-center gap-1.5"
               >
                 <Download size={14} />
                 <span>Descargar Guía Completa</span>
@@ -597,7 +597,7 @@ export const MaterialEstudioView: React.FC<MaterialEstudioViewProps> = ({
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-black text-xs uppercase tracking-wider transition-all"
+                  className="px-5 py-2 rounded-xl btn-3d-emerald text-white font-black text-xs uppercase tracking-wider transition-all"
                 >
                   Publicar Material
                 </button>

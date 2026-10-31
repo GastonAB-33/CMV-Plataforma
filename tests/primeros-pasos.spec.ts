@@ -12,7 +12,7 @@ test('Flujo completo de Primeros Pasos, Ficha de Bienvenida y Derivación Pastor
   await page.waitForTimeout(500);
 
   // 2. Verificar que en el Topbar existe el botón NUEVO HERMANO
-  const topbarButton = page.locator('header button', { hasText: 'NUEVO HERMANO' });
+  const topbarButton = page.locator('button', { hasText: 'NUEVO HERMANO' }).first();
   await expect(topbarButton).toBeVisible();
 
   // 3. Verificar que en el banner NO existe el botón NUEVO HERMANO
@@ -24,6 +24,8 @@ test('Flujo completo de Primeros Pasos, Ficha de Bienvenida y Derivación Pastor
   await topbarButton.click();
   await expect(page.locator('text=FICHA DE BIENVENIDA').first()).toBeVisible();
   await expect(page.locator('text=Cristo Manantial de Vida · Queremos conocerte y acompañarte').first()).toBeVisible();
+  await expect(page.locator('text=RECEPCION:').first()).toBeVisible();
+  await expect(page.locator('text=Plataforma Pastoral CMV')).toHaveCount(0);
 
   // 5. Verificar campos de la ficha: Fecha de nacimiento, teléfono, célula automática, sin campo fecha manual
   await expect(page.locator('label:has-text("Nombre y apellido")')).toBeVisible();
@@ -53,16 +55,23 @@ test('Flujo completo de Primeros Pasos, Ficha de Bienvenida y Derivación Pastor
 
   await page.waitForURL('**/primeros-pasos');
   await expect(page.locator('h1:has-text("Primeros Pasos")')).toBeVisible();
+  await expect(page.locator('text=MODULO DE RECEPCION')).toBeVisible();
+  await expect(page.locator('text=Recepción de nuevos creyentes, Fichas de Bienvenida y derivación a líderes.')).toBeVisible();
+  await expect(page.locator('button:has-text("NUEVA FICHA DE BIENVENIDA")')).toBeVisible();
 
   // 8. Verificar que la ficha de prueba de "Arce Ariel" (de la imagen de muestra) está visible en la tabla
   const table = page.locator('table');
   await expect(table.locator('text=Arce Ariel')).toBeVisible();
   await expect(table.locator('text=Saetas')).toBeVisible();
+  await expect(table.locator('text=DIEGO SOSA')).toBeVisible();
 
   // 9. Abrir el detalle de la ficha
   await table.locator('button:has-text("Ver Ficha")').first().click();
   const detailModal = page.locator('.fixed.inset-0');
   await expect(detailModal.locator('text=FICHA DE BIENVENIDA').first()).toBeVisible();
+  await expect(detailModal.locator('text=RECEPCION:').first()).toBeVisible();
+  await expect(detailModal.locator('text=DIEGO SOSA').first()).toBeVisible();
+  await expect(detailModal.locator('text=Plataforma Pastoral CMV')).toHaveCount(0);
   await expect(detailModal.locator('text=Llegó por Jorge Zapata')).toBeVisible();
   await expect(detailModal.getByText('Oren por su familia y trabajo')).toBeVisible();
   await expect(detailModal.getByText('MARANATHA.')).toBeVisible();

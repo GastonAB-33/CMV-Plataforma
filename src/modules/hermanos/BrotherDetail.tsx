@@ -444,7 +444,7 @@ const StageWrapperComponent = ({
                   type="button"
                   onClick={onSaveObservation}
                   disabled={!draftValue.trim() || isSavingObservation}
-                  className="w-full sm:w-auto text-center text-[10px] uppercase font-black tracking-[0.12em] px-3 py-1.5 rounded-full border border-emerald-500/40 dark:border-emerald-400/30 bg-emerald-600 dark:bg-emerald-500 text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full sm:w-auto text-center text-[10px] uppercase font-black tracking-[0.12em] px-4 py-1.5 rounded-full btn-3d-emerald text-white disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Guardar
                 </button>
@@ -482,7 +482,7 @@ const StageWrapperComponent = ({
                               type="button"
                               onClick={() => onUpdateObservation(entry)}
                               disabled={!editDraftValue.trim() || mutatingObservationId === entry.id}
-                              className="px-3 py-1 rounded-lg border border-emerald-500/40 dark:border-emerald-400/30 bg-emerald-600 dark:bg-emerald-500 text-[10px] uppercase font-black text-white disabled:opacity-50"
+                              className="px-3.5 py-1 rounded-lg btn-3d-emerald text-[10px] uppercase font-black text-white disabled:opacity-50"
                             >
                               Guardar
                             </button>
@@ -820,6 +820,18 @@ export const BrotherDetail = () => {
     setFrozenStages(stageFrozenStatsService.getFrozenStages(brother.id));
     setNiveladosList(niveladosService.getRecords(brother.id));
   }, [brother]);
+
+  // Garantizar que la Ficha de Hermano siempre comience desde la parte superior absoluta
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    if (document.documentElement) document.documentElement.scrollTop = 0;
+    if (document.body) document.body.scrollTop = 0;
+    const mainElement = document.querySelector('main') || document.getElementById('main-content');
+    if (mainElement) {
+      mainElement.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+      mainElement.scrollTop = 0;
+    }
+  }, [id]);
 
   useEffect(() => {
     let isMounted = true;
@@ -2804,18 +2816,18 @@ export const BrotherDetail = () => {
                     }
                   }}
                 >
-                  <div className="w-28 h-28 sm:w-32 sm:h-32 md:w-36 md:h-36 rounded-2xl overflow-hidden border-2 border-white/80 dark:border-white/20 shadow-2xl relative transition-transform duration-500 group-hover:scale-[1.02] bg-slate-200 dark:bg-slate-800">
+                  <div className="w-32 h-32 sm:w-36 sm:h-36 md:w-40 md:h-40 lg:w-44 lg:h-44 rounded-2xl overflow-hidden border-2 border-white/80 dark:border-white/20 shadow-2xl relative transition-transform duration-500 group-hover:scale-[1.02] bg-slate-200 dark:bg-slate-800 shrink-0">
                     {profilePhotoUrl ? (
                       <img src={profilePhotoUrl} alt={brother.name} className="w-full h-full object-cover" />
                     ) : (
-                      <span className="drop-shadow-lg">{brother.name.charAt(0)}</span>
+                      <span className="drop-shadow-lg text-4xl sm:text-5xl">{brother.name.charAt(0)}</span>
                     )}
 
                     <div className="absolute inset-0 pointer-events-none bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center gap-1.5 backdrop-blur-md">
-                      <div className="w-8 h-8 rounded-full bg-emerald-500/20 dark:bg-emerald-500/25 flex items-center justify-center">
-                        <Camera className="text-emerald-600 dark:text-emerald-400" size={18} />
+                      <div className="w-9 h-9 rounded-full bg-emerald-500/20 dark:bg-emerald-500/25 flex items-center justify-center">
+                        <Camera className="text-emerald-600 dark:text-emerald-400" size={20} />
                       </div>
-                      <span className="text-[8px] uppercase font-black text-emerald-600 dark:text-emerald-400 tracking-widest">Foto</span>
+                      <span className="text-[10px] uppercase font-black text-emerald-600 dark:text-emerald-400 tracking-widest">Foto</span>
                     </div>
                   </div>
                   <input
@@ -2844,14 +2856,14 @@ export const BrotherDetail = () => {
 
                 <div className="flex-1 min-w-0 flex flex-col items-center md:items-start text-center md:text-left">
                   <div className="flex flex-wrap justify-center md:justify-start items-center gap-2 mb-2">
-                    <span className="text-[10px] uppercase tracking-[0.35em] font-black text-emerald-600 dark:text-cyan-400">Ficha Personal</span>
+                    <span className="text-xs uppercase tracking-[0.25em] font-black text-emerald-600 dark:text-cyan-400">Ficha Personal</span>
                     <div className="hidden sm:block h-[1px] w-8 bg-emerald-500/30" />
-                    <span className="bg-gradient-to-r from-emerald-600 to-teal-500 text-white px-3.5 py-1 rounded-full text-[9px] uppercase tracking-[0.2em] font-black shadow-md">
+                    <span className="bg-gradient-to-r from-emerald-600 to-teal-500 text-white px-4 py-1 rounded-full text-xs uppercase tracking-[0.15em] font-black shadow-md">
                       {progression.currentStageBadgeLabel}
                     </span>
                   </div>
 
-                  <h1 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight text-slate-900 dark:text-white uppercase break-words mb-3">
+                  <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-black tracking-tight text-slate-900 dark:text-white uppercase break-words mb-3 leading-tight">
                     {brother.name}
                   </h1>
 
@@ -2861,9 +2873,9 @@ export const BrotherDetail = () => {
                         initAccompanimentSelectors(brother);
                         setIsEditModalOpen(true);
                       }}
-                      className="w-full sm:w-auto bg-gradient-to-r from-emerald-500/15 to-teal-500/15 hover:from-emerald-500 hover:to-teal-500 text-emerald-600 dark:text-emerald-400 hover:text-white border border-emerald-500/40 dark:border-emerald-400/30 px-4 py-2 rounded-xl font-black text-[9px] uppercase tracking-[0.18em] flex items-center justify-center gap-2 transition-all shadow-md active:scale-95"
+                      className="w-full sm:w-auto bg-gradient-to-r from-emerald-500/15 to-teal-500/15 hover:from-emerald-500 hover:to-teal-500 text-emerald-600 dark:text-emerald-400 hover:text-white border border-emerald-500/40 dark:border-emerald-400/30 px-4 py-2.5 rounded-xl font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all shadow-md active:scale-95"
                     >
-                      <Edit2 size={14} />
+                      <Edit2 size={15} />
                       <span>Editar Ficha</span>
                     </button>
                   )}
@@ -2872,61 +2884,61 @@ export const BrotherDetail = () => {
             </div>
 
             {/* Lateral Derecho: Fichas de información compactas una debajo de otra */}
-            <div className="flex flex-col gap-2 w-full">
+            <div className="flex flex-col gap-2.5 w-full">
               {/* 1. Célula */}
-              <div className="flex items-center gap-3 bg-white/70 dark:bg-black/40 backdrop-blur-md px-4 py-2.5 rounded-xl border border-white/80 dark:border-white/10 shadow-sm">
-                <div className="p-1.5 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg flex items-center justify-center shrink-0">
-                  <MapPin className="text-emerald-600 dark:text-emerald-400" size={15} />
+              <div className="flex items-center gap-3 bg-white/70 dark:bg-black/40 backdrop-blur-md px-4 py-3 rounded-xl border border-white/80 dark:border-white/10 shadow-sm">
+                <div className="p-2 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg flex items-center justify-center shrink-0">
+                  <MapPin className="text-emerald-600 dark:text-emerald-400" size={17} />
                 </div>
                 <div className="text-left flex-1 min-w-0">
-                  <p className="text-[8px] uppercase tracking-[0.15em] font-black text-slate-400 dark:text-gray-500 leading-none mb-0.5">Célula</p>
-                  <p className="font-bold text-xs sm:text-[13px] text-slate-800 dark:text-gray-100 truncate">{acompanamiento.celulaName || 'Sin asignar'}</p>
+                  <p className="text-[10px] sm:text-xs uppercase tracking-[0.15em] font-black text-slate-400 dark:text-gray-500 leading-none mb-1">Célula</p>
+                  <p className="font-extrabold text-sm sm:text-base text-slate-800 dark:text-gray-100 truncate">{acompanamiento.celulaName || 'Sin asignar'}</p>
                 </div>
               </div>
 
               {/* 2. Líderes */}
-              <div className="flex items-center gap-3 bg-white/70 dark:bg-black/40 backdrop-blur-md px-4 py-2.5 rounded-xl border border-white/80 dark:border-white/10 shadow-sm">
-                <div className="p-1.5 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg flex items-center justify-center shrink-0">
-                  <Users className="text-emerald-600 dark:text-emerald-400" size={15} />
+              <div className="flex items-center gap-3 bg-white/70 dark:bg-black/40 backdrop-blur-md px-4 py-3 rounded-xl border border-white/80 dark:border-white/10 shadow-sm">
+                <div className="p-2 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg flex items-center justify-center shrink-0">
+                  <Users className="text-emerald-600 dark:text-emerald-400" size={17} />
                 </div>
                 <div className="text-left flex-1 min-w-0">
-                  <p className="text-[8px] uppercase tracking-[0.15em] font-black text-slate-400 dark:text-gray-500 leading-none mb-0.5">Líderes</p>
-                  <p className="font-bold text-xs sm:text-[13px] text-slate-800 dark:text-gray-100 break-words leading-tight">{acompanamiento.liderCelulaName || 'No asignados'}</p>
+                  <p className="text-[10px] sm:text-xs uppercase tracking-[0.15em] font-black text-slate-400 dark:text-gray-500 leading-none mb-1">Líderes</p>
+                  <p className="font-extrabold text-sm sm:text-base text-slate-800 dark:text-gray-100 break-words leading-tight">{acompanamiento.liderCelulaName || 'No asignados'}</p>
                 </div>
               </div>
 
               {/* 3. Hermano Mayor */}
-              <div className="flex items-center gap-3 bg-white/70 dark:bg-black/40 backdrop-blur-md px-4 py-2.5 rounded-xl border border-white/80 dark:border-white/10 shadow-sm">
-                <div className="p-1.5 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg flex items-center justify-center shrink-0">
-                  <ShieldCheck className="text-emerald-600 dark:text-emerald-400" size={15} />
+              <div className="flex items-center gap-3 bg-white/70 dark:bg-black/40 backdrop-blur-md px-4 py-3 rounded-xl border border-white/80 dark:border-white/10 shadow-sm">
+                <div className="p-2 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg flex items-center justify-center shrink-0">
+                  <ShieldCheck className="text-emerald-600 dark:text-emerald-400" size={17} />
                 </div>
                 <div className="text-left flex-1 min-w-0">
-                  <p className="text-[8px] uppercase tracking-[0.15em] font-black text-slate-400 dark:text-gray-500 leading-none mb-0.5">Hermano Mayor</p>
-                  <p className="font-bold text-xs sm:text-[13px] text-slate-800 dark:text-gray-100 truncate">{acompanamiento.acompananteName || 'No asignado'}</p>
+                  <p className="text-[10px] sm:text-xs uppercase tracking-[0.15em] font-black text-slate-400 dark:text-gray-500 leading-none mb-1">Hermano Mayor</p>
+                  <p className="font-extrabold text-sm sm:text-base text-slate-800 dark:text-gray-100 truncate">{acompanamiento.acompananteName || 'No asignado'}</p>
                 </div>
               </div>
 
               {/* 4. Edad */}
-              <div className="flex items-center gap-3 bg-white/70 dark:bg-black/40 backdrop-blur-md px-4 py-2.5 rounded-xl border border-white/80 dark:border-white/10 shadow-sm">
-                <div className="p-1.5 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg flex items-center justify-center shrink-0">
-                  <Calendar className="text-emerald-600 dark:text-emerald-400" size={15} />
+              <div className="flex items-center gap-3 bg-white/70 dark:bg-black/40 backdrop-blur-md px-4 py-3 rounded-xl border border-white/80 dark:border-white/10 shadow-sm">
+                <div className="p-2 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg flex items-center justify-center shrink-0">
+                  <Calendar className="text-emerald-600 dark:text-emerald-400" size={17} />
                 </div>
                 <div className="text-left flex-1 min-w-0">
-                  <p className="text-[8px] uppercase tracking-[0.15em] font-black text-slate-400 dark:text-gray-500 leading-none mb-0.5">Edad</p>
-                  <p className="font-bold text-xs sm:text-[13px] text-slate-800 dark:text-gray-100">
+                  <p className="text-[10px] sm:text-xs uppercase tracking-[0.15em] font-black text-slate-400 dark:text-gray-500 leading-none mb-1">Edad</p>
+                  <p className="font-extrabold text-sm sm:text-base text-slate-800 dark:text-gray-100">
                     {brother.edad ? `${brother.edad} años` : 'No registrada'}
                   </p>
                 </div>
               </div>
 
               {/* 5. Contacto */}
-              <div className="flex items-center gap-3 bg-white/70 dark:bg-black/40 backdrop-blur-md px-4 py-2.5 rounded-xl border border-white/80 dark:border-white/10 shadow-sm">
-                <div className="p-1.5 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg flex items-center justify-center shrink-0">
-                  <Phone className="text-emerald-600 dark:text-emerald-400" size={15} />
+              <div className="flex items-center gap-3 bg-white/70 dark:bg-black/40 backdrop-blur-md px-4 py-3 rounded-xl border border-white/80 dark:border-white/10 shadow-sm">
+                <div className="p-2 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg flex items-center justify-center shrink-0">
+                  <Phone className="text-emerald-600 dark:text-emerald-400" size={17} />
                 </div>
                 <div className="text-left flex-1 min-w-0">
-                  <p className="text-[8px] uppercase tracking-[0.15em] font-black text-slate-400 dark:text-gray-500 leading-none mb-0.5">Contacto</p>
-                  <p className="font-bold text-xs sm:text-[13px] text-slate-800 dark:text-gray-100 truncate">{brother.telefono || 'No registrado'}</p>
+                  <p className="text-[10px] sm:text-xs uppercase tracking-[0.15em] font-black text-slate-400 dark:text-gray-500 leading-none mb-1">Contacto</p>
+                  <p className="font-extrabold text-sm sm:text-base text-slate-800 dark:text-gray-100 truncate">{brother.telefono || 'No registrado'}</p>
                 </div>
               </div>
             </div>
@@ -3052,14 +3064,14 @@ export const BrotherDetail = () => {
                     {/* Fecha Inicio */}
                     <div className="space-y-1.5">
                       <div className="flex items-center justify-between">
-                        <label className="text-[10px] uppercase font-black tracking-wider text-slate-600 dark:text-gray-400">
+                        <label className="text-xs font-black uppercase tracking-wider text-slate-700 dark:text-gray-300">
                           Fecha de Inicio
                         </label>
                         {altarStartDateDraft && (
                           <button
                             type="button"
                             onClick={() => setAltarStartDateDraft('')}
-                            className="text-[10px] text-rose-500 hover:text-rose-600 font-bold hover:underline"
+                            className="text-xs text-rose-500 hover:text-rose-600 font-bold hover:underline"
                           >
                             Quitar fecha
                           </button>
@@ -3069,9 +3081,9 @@ export const BrotherDetail = () => {
                         type="date"
                         value={altarStartDateDraft}
                         onChange={(e) => setAltarStartDateDraft(e.target.value)}
-                        className="w-full bg-white dark:bg-black border border-slate-200 dark:border-white/10 rounded-xl p-2.5 text-xs text-slate-800 dark:text-gray-100 outline-none focus:border-emerald-500 [color-scheme:dark]"
+                        className="w-full bg-white dark:bg-black border border-slate-200 dark:border-white/10 rounded-xl p-2.5 text-sm sm:text-base text-slate-800 dark:text-gray-100 outline-none focus:border-emerald-500 [color-scheme:dark]"
                       />
-                      <span className="text-[10px] text-slate-400 dark:text-gray-500 block">
+                      <span className="text-xs text-slate-500 dark:text-gray-400 font-medium block">
                         Activa &quot;En Proceso&quot;
                       </span>
                     </div>
@@ -3079,14 +3091,14 @@ export const BrotherDetail = () => {
                     {/* Fecha Fin */}
                     <div className="space-y-1.5">
                       <div className="flex items-center justify-between">
-                        <label className="text-[10px] uppercase font-black tracking-wider text-slate-600 dark:text-gray-400">
+                        <label className="text-xs font-black uppercase tracking-wider text-slate-700 dark:text-gray-300">
                           Fecha de Fin
                         </label>
                         {altarEndDateDraft && (
                           <button
                             type="button"
                             onClick={() => setAltarEndDateDraft('')}
-                            className="text-[10px] text-rose-500 hover:text-rose-600 font-bold hover:underline"
+                            className="text-xs text-rose-500 hover:text-rose-600 font-bold hover:underline"
                           >
                             Quitar fecha
                           </button>
@@ -3096,9 +3108,9 @@ export const BrotherDetail = () => {
                         type="date"
                         value={altarEndDateDraft}
                         onChange={(e) => setAltarEndDateDraft(e.target.value)}
-                        className="w-full bg-white dark:bg-black border border-slate-200 dark:border-white/10 rounded-xl p-2.5 text-xs text-slate-800 dark:text-gray-100 outline-none focus:border-emerald-500 [color-scheme:dark]"
+                        className="w-full bg-white dark:bg-black border border-slate-200 dark:border-white/10 rounded-xl p-2.5 text-sm sm:text-base text-slate-800 dark:text-gray-100 outline-none focus:border-emerald-500 [color-scheme:dark]"
                       />
-                      <span className="text-[10px] text-slate-400 dark:text-gray-500 block">
+                      <span className="text-xs text-slate-500 dark:text-gray-400 font-medium block">
                         Activa &quot;Finalizado&quot;
                       </span>
                     </div>
@@ -3108,13 +3120,13 @@ export const BrotherDetail = () => {
 
                   {/* Selector de Hermano Mayor */}
                   <div className="space-y-1.5 pt-2 border-t border-emerald-500/20 dark:border-white/10">
-                    <label className="text-[10px] uppercase font-black tracking-wider text-slate-600 dark:text-gray-400">
+                    <label className="text-xs font-black uppercase tracking-wider text-slate-700 dark:text-gray-300">
                       Hermano Mayor o Matrimonio a cargo del Altar
                     </label>
                     <select
                       value={altarHermanoMayorDraft}
                       onChange={(e) => setAltarHermanoMayorDraft(e.target.value)}
-                      className="w-full bg-white dark:bg-black border border-slate-200 dark:border-white/10 rounded-xl p-2.5 text-xs text-slate-800 dark:text-gray-100 outline-none focus:border-emerald-500"
+                      className="w-full bg-white dark:bg-black border border-slate-200 dark:border-white/10 rounded-xl p-2.5 text-sm sm:text-base text-slate-800 dark:text-gray-100 outline-none focus:border-emerald-500"
                     >
                       <option value="">Sin asignar</option>
                       {marriages.length > 0 && (
@@ -3139,24 +3151,24 @@ export const BrotherDetail = () => {
                   {/* Estado del Altar y Opciones */}
                   <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-emerald-500/20 dark:border-white/10">
                     <div className="flex items-center gap-2">
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-gray-400">
+                      <span className="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-gray-300">
                         Estado resultante:
                       </span>
                       {altarData.isInterrumpido ? (
-                        <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/30 flex items-center gap-1.5 shadow-sm">
-                          <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse" />
+                        <span className="px-3.5 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/30 flex items-center gap-1.5 shadow-sm">
+                          <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
                           Altar Interrumpido
                         </span>
                       ) : altarEndDateDraft ? (
-                        <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 shadow-sm">
+                        <span className="px-3.5 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 shadow-sm">
                           Altar Finalizado
                         </span>
                       ) : altarStartDateDraft ? (
-                        <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30 shadow-sm">
+                        <span className="px-3.5 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30 shadow-sm">
                           Altar En Proceso
                         </span>
                       ) : (
-                        <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-slate-500/15 text-slate-600 dark:text-gray-400 border border-slate-500/30 shadow-sm">
+                        <span className="px-3.5 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-slate-500/15 text-slate-600 dark:text-gray-400 border border-slate-500/30 shadow-sm">
                           Sin Altar
                         </span>
                       )}
@@ -3166,7 +3178,7 @@ export const BrotherDetail = () => {
                       <button
                         type="button"
                         onClick={handleResumeAltar}
-                        className="px-3.5 py-1.5 rounded-xl text-[10px] uppercase tracking-wider font-black bg-white dark:bg-black text-slate-800 dark:text-gray-100 border border-rose-300 dark:border-rose-800/60 hover:bg-rose-100 dark:hover:bg-rose-900/30 transition-all shadow-sm shrink-0 active:scale-95"
+                        className="px-4 py-2 rounded-xl text-xs sm:text-sm uppercase tracking-wider font-black bg-white dark:bg-black text-slate-800 dark:text-gray-100 border border-rose-300 dark:border-rose-800/60 hover:bg-rose-100 dark:hover:bg-rose-900/30 transition-all shadow-sm shrink-0 active:scale-95"
                       >
                         Reanudar Altar
                       </button>
@@ -3174,9 +3186,9 @@ export const BrotherDetail = () => {
                       <button
                         type="button"
                         onClick={() => setIsInterruptModalOpen(true)}
-                        className="px-3.5 py-1.5 rounded-xl text-[10px] uppercase tracking-wider font-black border border-rose-400/40 bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 hover:bg-rose-600 hover:text-white transition-all flex items-center gap-1.5 active:scale-95 shadow-sm"
+                        className="px-4 py-2 rounded-xl text-xs sm:text-sm uppercase tracking-wider font-black border border-rose-400/40 bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 hover:bg-rose-600 hover:text-white transition-all flex items-center gap-1.5 active:scale-95 shadow-sm"
                       >
-                        <AlertTriangle size={13} />
+                        <AlertTriangle size={15} />
                         <span>Indicar Altar Interrumpido</span>
                       </button>
                     )}
@@ -3187,18 +3199,18 @@ export const BrotherDetail = () => {
                   <div className="flex flex-col sm:flex-row gap-4 md:gap-6 items-start sm:items-end justify-between">
                     <div className="flex flex-col sm:flex-row gap-4 md:gap-6">
                       <div className="space-y-1">
-                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 dark:text-gray-500">
+                        <span className="text-xs font-black uppercase tracking-[0.2em] text-slate-500 dark:text-gray-400">
                           Inicio
                         </span>
-                        <p className="text-sm font-bold text-slate-800 dark:text-gray-200 bg-white dark:bg-black/55 px-4 py-2.5 rounded-xl inline-flex border border-slate-200 dark:border-white/10 shadow-inner">
+                        <p className="text-base font-black text-slate-800 dark:text-gray-100 bg-white dark:bg-black/55 px-4 py-2.5 rounded-xl inline-flex border border-slate-200 dark:border-white/10 shadow-inner">
                           {displayDate(altarData.fechaInicio || brother.altar?.fechaInicio)}
                         </p>
                       </div>
                       <div className="space-y-1">
-                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 dark:text-gray-500">
+                        <span className="text-xs font-black uppercase tracking-[0.2em] text-slate-500 dark:text-gray-400">
                           Fin
                         </span>
-                        <p className="text-sm font-bold text-slate-800 dark:text-gray-200 bg-white dark:bg-black/55 px-4 py-2.5 rounded-xl inline-flex border border-slate-200 dark:border-white/10 shadow-inner">
+                        <p className="text-base font-black text-slate-800 dark:text-gray-100 bg-white dark:bg-black/55 px-4 py-2.5 rounded-xl inline-flex border border-slate-200 dark:border-white/10 shadow-inner">
                           {displayDate(altarData.fechaFin || brother.altar?.fechaFin)}
                         </p>
                       </div>
@@ -3210,13 +3222,13 @@ export const BrotherDetail = () => {
                     <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 dark:border-white/5 pb-3">
                       <div className="flex items-center gap-3">
                         <div className="p-2.5 bg-emerald-500/10 dark:bg-emerald-500/15 rounded-xl text-emerald-600 dark:text-emerald-400">
-                          <UserCheck size={18} />
+                          <UserCheck size={20} />
                         </div>
                         <div>
-                          <p className="text-[9px] uppercase tracking-[0.2em] font-black text-slate-400 dark:text-gray-500">
+                          <p className="text-xs uppercase tracking-[0.2em] font-black text-slate-500 dark:text-gray-400">
                             Hermano Mayor a cargo del Altar
                           </p>
-                          <p className="font-bold text-sm text-slate-800 dark:text-gray-100">
+                          <p className="font-bold text-base text-slate-900 dark:text-white">
                             {hermanoMayorName || 'Sin asignar'}
                           </p>
                         </div>
@@ -3224,20 +3236,20 @@ export const BrotherDetail = () => {
 
                       <div className="flex items-center gap-2">
                         {currentAltarStatus === 'INTERRUMPIDO' ? (
-                          <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/30 flex items-center gap-1.5 shadow-sm">
-                            <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse" />
+                          <span className="px-3.5 py-1.5 rounded-full text-xs font-black uppercase tracking-wider bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/30 flex items-center gap-1.5 shadow-sm">
+                            <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
                             Altar Interrumpido
                           </span>
                         ) : currentAltarStatus === 'FINALIZADO' ? (
-                          <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 shadow-sm">
+                          <span className="px-3.5 py-1.5 rounded-full text-xs font-black uppercase tracking-wider bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 shadow-sm">
                             Altar Finalizado
                           </span>
                         ) : currentAltarStatus === 'EN_PROCESO' ? (
-                          <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30 shadow-sm">
+                          <span className="px-3.5 py-1.5 rounded-full text-xs font-black uppercase tracking-wider bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30 shadow-sm">
                             Altar En Proceso
                           </span>
                         ) : (
-                          <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-slate-500/15 text-slate-600 dark:text-gray-400 border border-slate-500/30 shadow-sm">
+                          <span className="px-3.5 py-1.5 rounded-full text-xs font-black uppercase tracking-wider bg-slate-500/15 text-slate-600 dark:text-gray-400 border border-slate-500/30 shadow-sm">
                             Sin Altar
                           </span>
                         )}
@@ -3248,12 +3260,12 @@ export const BrotherDetail = () => {
                       <div className="bg-rose-50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-900/40 rounded-xl p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                         <div className="space-y-1 text-left">
                           <div className="flex items-center gap-2">
-                            <AlertTriangle size={15} className="text-rose-600 dark:text-rose-400 shrink-0" />
-                            <p className="text-xs font-bold text-rose-800 dark:text-rose-300">
+                            <AlertTriangle size={18} className="text-rose-600 dark:text-rose-400 shrink-0" />
+                            <p className="text-sm font-bold text-rose-800 dark:text-rose-300">
                               Motivo: {altarData.motivoInterrupcion || 'No especificado'}
                             </p>
                           </div>
-                          <p className="text-[10px] text-rose-600/80 dark:text-rose-400/80 pl-6">
+                          <p className="text-xs text-rose-600/80 dark:text-rose-400/80 pl-6">
                             {altarData.fechaInterrupcion ? `Registrado el ${new Date(altarData.fechaInterrupcion).toLocaleDateString()}` : ''}
                             {altarData.interrumpidoPor?.name ? ` por ${altarData.interrumpidoPor.name}` : ''}
                           </p>
@@ -4588,7 +4600,7 @@ export const BrotherDetail = () => {
                           setSelectedGrupoVidaMemberId(null);
                           setIsGrupoVidaMembersModalOpen(true);
                         }}
-                        className="px-3 py-1.5 rounded-xl text-[10px] uppercase font-black bg-emerald-600 dark:bg-emerald-500 text-white hover:bg-emerald-700 shadow-sm transition-all flex items-center gap-1.5"
+                        className="px-3 py-1.5 rounded-xl text-[10px] uppercase font-black btn-3d-emerald text-white shadow-sm transition-all flex items-center gap-1.5"
                       >
                         <Users size={12} />
                         Ver Integrantes ({grupoVidaMembers.length})
@@ -5488,14 +5500,14 @@ export const BrotherDetail = () => {
               <button
                 type="button"
                 onClick={() => setSelectedDiscipuloAltarBrotherId(null)}
-                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-[10px] uppercase tracking-widest font-black border border-slate-300 dark:border-white/15 bg-white dark:bg-white/5 text-slate-700 dark:text-gray-200 hover:text-emerald-600 dark:hover:text-emerald-400 hover:border-emerald-500/40 transition-colors active:scale-95"
+                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs uppercase tracking-wider font-black border border-slate-300 dark:border-white/15 bg-white dark:bg-white/5 text-slate-700 dark:text-gray-200 hover:text-emerald-600 dark:hover:text-emerald-400 hover:border-emerald-500/40 transition-colors active:scale-95"
               >
-                <ArrowLeft size={14} />
+                <ArrowLeft size={16} />
                 <span>Volver a la lista de altares</span>
               </button>
 
               <div className="flex flex-wrap items-center gap-2 ml-auto">
-                <span className="text-[10px] font-bold text-slate-500 dark:text-gray-400">
+                <span className="text-xs font-bold text-slate-600 dark:text-gray-300">
                   Altar {selectedBrotherIndex >= 0 ? selectedBrotherIndex + 1 : 1} de {filteredDisciplesAltarBrothers.length}
                 </span>
                 <div className="flex items-center gap-1">
@@ -5504,18 +5516,18 @@ export const BrotherDetail = () => {
                     disabled={!prevAltarBrother}
                     onClick={() => prevAltarBrother && setSelectedDiscipuloAltarBrotherId(prevAltarBrother.id)}
                     title={prevAltarBrother ? `Ver altar anterior (${prevAltarBrother.name})` : 'No hay altar anterior'}
-                    className="p-1.5 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 text-slate-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 disabled:opacity-30 disabled:cursor-not-allowed transition-all active:scale-95"
+                    className="p-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 text-slate-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 disabled:opacity-30 disabled:cursor-not-allowed transition-all active:scale-95"
                   >
-                    <ChevronLeft size={15} />
+                    <ChevronLeft size={16} />
                   </button>
                   <button
                     type="button"
                     disabled={!nextAltarBrother}
                     onClick={() => nextAltarBrother && setSelectedDiscipuloAltarBrotherId(nextAltarBrother.id)}
                     title={nextAltarBrother ? `Ver altar siguiente (${nextAltarBrother.name})` : 'No hay altar siguiente'}
-                    className="p-1.5 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 text-slate-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 disabled:opacity-30 disabled:cursor-not-allowed transition-all active:scale-95"
+                    className="p-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 text-slate-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 disabled:opacity-30 disabled:cursor-not-allowed transition-all active:scale-95"
                   >
-                    <ChevronRight size={15} />
+                    <ChevronRight size={16} />
                   </button>
                 </div>
 
@@ -5523,9 +5535,9 @@ export const BrotherDetail = () => {
                   type="button"
                   onClick={() => window.open(`/hermanos/${selectedDiscipuloAltarBrother.id}`, '_blank')}
                   title="Abrir ficha completa del hermano en una nueva ventana"
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] uppercase tracking-wider font-black border border-emerald-500/40 dark:border-emerald-400/30 bg-emerald-500/10 dark:bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-600 hover:text-white transition-all active:scale-95 shadow-sm ml-1"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs uppercase tracking-wider font-black border border-emerald-500/40 dark:border-emerald-400/30 bg-emerald-500/10 dark:bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-600 hover:text-white transition-all active:scale-95 shadow-sm ml-1"
                 >
-                  <ExternalLink size={13} />
+                  <ExternalLink size={14} />
                   <span>Ver Ficha Completa</span>
                 </button>
               </div>
@@ -5546,35 +5558,35 @@ export const BrotherDetail = () => {
               </div>
               <div className="min-w-0 flex-1 space-y-1">
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="text-[9px] uppercase tracking-[0.2em] font-black text-emerald-600 dark:text-emerald-400">Ficha del Hermano</span>
-                  <span className="bg-emerald-600 dark:bg-emerald-500 text-white px-2.5 py-0.5 rounded-full text-[8px] uppercase tracking-wider font-black">
+                  <span className="text-xs uppercase tracking-[0.2em] font-black text-emerald-600 dark:text-emerald-400">Ficha del Hermano</span>
+                  <span className="bg-emerald-600 dark:bg-emerald-500 text-white px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs uppercase tracking-wider font-black">
                     {processBadgeLabelMap[selectedDiscipuloAltarBrother.procesoActual] || 'Altar'}
                   </span>
                 </div>
                 <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tight break-words">
                   {selectedDiscipuloAltarBrother.name}
                 </h3>
-                <p className="text-xs text-slate-500 dark:text-gray-400">
-                  Célula: <span className="font-bold text-slate-700 dark:text-gray-200">{selectedDiscipuloAltarBrother.acompanamiento?.celulaName || 'Sin asignar'}</span>
+                <p className="text-xs sm:text-sm text-slate-600 dark:text-gray-300">
+                  Célula: <span className="font-bold text-slate-800 dark:text-gray-100">{selectedDiscipuloAltarBrother.acompanamiento?.celulaName || 'Sin asignar'}</span>
                   {selectedDiscipuloAltarBrother.acompanamiento?.liderCelulaName && (
-                    <span> · Líder: <span className="font-semibold text-slate-700 dark:text-gray-200">{selectedDiscipuloAltarBrother.acompanamiento.liderCelulaName}</span></span>
+                    <span> · Líder: <span className="font-semibold text-slate-800 dark:text-gray-100">{selectedDiscipuloAltarBrother.acompanamiento.liderCelulaName}</span></span>
                   )}
                 </p>
               </div>
               <div className="self-start sm:self-center shrink-0 flex items-center gap-2">
                 <span
-                  className={`text-[10px] px-3 py-1.5 rounded-full border font-black tracking-wider inline-flex items-center gap-1.5 shadow-sm ${altarTrackingStatusStyle[getAltarTrackingStatus(selectedDiscipuloAltarBrother)]}`}
+                  className={`text-xs px-3.5 py-1.5 rounded-full border font-black tracking-wider inline-flex items-center gap-1.5 shadow-sm ${altarTrackingStatusStyle[getAltarTrackingStatus(selectedDiscipuloAltarBrother)]}`}
                 >
-                  <span className="w-1.5 h-1.5 rounded-full bg-current" />
+                  <span className="w-2 h-2 rounded-full bg-current" />
                   {altarTrackingStatusLabel[getAltarTrackingStatus(selectedDiscipuloAltarBrother)]}
                 </span>
                 <button
                   type="button"
                   onClick={() => window.open(`/hermanos/${selectedDiscipuloAltarBrother.id}`, '_blank')}
                   title="Abrir ficha completa en una nueva ventana"
-                  className="p-2 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 hover:border-emerald-500/40 transition-all active:scale-95"
+                  className="p-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 hover:border-emerald-500/40 transition-all active:scale-95"
                 >
-                  <ExternalLink size={15} />
+                  <ExternalLink size={16} />
                 </button>
               </div>
             </div>
@@ -5582,16 +5594,16 @@ export const BrotherDetail = () => {
             {/* Alerta de Interrupción si está interrumpido */}
             {(selectedAltarInfo?.isInterrumpido || selectedDiscipuloAltarBrother.altar?.interrumpido) && (
               <div className="p-3.5 rounded-2xl bg-rose-50 dark:bg-rose-950/20 border border-rose-300 dark:border-rose-900/50 flex items-start gap-3">
-                <AlertTriangle className="text-rose-500 shrink-0 mt-0.5" size={18} />
-                <div className="text-xs space-y-1 min-w-0 flex-1">
-                  <p className="font-black text-rose-700 dark:text-rose-400 uppercase tracking-wide text-[10px]">
+                <AlertTriangle className="text-rose-500 shrink-0 mt-0.5" size={20} />
+                <div className="space-y-1 min-w-0 flex-1">
+                  <p className="font-black text-rose-700 dark:text-rose-400 uppercase tracking-wide text-xs">
                     Altar Interrumpido
                   </p>
-                  <p className="text-slate-800 dark:text-gray-200 font-medium">
+                  <p className="text-sm text-slate-800 dark:text-gray-200 font-medium">
                     Motivo: <span className="font-bold">{selectedAltarInfo?.motivoInterrupcion || selectedDiscipuloAltarBrother.altar?.motivoInterrupcion || 'Sin motivo registrado'}</span>
                   </p>
                   {(selectedAltarInfo?.fechaInterrupcion || selectedDiscipuloAltarBrother.altar?.fechaInterrupcion) && (
-                    <p className="text-[10px] text-slate-500 dark:text-gray-400">
+                    <p className="text-xs text-slate-500 dark:text-gray-400">
                       Fecha: {displayDate(selectedAltarInfo?.fechaInterrupcion || selectedDiscipuloAltarBrother.altar?.fechaInterrupcion)}
                     </p>
                   )}
@@ -5601,57 +5613,57 @@ export const BrotherDetail = () => {
 
             {/* Datos Personales y Espirituales */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
-              <div className="p-3 rounded-xl bg-slate-50 dark:bg-black/35 border border-slate-200 dark:border-white/10 space-y-1">
-                <span className="text-[9px] uppercase tracking-wider font-black text-slate-400 dark:text-gray-500 flex items-center gap-1.5">
-                  <MapPin size={12} className="text-emerald-600 dark:text-emerald-400" /> Célula
+              <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-black/35 border border-slate-200 dark:border-white/10 space-y-1">
+                <span className="text-xs uppercase tracking-wider font-black text-slate-500 dark:text-gray-400 flex items-center gap-1.5">
+                  <MapPin size={14} className="text-emerald-600 dark:text-emerald-400" /> Célula
                 </span>
-                <p className="text-xs font-bold text-slate-800 dark:text-gray-100 truncate">
+                <p className="text-sm font-bold text-slate-900 dark:text-gray-100 truncate">
                   {selectedDiscipuloAltarBrother.acompanamiento?.celulaName || 'Sin asignar'}
                 </p>
               </div>
 
-              <div className="p-3 rounded-xl bg-slate-50 dark:bg-black/35 border border-slate-200 dark:border-white/10 space-y-1">
-                <span className="text-[9px] uppercase tracking-wider font-black text-slate-400 dark:text-gray-500 flex items-center gap-1.5">
-                  <Users size={12} className="text-emerald-600 dark:text-emerald-400" /> Líder de Célula
+              <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-black/35 border border-slate-200 dark:border-white/10 space-y-1">
+                <span className="text-xs uppercase tracking-wider font-black text-slate-500 dark:text-gray-400 flex items-center gap-1.5">
+                  <Users size={14} className="text-emerald-600 dark:text-emerald-400" /> Líder de Célula
                 </span>
-                <p className="text-xs font-bold text-slate-800 dark:text-gray-100 truncate">
+                <p className="text-sm font-bold text-slate-900 dark:text-gray-100 truncate">
                   {selectedDiscipuloAltarBrother.acompanamiento?.liderCelulaName || 'No asignado'}
                 </p>
               </div>
 
-              <div className="p-3 rounded-xl bg-slate-50 dark:bg-black/35 border border-slate-200 dark:border-white/10 space-y-1">
-                <span className="text-[9px] uppercase tracking-wider font-black text-slate-400 dark:text-gray-500 flex items-center gap-1.5">
-                  <ShieldCheck size={12} className="text-emerald-600 dark:text-emerald-400" /> Hermano Mayor
+              <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-black/35 border border-slate-200 dark:border-white/10 space-y-1">
+                <span className="text-xs uppercase tracking-wider font-black text-slate-500 dark:text-gray-400 flex items-center gap-1.5">
+                  <ShieldCheck size={14} className="text-emerald-600 dark:text-emerald-400" /> Hermano Mayor
                 </span>
-                <p className="text-xs font-bold text-slate-800 dark:text-gray-100 truncate">
+                <p className="text-sm font-bold text-slate-900 dark:text-gray-100 truncate">
                   {selectedDiscipuloAltarBrother.acompanamiento?.acompananteName || selectedAltarInfo?.hermanoMayorName || 'No asignado'}
                 </p>
               </div>
 
-              <div className="p-3 rounded-xl bg-slate-50 dark:bg-black/35 border border-slate-200 dark:border-white/10 space-y-1">
-                <span className="text-[9px] uppercase tracking-wider font-black text-slate-400 dark:text-gray-500 flex items-center gap-1.5">
-                  <Phone size={12} className="text-emerald-600 dark:text-emerald-400" /> Teléfono / Contacto
+              <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-black/35 border border-slate-200 dark:border-white/10 space-y-1">
+                <span className="text-xs uppercase tracking-wider font-black text-slate-500 dark:text-gray-400 flex items-center gap-1.5">
+                  <Phone size={14} className="text-emerald-600 dark:text-emerald-400" /> Teléfono / Contacto
                 </span>
-                <p className="text-xs font-bold text-slate-800 dark:text-gray-100 truncate">
+                <p className="text-sm font-bold text-slate-900 dark:text-gray-100 truncate">
                   {selectedDiscipuloAltarBrother.telefono || 'No registrado'}
                 </p>
               </div>
 
-              <div className="p-3 rounded-xl bg-slate-50 dark:bg-black/35 border border-slate-200 dark:border-white/10 space-y-1">
-                <span className="text-[9px] uppercase tracking-wider font-black text-slate-400 dark:text-gray-500 flex items-center gap-1.5">
-                  <Calendar size={12} className="text-emerald-600 dark:text-emerald-400" /> Edad / Nacimiento
+              <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-black/35 border border-slate-200 dark:border-white/10 space-y-1">
+                <span className="text-xs uppercase tracking-wider font-black text-slate-500 dark:text-gray-400 flex items-center gap-1.5">
+                  <Calendar size={14} className="text-emerald-600 dark:text-emerald-400" /> Edad / Nacimiento
                 </span>
-                <p className="text-xs font-bold text-slate-800 dark:text-gray-100 truncate">
+                <p className="text-sm font-bold text-slate-900 dark:text-gray-100 truncate">
                   {selectedDiscipuloAltarBrother.edad ? `${selectedDiscipuloAltarBrother.edad} años` : ''}
                   {selectedDiscipuloAltarBrother.fechaNacimiento ? ` (${displayDate(selectedDiscipuloAltarBrother.fechaNacimiento)})` : (!selectedDiscipuloAltarBrother.edad ? 'No registrada' : '')}
                 </p>
               </div>
 
-              <div className="p-3 rounded-xl bg-slate-50 dark:bg-black/35 border border-slate-200 dark:border-white/10 space-y-1">
-                <span className="text-[9px] uppercase tracking-wider font-black text-slate-400 dark:text-gray-500 flex items-center gap-1.5">
-                  <Calendar size={12} className="text-emerald-600 dark:text-emerald-400" /> Fecha de Ingreso
+              <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-black/35 border border-slate-200 dark:border-white/10 space-y-1">
+                <span className="text-xs uppercase tracking-wider font-black text-slate-500 dark:text-gray-400 flex items-center gap-1.5">
+                  <Calendar size={14} className="text-emerald-600 dark:text-emerald-400" /> Fecha de Ingreso
                 </span>
-                <p className="text-xs font-bold text-slate-800 dark:text-gray-100 truncate">
+                <p className="text-sm font-bold text-slate-900 dark:text-gray-100 truncate">
                   {displayDate(selectedDiscipuloAltarBrother.fechaIngreso || selectedAltarInfo?.fechaInicio || selectedDiscipuloAltarBrother.altar?.fechaInicio)}
                 </p>
               </div>
@@ -5660,30 +5672,30 @@ export const BrotherDetail = () => {
             {/* Detalle específico del Altar */}
             <div className="p-4 rounded-2xl bg-white dark:bg-black/35 border border-slate-200 dark:border-white/10 space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-[10px] uppercase tracking-[0.2em] font-black text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
-                  <Flame size={13} /> Información del Altar
+                <span className="text-xs uppercase tracking-[0.2em] font-black text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
+                  <Flame size={15} /> Información del Altar
                 </span>
-                <span className={`text-[9px] px-2.5 py-0.5 rounded-full border font-black uppercase tracking-wider ${altarTrackingStatusStyle[getAltarTrackingStatus(selectedDiscipuloAltarBrother)]}`}>
+                <span className={`text-xs px-3 py-1 rounded-full border font-black uppercase tracking-wider ${altarTrackingStatusStyle[getAltarTrackingStatus(selectedDiscipuloAltarBrother)]}`}>
                   {altarTrackingStatusLabel[getAltarTrackingStatus(selectedDiscipuloAltarBrother)]}
                 </span>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-                <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-black/45 border border-slate-100 dark:border-white/5">
-                  <p className="text-[9px] uppercase font-black tracking-wider text-slate-400 dark:text-gray-500">Inicio del Altar</p>
-                  <p className="text-xs font-bold text-slate-800 dark:text-gray-100 mt-0.5">
+                <div className="p-3 rounded-xl bg-slate-50 dark:bg-black/45 border border-slate-100 dark:border-white/5">
+                  <p className="text-xs uppercase font-black tracking-wider text-slate-500 dark:text-gray-400">Inicio del Altar</p>
+                  <p className="text-sm font-bold text-slate-900 dark:text-gray-100 mt-1">
                     {displayDate(selectedAltarInfo?.fechaInicio || selectedDiscipuloAltarBrother.altar?.fechaInicio)}
                   </p>
                 </div>
-                <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-black/45 border border-slate-100 dark:border-white/5">
-                  <p className="text-[9px] uppercase font-black tracking-wider text-slate-400 dark:text-gray-500">Fin del Altar</p>
-                  <p className="text-xs font-bold text-slate-800 dark:text-gray-100 mt-0.5">
+                <div className="p-3 rounded-xl bg-slate-50 dark:bg-black/45 border border-slate-100 dark:border-white/5">
+                  <p className="text-xs uppercase font-black tracking-wider text-slate-500 dark:text-gray-400">Fin del Altar</p>
+                  <p className="text-sm font-bold text-slate-900 dark:text-gray-100 mt-1">
                     {displayDate(selectedAltarInfo?.fechaFin || selectedDiscipuloAltarBrother.altar?.fechaFin)}
                   </p>
                 </div>
-                <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-black/45 border border-slate-100 dark:border-white/5">
-                  <p className="text-[9px] uppercase font-black tracking-wider text-slate-400 dark:text-gray-500">Realizado por</p>
-                  <p className="text-xs font-bold text-slate-800 dark:text-gray-100 truncate mt-0.5">
+                <div className="p-3 rounded-xl bg-slate-50 dark:bg-black/45 border border-slate-100 dark:border-white/5">
+                  <p className="text-xs uppercase font-black tracking-wider text-slate-500 dark:text-gray-400">Realizado por</p>
+                  <p className="text-sm font-bold text-slate-900 dark:text-gray-100 truncate mt-1">
                     {(selectedDiscipuloAltarBrother.altar?.realizadoPor ?? []).join(', ') || selectedAltarInfo?.hermanoMayorName || selectedDiscipuloAltarBrother.acompanamiento?.acompananteName || 'No especificado'}
                   </p>
                 </div>
@@ -5693,30 +5705,30 @@ export const BrotherDetail = () => {
             {/* Talentos y Dones (si existen) */}
             {selectedTalentsText && (
               <div className="p-4 rounded-2xl bg-white dark:bg-black/35 border border-slate-200 dark:border-white/10 space-y-1.5">
-                <span className="text-[10px] uppercase tracking-[0.2em] font-black text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
-                  <Music2 size={13} /> Talentos y Dones de Servicio
+                <span className="text-xs uppercase tracking-[0.2em] font-black text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
+                  <Music2 size={15} /> Talentos y Dones de Servicio
                 </span>
-                <p className="text-xs text-slate-700 dark:text-gray-300 whitespace-pre-wrap">{selectedTalentsText}</p>
+                <p className="text-sm text-slate-700 dark:text-gray-300 whitespace-pre-wrap">{selectedTalentsText}</p>
               </div>
             )}
 
             {/* Procesos y Etapas Realizadas */}
             <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-black/35 p-4 space-y-3">
-              <p className="text-[10px] uppercase tracking-[0.2em] font-black text-emerald-600 dark:text-emerald-400">Procesos y Etapas Realizadas</p>
+              <p className="text-xs uppercase tracking-[0.2em] font-black text-emerald-600 dark:text-emerald-400">Procesos y Etapas Realizadas</p>
               {selectedBrotherProcessSummary.length === 0 ? (
                 <p className="text-sm text-slate-500 dark:text-gray-400">Este hermano aún no tiene etapas completadas o registradas.</p>
               ) : (
                 <div className="space-y-3">
                   {selectedBrotherProcessSummary.map((processEntry) => (
-                    <article key={processEntry.key} className="rounded-xl border border-slate-200 dark:border-white/10 bg-[#f8fafc] dark:bg-black/35 p-3">
+                    <article key={processEntry.key} className="rounded-xl border border-slate-200 dark:border-white/10 bg-[#f8fafc] dark:bg-black/35 p-3.5">
                       <div className="flex flex-wrap items-start justify-between gap-2">
-                        <p className="text-[10px] uppercase tracking-[0.16em] font-black text-slate-500 dark:text-gray-500">{processEntry.label}</p>
+                        <p className="text-xs uppercase tracking-[0.16em] font-black text-slate-600 dark:text-gray-400">{processEntry.label}</p>
                         <div className="flex flex-wrap items-center gap-2">
-                          <span className="text-[10px] font-black text-slate-600 dark:text-gray-300 border border-slate-300 dark:border-white/15 rounded-md px-2 py-1 bg-white dark:bg-black/30">
+                          <span className="text-xs font-black text-slate-700 dark:text-gray-200 border border-slate-300 dark:border-white/15 rounded-md px-2.5 py-1 bg-white dark:bg-black/30">
                             Inicio: {displayDate(processEntry.startDate)}
                           </span>
                           {processEntry.endDate && (
-                            <span className="text-[10px] font-black text-slate-600 dark:text-gray-300 border border-slate-300 dark:border-white/15 rounded-md px-2 py-1 bg-white dark:bg-black/30">
+                            <span className="text-xs font-black text-slate-700 dark:text-gray-200 border border-slate-300 dark:border-white/15 rounded-md px-2.5 py-1 bg-white dark:bg-black/30">
                               Fin: {displayDate(processEntry.endDate)}
                             </span>
                           )}
@@ -5724,29 +5736,29 @@ export const BrotherDetail = () => {
                       </div>
                       <div className="mt-3 space-y-2">
                         {processEntry.observations.length === 0 ? (
-                          <p className="text-xs text-slate-500 dark:text-gray-500">Sin observaciones en este proceso.</p>
+                          <p className="text-xs sm:text-sm text-slate-500 dark:text-gray-400">Sin observaciones en este proceso.</p>
                         ) : (
                           processEntry.observations.map((observation, index) => (
                             <div
                               key={`${processEntry.key}-${index}`}
-                              className={`rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-black/45 p-2.5 min-h-[72px] ${
+                              className={`rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-black/45 p-3 min-h-[72px] ${
                                 index === 0 ? '' : 'mt-2'
                               }`}
                             >
-                              <p className="text-xs text-slate-700 dark:text-gray-300">{observation.text}</p>
-                              <p className="text-[10px] text-slate-500 dark:text-gray-500 mt-2">{observation.author.name}</p>
+                              <p className="text-sm text-slate-700 dark:text-gray-200">{observation.text}</p>
+                              <p className="text-xs text-slate-500 dark:text-gray-400 mt-2">{observation.author.name}</p>
                             </div>
                           ))
                         )}
                       </div>
                       {(processEntry.key === Proceso.EDDI || processEntry.key === Proceso.EDDI2 || processEntry.key === Proceso.EDDI3 || processEntry.key === Proceso.EDEM) && processEntry.grades.length > 0 && (
                         <div className="mt-3 space-y-2">
-                          <p className="text-[10px] uppercase tracking-[0.16em] font-black text-slate-500 dark:text-gray-500">Materias y calificaciones</p>
+                          <p className="text-xs uppercase tracking-[0.16em] font-black text-slate-600 dark:text-gray-400">Materias y calificaciones</p>
                           <div className="space-y-2">
                             {processEntry.grades.map((grade) => (
                               <div key={grade.id} className="rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-black/45 px-3 py-2 flex items-center justify-between gap-3">
-                                <span className="text-xs text-slate-700 dark:text-gray-300">{grade.materia}</span>
-                                <span className="text-xs font-black text-emerald-700 dark:text-emerald-300 ">{grade.nota}</span>
+                                <span className="text-sm text-slate-700 dark:text-gray-300">{grade.materia}</span>
+                                <span className="text-sm font-black text-emerald-700 dark:text-emerald-300">{grade.nota}</span>
                               </div>
                             ))}
                           </div>
@@ -5763,9 +5775,9 @@ export const BrotherDetail = () => {
               <button
                 type="button"
                 onClick={() => setSelectedDiscipuloAltarBrotherId(null)}
-                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-[10px] uppercase tracking-widest font-black border border-slate-300 dark:border-white/15 bg-white dark:bg-white/5 text-slate-700 dark:text-gray-200 hover:text-emerald-600 dark:hover:text-emerald-400 hover:border-emerald-500/40 transition-colors active:scale-95"
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs uppercase tracking-wider font-black border border-slate-300 dark:border-white/15 bg-white dark:bg-white/5 text-slate-700 dark:text-gray-200 hover:text-emerald-600 dark:hover:text-emerald-400 hover:border-emerald-500/40 transition-colors active:scale-95"
               >
-                <ArrowLeft size={14} />
+                <ArrowLeft size={16} />
                 <span>Volver a la lista de altares</span>
               </button>
 
@@ -5773,10 +5785,10 @@ export const BrotherDetail = () => {
                 <button
                   type="button"
                   onClick={() => setSelectedDiscipuloAltarBrotherId(nextAltarBrother.id)}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-[10px] uppercase tracking-widest font-black bg-emerald-600 dark:bg-emerald-500 text-white hover:bg-emerald-700 transition-all shadow-md active:scale-95 ml-auto"
+                  className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs uppercase tracking-wider font-black btn-3d-emerald text-white shadow-md active:scale-95 ml-auto"
                 >
                   <span>Siguiente Altar ({nextAltarBrother.name})</span>
-                  <ChevronRight size={14} />
+                  <ChevronRight size={16} />
                 </button>
               )}
             </div>
@@ -5787,79 +5799,79 @@ export const BrotherDetail = () => {
               <button
                 type="button"
                 onClick={() => setDiscipuloAltarsFilter('TODOS')}
-                className={`rounded-xl border p-3 text-left transition-all flex flex-col justify-between min-h-[86px] ${
+                className={`rounded-xl border p-3.5 text-left transition-all flex flex-col justify-between min-h-[92px] ${
                   discipuloAltarsFilter === 'TODOS'
                     ? 'border-emerald-500 dark:border-emerald-400 bg-emerald-500/10 dark:bg-emerald-500/15'
                     : 'border-slate-200 dark:border-white/10 bg-[#f8fafc] dark:bg-black/40 hover:border-emerald-500/40'
                 }`}
               >
                 <div className="min-h-[28px] flex items-start">
-                  <p className="text-[9px] sm:text-[10px] uppercase tracking-wider leading-tight font-black text-slate-500 dark:text-gray-400 break-normal">Total Altares</p>
+                  <p className="text-xs font-black uppercase tracking-wider leading-tight text-slate-600 dark:text-gray-300 break-normal">Total Altares</p>
                 </div>
-                <p className="text-xl sm:text-2xl font-black text-emerald-700 dark:text-emerald-300  mt-auto">{altarTrackingSummary.opened}</p>
+                <p className="text-2xl font-black text-emerald-700 dark:text-emerald-300 mt-auto">{altarTrackingSummary.opened}</p>
               </button>
               <button
                 type="button"
                 onClick={() => setDiscipuloAltarsFilter('EN_PROCESO')}
-                className={`rounded-xl border p-3 text-left transition-all flex flex-col justify-between min-h-[86px] ${
+                className={`rounded-xl border p-3.5 text-left transition-all flex flex-col justify-between min-h-[92px] ${
                   discipuloAltarsFilter === 'EN_PROCESO'
                     ? 'border-amber-500 bg-amber-500/10'
                     : 'border-slate-200 dark:border-white/10 bg-[#f8fafc] dark:bg-black/40 hover:border-amber-500/40'
                 }`}
               >
                 <div className="min-h-[28px] flex items-start">
-                  <p className="text-[9px] sm:text-[10px] uppercase tracking-wider leading-tight font-black text-slate-500 dark:text-gray-400 break-normal">En Proceso</p>
+                  <p className="text-xs font-black uppercase tracking-wider leading-tight text-slate-600 dark:text-gray-300 break-normal">En Proceso</p>
                 </div>
-                <p className="text-xl sm:text-2xl font-black text-amber-600 dark:text-amber-400 mt-auto">{altarTrackingSummary.enProceso}</p>
+                <p className="text-2xl font-black text-amber-600 dark:text-amber-400 mt-auto">{altarTrackingSummary.enProceso}</p>
               </button>
               <button
                 type="button"
                 onClick={() => setDiscipuloAltarsFilter('FINALIZADOS')}
-                className={`rounded-xl border p-3 text-left transition-all flex flex-col justify-between min-h-[86px] ${
+                className={`rounded-xl border p-3.5 text-left transition-all flex flex-col justify-between min-h-[92px] ${
                   discipuloAltarsFilter === 'FINALIZADOS'
                     ? 'border-emerald-500 bg-emerald-500/10'
                     : 'border-slate-200 dark:border-white/10 bg-[#f8fafc] dark:bg-black/40 hover:border-emerald-500/40'
                 }`}
               >
                 <div className="min-h-[28px] flex items-start">
-                  <p className="text-[9px] sm:text-[10px] uppercase tracking-wider leading-tight font-black text-slate-500 dark:text-gray-400 break-normal">Finalizados</p>
+                  <p className="text-xs font-black uppercase tracking-wider leading-tight text-slate-600 dark:text-gray-300 break-normal">Finalizados</p>
                 </div>
-                <p className="text-xl sm:text-2xl font-black text-emerald-700 dark:text-emerald-300 mt-auto">{altarTrackingSummary.finalized}</p>
+                <p className="text-2xl font-black text-emerald-700 dark:text-emerald-300 mt-auto">{altarTrackingSummary.finalized}</p>
               </button>
               <button
                 type="button"
                 onClick={() => setDiscipuloAltarsFilter('INTERRUMPIDOS')}
-                className={`rounded-xl border p-3 text-left transition-all flex flex-col justify-between min-h-[86px] ${
+                className={`rounded-xl border p-3.5 text-left transition-all flex flex-col justify-between min-h-[92px] ${
                   discipuloAltarsFilter === 'INTERRUMPIDOS'
                     ? 'border-rose-500 bg-rose-500/10'
                     : 'border-slate-200 dark:border-white/10 bg-[#f8fafc] dark:bg-black/40 hover:border-rose-500/40'
                 }`}
               >
                 <div className="min-h-[28px] flex items-start">
-                  <p className="text-[9px] sm:text-[10px] uppercase tracking-wider leading-tight font-black text-slate-500 dark:text-gray-400 break-normal">Interrumpidos</p>
+                  <p className="text-xs font-black uppercase tracking-wider leading-tight text-slate-600 dark:text-gray-300 break-normal">Interrumpidos</p>
                 </div>
-                <p className="text-xl sm:text-2xl font-black text-rose-700 dark:text-rose-300 mt-auto">{altarTrackingSummary.interrupted}</p>
+                <p className="text-2xl font-black text-rose-700 dark:text-rose-300 mt-auto">{altarTrackingSummary.interrupted}</p>
               </button>
               {altarModalSourceStage !== 4 && (
                 <button
                   type="button"
                   onClick={() => setDiscipuloAltarsFilter('CONECTORES')}
-                  className={`rounded-xl border p-3 text-left transition-all flex flex-col justify-between min-h-[86px] ${
+                  className={`rounded-xl border p-3.5 text-left transition-all flex flex-col justify-between min-h-[92px] ${
                     discipuloAltarsFilter === 'CONECTORES'
                       ? 'border-purple-500 bg-purple-500/10'
                       : 'border-slate-200 dark:border-white/10 bg-[#f8fafc] dark:bg-black/40 hover:border-purple-500/40'
                   }`}
                 >
                   <div className="min-h-[28px] flex items-start">
-                    <p className="text-[9px] sm:text-[10px] uppercase tracking-wider leading-tight font-black text-slate-500 dark:text-gray-400 break-normal">Discípulos Conectores</p>
+                    <p className="text-xs font-black uppercase tracking-wider leading-tight text-purple-700 dark:text-purple-300 break-normal">Discípulos Conectores</p>
                   </div>
-                  <p className="text-xl sm:text-2xl font-black text-purple-600 dark:text-purple-400 mt-auto">{altaresFinalizadosConectores.length}</p>
+                  <p className="text-2xl font-black text-purple-600 dark:text-purple-400 mt-auto">{altaresFinalizadosConectores.length}</p>
                 </button>
               )}
             </div>
 
             {filteredDisciplesAltarBrothers.length === 0 ? (
-              <p className="text-sm text-slate-500 dark:text-gray-400">
+              <p className="text-sm sm:text-base text-slate-500 dark:text-gray-400">
                 {discipuloAltarsFilter === 'TODOS'
                   ? 'No hay hermanos registrados en altares abiertos por este discípulo.'
                   : discipuloAltarsFilter === 'CONECTORES'
@@ -5877,10 +5889,10 @@ export const BrotherDetail = () => {
                   return (
                     <article
                       key={entry.id}
-                      className="rounded-xl border border-slate-200 dark:border-white/10 bg-[#f8fafc] dark:bg-black/35 p-4 flex flex-col sm:flex-row sm:items-center gap-3 hover:border-emerald-500/40 transition-colors"
+                      className="rounded-xl border border-slate-200 dark:border-white/10 bg-[#f8fafc] dark:bg-black/35 p-4 flex flex-col sm:flex-row sm:items-center gap-3.5 hover:border-emerald-500/40 transition-colors"
                     >
-                      <div className="flex items-center gap-3 min-w-0 flex-1">
-                        <div className="w-10 h-10 rounded-xl overflow-hidden bg-slate-100 dark:bg-black/60 border border-emerald-500/30 dark:border-emerald-400/20 flex items-center justify-center text-sm font-black text-emerald-600 dark:text-emerald-400 shrink-0">
+                      <div className="flex items-center gap-3.5 min-w-0 flex-1">
+                        <div className="w-12 h-12 rounded-xl overflow-hidden bg-slate-100 dark:bg-black/60 border border-emerald-500/30 dark:border-emerald-400/20 flex items-center justify-center text-base font-black text-emerald-600 dark:text-emerald-400 shrink-0">
                           {entry.fotoUrl ? (
                             <img src={entry.fotoUrl} alt={entry.name} className="w-full h-full object-cover" />
                           ) : (
@@ -5888,8 +5900,8 @@ export const BrotherDetail = () => {
                           )}
                         </div>
                         <div className="min-w-0 flex-1">
-                          <p className="text-sm font-black text-slate-900 dark:text-white truncate">{entry.name}</p>
-                          <p className="text-xs text-slate-500 dark:text-gray-400 mt-0.5 truncate">
+                          <p className="text-sm sm:text-base font-black text-slate-900 dark:text-white truncate">{entry.name}</p>
+                          <p className="text-xs sm:text-sm text-slate-600 dark:text-gray-300 mt-1 truncate">
                             Célula: {entry.acompanamiento?.celulaName || 'Sin asignar'}
                             {discipuloAltarsFilter === 'CONECTORES' ? (
                               <span> · Proceso actual: {processBadgeLabelMap[entry.procesoActual] || 'Discípulo Conector'}</span>
@@ -5901,12 +5913,12 @@ export const BrotherDetail = () => {
                       </div>
                       <div className="flex items-center gap-2 sm:gap-3 self-end sm:self-auto shrink-0">
                         {discipuloAltarsFilter === 'CONECTORES' ? (
-                          <span className="text-[10px] px-2.5 py-1 rounded-md border font-black tracking-wider bg-purple-500/15 text-purple-700 dark:text-purple-300 border-purple-500/30">
+                          <span className="text-xs px-3 py-1 rounded-full border font-black tracking-wider bg-purple-500/15 text-purple-700 dark:text-purple-300 border-purple-500/30">
                             Discípulo Conector
                           </span>
                         ) : (
                           <span
-                            className={`text-[10px] px-2.5 py-1 rounded-md border font-black tracking-wider ${altarTrackingStatusStyle[status]}`}
+                            className={`text-xs px-3 py-1 rounded-full border font-black tracking-wider ${altarTrackingStatusStyle[status]}`}
                           >
                             {altarTrackingStatusLabel[status]}
                           </span>
@@ -5914,7 +5926,7 @@ export const BrotherDetail = () => {
                         <button
                           type="button"
                           onClick={() => setSelectedDiscipuloAltarBrotherId(entry.id)}
-                          className="px-3 py-1.5 rounded-lg text-[10px] uppercase tracking-widest font-black border border-emerald-500/40 dark:border-emerald-400/30 bg-emerald-500/15 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-600 hover:text-white transition-colors"
+                          className="px-3.5 py-2 rounded-xl text-xs sm:text-sm uppercase tracking-wider font-black border border-emerald-500/40 dark:border-emerald-400/30 bg-emerald-500/15 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-600 hover:text-white transition-colors"
                         >
                           Ver
                         </button>
@@ -6548,7 +6560,7 @@ export const BrotherDetail = () => {
                 <button
                   type="button"
                   onClick={() => setSelectedGrupoVidaMemberId(nextGrupoVidaMember.id)}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-[10px] uppercase tracking-widest font-black bg-emerald-600 dark:bg-emerald-500 text-white hover:bg-emerald-700 transition-all shadow-md active:scale-95 ml-auto"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-[10px] uppercase tracking-widest font-black btn-3d-emerald text-white shadow-md active:scale-95 ml-auto"
                 >
                   <span>Siguiente Integrante ({nextGrupoVidaMember.name})</span>
                   <ChevronRight size={14} />
@@ -6803,12 +6815,12 @@ export const BrotherDetail = () => {
                         setSelectedConectorForAltars(null);
                         setConectorAltarsFilter('TODOS');
                       }}
-                      className="inline-flex items-center gap-1.5 text-xs font-bold text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 hover:underline transition-colors"
+                      className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 hover:underline transition-colors"
                     >
-                      <ArrowLeft size={14} />
+                      <ArrowLeft size={16} />
                       <span>Volver a la lista de conectores</span>
                     </button>
-                    <span className="text-[10px] text-slate-500 dark:text-gray-400 font-bold">
+                    <span className="text-xs sm:text-sm text-slate-600 dark:text-gray-300 font-bold">
                       Célula: {selectedConectorForAltars.acompanamiento?.celulaName || 'Sin asignar'}
                     </span>
                   </div>
@@ -6818,13 +6830,13 @@ export const BrotherDetail = () => {
                     {/* TOTAL ALTARES */}
                     <div
                       onClick={() => setConectorAltarsFilter('TODOS')}
-                      className={`p-3 rounded-2xl border cursor-pointer transition-all ${
+                      className={`p-3.5 rounded-2xl border cursor-pointer transition-all ${
                         conectorAltarsFilter === 'TODOS'
                           ? 'bg-emerald-500/10 border-emerald-500 shadow-sm'
                           : 'bg-white dark:bg-black/40 border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20'
                       }`}
                     >
-                      <p className="text-[10px] font-black uppercase tracking-wider text-slate-500 dark:text-gray-400">
+                      <p className="text-xs font-black uppercase tracking-wider text-slate-600 dark:text-gray-300">
                         TOTAL ALTARES
                       </p>
                       <p className="text-2xl font-black mt-1 text-emerald-600 dark:text-emerald-400">
@@ -6835,13 +6847,13 @@ export const BrotherDetail = () => {
                     {/* EN PROCESO */}
                     <div
                       onClick={() => setConectorAltarsFilter('EN_PROCESO')}
-                      className={`p-3 rounded-2xl border cursor-pointer transition-all ${
+                      className={`p-3.5 rounded-2xl border cursor-pointer transition-all ${
                         conectorAltarsFilter === 'EN_PROCESO'
                           ? 'bg-amber-500/10 border-amber-500 shadow-sm'
                           : 'bg-white dark:bg-black/40 border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20'
                       }`}
                     >
-                      <p className="text-[10px] font-black uppercase tracking-wider text-slate-500 dark:text-gray-400">
+                      <p className="text-xs font-black uppercase tracking-wider text-slate-600 dark:text-gray-300">
                         EN PROCESO
                       </p>
                       <p className="text-2xl font-black mt-1 text-amber-500">
@@ -6852,13 +6864,13 @@ export const BrotherDetail = () => {
                     {/* FINALIZADOS */}
                     <div
                       onClick={() => setConectorAltarsFilter('FINALIZADOS')}
-                      className={`p-3 rounded-2xl border cursor-pointer transition-all ${
+                      className={`p-3.5 rounded-2xl border cursor-pointer transition-all ${
                         conectorAltarsFilter === 'FINALIZADOS'
                           ? 'bg-emerald-500/10 border-emerald-500 shadow-sm'
                           : 'bg-white dark:bg-black/40 border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20'
                       }`}
                     >
-                      <p className="text-[10px] font-black uppercase tracking-wider text-slate-500 dark:text-gray-400">
+                      <p className="text-xs font-black uppercase tracking-wider text-slate-600 dark:text-gray-300">
                         FINALIZADOS
                       </p>
                       <p className="text-2xl font-black mt-1 text-emerald-600 dark:text-emerald-400">
@@ -6869,13 +6881,13 @@ export const BrotherDetail = () => {
                     {/* INTERRUMPIDOS */}
                     <div
                       onClick={() => setConectorAltarsFilter('INTERRUMPIDOS')}
-                      className={`p-3 rounded-2xl border cursor-pointer transition-all ${
+                      className={`p-3.5 rounded-2xl border cursor-pointer transition-all ${
                         conectorAltarsFilter === 'INTERRUMPIDOS'
                           ? 'bg-rose-500/10 border-rose-500 shadow-sm'
                           : 'bg-white dark:bg-black/40 border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20'
                       }`}
                     >
-                      <p className="text-[10px] font-black uppercase tracking-wider text-slate-500 dark:text-gray-400">
+                      <p className="text-xs font-black uppercase tracking-wider text-slate-600 dark:text-gray-300">
                         INTERRUMPIDOS
                       </p>
                       <p className="text-2xl font-black mt-1 text-rose-600">
@@ -6886,11 +6898,11 @@ export const BrotherDetail = () => {
 
                   {/* Lista de Altares o mensaje vacío de la Imagen 2 */}
                   {displayedAltars.length === 0 ? (
-                    <div className="py-8 text-center text-slate-400 dark:text-gray-500 text-xs">
+                    <div className="py-8 text-center text-slate-500 dark:text-gray-400 text-sm sm:text-base">
                       No hay hermanos registrados en altares abiertos por este discípulo.
                     </div>
                   ) : (
-                    <div className="space-y-2 max-h-[360px] overflow-y-auto pr-1 [scrollbar-width:thin]">
+                    <div className="space-y-2.5 max-h-[360px] overflow-y-auto pr-1 [scrollbar-width:thin]">
                       {displayedAltars.map((altarMember) => {
                         const info = altarService.getAltarInfo(altarMember.id);
                         const status = getAltarTrackingStatus(altarMember);
@@ -6899,10 +6911,10 @@ export const BrotherDetail = () => {
                         return (
                           <div
                             key={`conector-altar-item-${altarMember.id}`}
-                            className="p-3 rounded-xl bg-white dark:bg-black/50 border border-slate-200 dark:border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm hover:border-purple-500/30 transition-colors"
+                            className="p-3.5 rounded-xl bg-white dark:bg-black/50 border border-slate-200 dark:border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm hover:border-purple-500/30 transition-colors"
                           >
-                            <div className="flex items-center gap-3 min-w-0">
-                              <div className="w-9 h-9 rounded-xl overflow-hidden bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-xs font-bold text-purple-600 shrink-0">
+                            <div className="flex items-center gap-3.5 min-w-0">
+                              <div className="w-11 h-11 rounded-xl overflow-hidden bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-sm font-bold text-purple-600 shrink-0">
                                 {altarMember.fotoUrl ? (
                                   <img src={altarMember.fotoUrl} alt={altarMember.name} className="w-full h-full object-cover" />
                                 ) : (
@@ -6911,11 +6923,11 @@ export const BrotherDetail = () => {
                               </div>
                               <div className="min-w-0">
                                 <div className="flex items-center gap-2">
-                                  <p className="text-xs font-black text-slate-800 dark:text-gray-200 truncate">
+                                  <p className="text-sm sm:text-base font-black text-slate-900 dark:text-gray-100 truncate">
                                     {altarMember.name}
                                   </p>
                                   <span
-                                    className={`text-[9px] uppercase font-black px-2 py-0.5 rounded-full border shrink-0 ${
+                                    className={`text-xs uppercase font-black px-2.5 py-0.5 rounded-full border shrink-0 ${
                                       status === 'FINALIZADO'
                                         ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/30'
                                         : status === 'INTERRUMPIDO'
@@ -6926,7 +6938,7 @@ export const BrotherDetail = () => {
                                     {status === 'FINALIZADO' ? 'Finalizado' : status === 'INTERRUMPIDO' ? 'Interrumpido' : 'En Proceso'}
                                   </span>
                                 </div>
-                                <p className="text-[10px] text-slate-500 dark:text-gray-400 truncate">
+                                <p className="text-xs sm:text-sm text-slate-600 dark:text-gray-300 mt-0.5 truncate">
                                   Inicio: {start ? displayDate(start) : 'Sin fecha'}
                                   {end ? ` · Fin: ${displayDate(end)}` : ''}
                                 </p>
@@ -6943,7 +6955,7 @@ export const BrotherDetail = () => {
                                   window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
                                 });
                               }}
-                              className="self-start sm:self-auto px-3 py-1.5 rounded-lg text-[10px] uppercase font-bold text-purple-600 dark:text-purple-300 border border-purple-500/30 hover:bg-purple-600 hover:text-white transition-colors shrink-0"
+                              className="self-start sm:self-auto px-3.5 py-2 rounded-xl text-xs sm:text-sm uppercase font-black text-purple-600 dark:text-purple-300 border border-purple-500/30 hover:bg-purple-600 hover:text-white transition-colors shrink-0"
                             >
                               Ver ficha
                             </button>
@@ -6960,8 +6972,8 @@ export const BrotherDetail = () => {
             <div className="space-y-4">
               {/* Tarjetas de Resumen General de Conectores de la Célula */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-                <div className="p-3 rounded-2xl bg-purple-500/10 border border-purple-500/30">
-                  <p className="text-[10px] font-black uppercase tracking-wider text-purple-700 dark:text-purple-300">
+                <div className="p-3.5 rounded-2xl bg-purple-500/10 border border-purple-500/30">
+                  <p className="text-xs font-black uppercase tracking-wider text-purple-700 dark:text-purple-300">
                     TOTAL CONECTORES
                   </p>
                   <p className="text-2xl font-black mt-1 text-purple-700 dark:text-purple-300">
@@ -6969,8 +6981,8 @@ export const BrotherDetail = () => {
                   </p>
                 </div>
 
-                <div className="p-3 rounded-2xl bg-white dark:bg-black/40 border border-slate-200 dark:border-white/10">
-                  <p className="text-[10px] font-black uppercase tracking-wider text-slate-500 dark:text-gray-400">
+                <div className="p-3.5 rounded-2xl bg-white dark:bg-black/40 border border-slate-200 dark:border-white/10">
+                  <p className="text-xs font-black uppercase tracking-wider text-slate-600 dark:text-gray-300">
                     ALTARES ABIERTOS
                   </p>
                   <p className="text-2xl font-black mt-1 text-slate-800 dark:text-gray-100">
@@ -6978,8 +6990,8 @@ export const BrotherDetail = () => {
                   </p>
                 </div>
 
-                <div className="p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/30">
-                  <p className="text-[10px] font-black uppercase tracking-wider text-emerald-700 dark:text-emerald-300">
+                <div className="p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30">
+                  <p className="text-xs font-black uppercase tracking-wider text-emerald-700 dark:text-emerald-300">
                     ALTARES FINALIZADOS
                   </p>
                   <p className="text-2xl font-black mt-1 text-emerald-600 dark:text-emerald-400">
@@ -6987,8 +6999,8 @@ export const BrotherDetail = () => {
                   </p>
                 </div>
 
-                <div className="p-3 rounded-2xl bg-rose-500/10 border border-rose-500/30">
-                  <p className="text-[10px] font-black uppercase tracking-wider text-rose-700 dark:text-rose-300">
+                <div className="p-3.5 rounded-2xl bg-rose-500/10 border border-rose-500/30">
+                  <p className="text-xs font-black uppercase tracking-wider text-rose-700 dark:text-rose-300">
                     INTERRUMPIDOS
                   </p>
                   <p className="text-2xl font-black mt-1 text-rose-600">
@@ -6999,11 +7011,11 @@ export const BrotherDetail = () => {
 
               {/* Lista de Conectores */}
               {celulaDiscipulosConectores.length === 0 ? (
-                <div className="py-8 text-center text-slate-400 dark:text-gray-500 text-xs">
+                <div className="py-8 text-center text-slate-500 dark:text-gray-400 text-sm sm:text-base">
                   No hay discípulos conectores registrados en esta célula actualmente.
                 </div>
               ) : (
-                <div className="space-y-2 max-h-[380px] overflow-y-auto pr-1 [scrollbar-width:thin]">
+                <div className="space-y-2.5 max-h-[380px] overflow-y-auto pr-1 [scrollbar-width:thin]">
                   {celulaDiscipulosConectores.map((conector) => {
                     const altars = getAltarsForConector(conector.id, conector.name);
                     return (
@@ -7013,10 +7025,10 @@ export const BrotherDetail = () => {
                           setSelectedConectorForAltars(conector);
                           setConectorAltarsFilter('TODOS');
                         }}
-                        className="p-3 rounded-xl bg-white dark:bg-black/50 border border-slate-200 dark:border-white/10 hover:border-purple-500/40 hover:shadow-md cursor-pointer transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3 group"
+                        className="p-3.5 rounded-xl bg-white dark:bg-black/50 border border-slate-200 dark:border-white/10 hover:border-purple-500/40 hover:shadow-md cursor-pointer transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3 group"
                       >
-                        <div className="flex items-center gap-3 min-w-0">
-                          <div className="w-10 h-10 rounded-xl overflow-hidden bg-purple-500/15 border border-purple-500/30 flex items-center justify-center text-sm font-black text-purple-600 shrink-0">
+                        <div className="flex items-center gap-3.5 min-w-0">
+                          <div className="w-12 h-12 rounded-xl overflow-hidden bg-purple-500/15 border border-purple-500/30 flex items-center justify-center text-base font-black text-purple-600 shrink-0">
                             {conector.fotoUrl ? (
                               <img src={conector.fotoUrl} alt={conector.name} className="w-full h-full object-cover" />
                             ) : (
@@ -7025,21 +7037,21 @@ export const BrotherDetail = () => {
                           </div>
                           <div className="min-w-0">
                             <div className="flex items-center gap-2">
-                              <p className="text-xs font-black text-slate-800 dark:text-gray-100 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors truncate">
+                              <p className="text-sm sm:text-base font-black text-slate-800 dark:text-gray-100 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors truncate">
                                 {conector.name}
                               </p>
-                              <span className="text-[9px] uppercase font-black px-2 py-0.5 rounded-full bg-purple-500/15 text-purple-700 dark:text-purple-300 border border-purple-500/30 shrink-0">
+                              <span className="text-xs uppercase font-black px-2.5 py-0.5 rounded-full bg-purple-500/15 text-purple-700 dark:text-purple-300 border border-purple-500/30 shrink-0">
                                 Conector
                               </span>
                             </div>
-                            <p className="text-[10px] text-slate-500 dark:text-gray-400 truncate">
+                            <p className="text-xs sm:text-sm text-slate-600 dark:text-gray-300 truncate mt-1">
                               Célula: {conector.acompanamiento?.celulaName || 'Sin asignar'} · Tel: {conector.telefono || 'Sin teléfono'}
                             </p>
                           </div>
                         </div>
 
                         <div className="flex items-center gap-2 shrink-0 self-end sm:self-auto">
-                          <span className="text-[10px] font-bold px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-gray-300 border border-slate-200 dark:border-white/10">
+                          <span className="text-xs sm:text-sm font-bold px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-white/5 text-slate-700 dark:text-gray-200 border border-slate-200 dark:border-white/10">
                             {altars.length} {altars.length === 1 ? 'Altar' : 'Altares'}
                           </span>
                           <button
@@ -7049,9 +7061,10 @@ export const BrotherDetail = () => {
                               setSelectedConectorForAltars(conector);
                               setConectorAltarsFilter('TODOS');
                             }}
-                            className="px-3 py-1.5 rounded-xl text-[10px] uppercase font-black bg-purple-600 text-white hover:bg-purple-500 shadow-sm transition-all flex items-center gap-1"
+                            className="px-3.5 py-2 rounded-xl text-xs sm:text-sm uppercase font-black bg-purple-600 text-white hover:bg-purple-500 shadow-sm transition-all flex items-center gap-1.5"
                           >
-                            Ver Altares <ChevronRight size={12} />
+                            <span>Ver Altares</span>
+                            <ChevronRight size={14} />
                           </button>
                         </div>
                       </div>
@@ -7070,7 +7083,7 @@ export const BrotherDetail = () => {
                 setSelectedConectorForAltars(null);
                 setConectorAltarsFilter('TODOS');
               }}
-              className="px-4 py-2 rounded-xl text-[10px] uppercase font-bold border border-slate-200 dark:border-white/10 text-slate-600 dark:text-gray-400 hover:bg-slate-100 dark:hover:bg-white/5"
+              className="px-4 py-2 rounded-xl text-xs sm:text-sm uppercase font-bold border border-slate-200 dark:border-white/10 text-slate-600 dark:text-gray-400 hover:bg-slate-100 dark:hover:bg-white/5"
             >
               Cerrar
             </button>
@@ -7112,8 +7125,8 @@ export const BrotherDetail = () => {
 
               {/* Ficha del Líder del Grupo (idéntica a Imagen 1) */}
               <div className="p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/25 flex items-center justify-between gap-3">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl overflow-hidden bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-sm font-black text-emerald-600 shrink-0">
+                <div className="flex items-center gap-3.5">
+                  <div className="w-12 h-12 rounded-xl overflow-hidden bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-sm font-black text-emerald-600 shrink-0">
                     {selectedCellGrupoVida.leaderFotoUrl ? (
                       <img
                         src={selectedCellGrupoVida.leaderFotoUrl}
@@ -7125,15 +7138,15 @@ export const BrotherDetail = () => {
                     )}
                   </div>
                   <div>
-                    <p className="text-xs font-black text-slate-800 dark:text-gray-100">
+                    <p className="text-sm font-black text-slate-800 dark:text-gray-100">
                       Líder: {selectedCellGrupoVida.leaderName}
                     </p>
-                    <p className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold">
+                    <p className="text-xs text-emerald-600 dark:text-emerald-400 font-bold mt-0.5">
                       Rol: {selectedCellGrupoVida.leaderRole}
                     </p>
                   </div>
                 </div>
-                <span className="text-[10px] uppercase font-black px-2.5 py-1 rounded-full border shrink-0 bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/30">
+                <span className="text-xs uppercase font-black px-3 py-1 rounded-full border shrink-0 bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/30">
                   {selectedCellGrupoVida.members.length} {selectedCellGrupoVida.members.length === 1 ? 'Integrante' : 'Integrantes'}
                 </span>
               </div>
@@ -7150,8 +7163,8 @@ export const BrotherDetail = () => {
                       key={`gv-cell-member-${member.id}`}
                       className="p-3 rounded-xl bg-white dark:bg-black/50 border border-slate-200 dark:border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm hover:border-emerald-500/30 transition-colors"
                     >
-                      <div className="flex items-center gap-3 min-w-0">
-                        <div className="w-9 h-9 rounded-xl overflow-hidden bg-slate-100 dark:bg-black/60 border border-emerald-500/30 flex items-center justify-center text-xs font-bold text-emerald-600 shrink-0">
+                      <div className="flex items-center gap-3.5 min-w-0">
+                        <div className="w-11 h-11 rounded-xl overflow-hidden bg-slate-100 dark:bg-black/60 border border-emerald-500/30 flex items-center justify-center text-xs font-bold text-emerald-600 shrink-0">
                           {member.fotoUrl ? (
                             <img src={member.fotoUrl} alt={member.name} className="w-full h-full object-cover" />
                           ) : (
@@ -7159,10 +7172,10 @@ export const BrotherDetail = () => {
                           )}
                         </div>
                         <div className="min-w-0">
-                          <p className="text-xs font-black text-slate-800 dark:text-gray-200 truncate">
+                          <p className="text-sm font-black text-slate-800 dark:text-gray-200 truncate">
                             {member.name}
                           </p>
-                          <p className="text-[10px] text-slate-500 dark:text-gray-400 truncate">
+                          <p className="text-xs text-slate-500 dark:text-gray-400 truncate mt-0.5">
                             {processBadgeLabelMap[member.procesoActual] || 'Hermano'} · {member.telefono || 'Sin teléfono'}
                           </p>
                         </div>
@@ -7229,7 +7242,7 @@ export const BrotherDetail = () => {
                       className="p-3.5 rounded-2xl bg-white dark:bg-black/50 border border-slate-200 dark:border-white/10 hover:border-emerald-500/40 hover:shadow-md cursor-pointer transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3 group active:scale-[0.99]"
                     >
                       <div className="flex items-center gap-3.5 min-w-0">
-                        <div className="w-10 h-10 rounded-xl overflow-hidden bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-sm font-black text-emerald-600 shrink-0 group-hover:scale-105 transition-transform">
+                        <div className="w-12 h-12 rounded-xl overflow-hidden bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-sm font-black text-emerald-600 shrink-0 group-hover:scale-105 transition-transform">
                           {grupo.leaderFotoUrl ? (
                             <img src={grupo.leaderFotoUrl} alt={grupo.leaderName} className="w-full h-full object-cover" />
                           ) : (
@@ -7238,21 +7251,21 @@ export const BrotherDetail = () => {
                         </div>
                         <div className="min-w-0">
                           <div className="flex flex-wrap items-center gap-2">
-                            <h4 className="text-xs font-black text-slate-800 dark:text-gray-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors truncate">
+                            <h4 className="text-sm font-black text-slate-800 dark:text-gray-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors truncate">
                               {grupo.nombreGrupoVida}
                             </h4>
-                            <span className="text-[9px] uppercase font-black px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 shrink-0">
+                            <span className="text-[10px] uppercase font-black px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 shrink-0">
                               {grupo.leaderRole}
                             </span>
                           </div>
-                          <p className="text-[10px] text-slate-500 dark:text-gray-400 truncate mt-0.5">
+                          <p className="text-xs text-slate-500 dark:text-gray-400 truncate mt-0.5">
                             Líder a cargo: <strong className="text-slate-700 dark:text-gray-300 font-bold">{grupo.leaderName}</strong>
                           </p>
                         </div>
                       </div>
 
                       <div className="flex items-center gap-2.5 shrink-0 self-end sm:self-auto">
-                        <span className="text-[10px] font-bold px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-gray-300 border border-slate-200 dark:border-white/10">
+                        <span className="text-xs font-bold px-3 py-1 rounded-lg bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-gray-300 border border-slate-200 dark:border-white/10">
                           {grupo.members.length} {grupo.members.length === 1 ? 'Integrante' : 'Integrantes'}
                         </span>
                         <button
@@ -7261,7 +7274,7 @@ export const BrotherDetail = () => {
                             e.stopPropagation();
                             setSelectedCellGrupoVida(grupo);
                           }}
-                          className="px-3.5 py-1.5 rounded-xl text-[10px] uppercase font-black bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm transition-all flex items-center gap-1"
+                          className="px-3.5 py-1.5 rounded-xl text-xs uppercase font-black btn-3d-emerald text-white shadow-sm transition-all flex items-center gap-1"
                         >
                           Ver Integrantes <ChevronRight size={12} />
                         </button>

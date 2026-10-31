@@ -21,8 +21,8 @@ const INITIAL_FICHAS: FichaBienvenida[] = [
     observaciones: 'MARANATHA.',
     createdAt: '2026-10-04T12:30:00.000Z',
     creadoPor: {
-      id: 'pastor-carlos',
-      nombre: 'Pastor Carlos',
+      id: 'usr-diego-sosa',
+      nombre: 'Diego Sosa',
     },
     estadoDerivacion: 'pendiente',
   },
@@ -39,7 +39,18 @@ const readStoredFichas = (): FichaBienvenida[] => {
       return INITIAL_FICHAS;
     }
     const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) && parsed.length > 0 ? parsed : INITIAL_FICHAS;
+    if (Array.isArray(parsed) && parsed.length > 0) {
+      return parsed.map((item: FichaBienvenida) => {
+        if (item.id === 'ficha-arce-ariel' && (!item.creadoPor || item.creadoPor.nombre === 'Pastor Carlos')) {
+          return {
+            ...item,
+            creadoPor: { id: 'usr-diego-sosa', nombre: 'Diego Sosa' },
+          };
+        }
+        return item;
+      });
+    }
+    return INITIAL_FICHAS;
   } catch {
     return INITIAL_FICHAS;
   }
