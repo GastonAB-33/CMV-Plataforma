@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Check, Heart, Phone, Users, User, HelpCircle, FileText, Sparkles, Cake, CalendarDays } from 'lucide-react';
+import { X, Check, Heart, Phone, Users, User, HelpCircle, FileText, HeartHandshake, Cake, CalendarDays } from 'lucide-react';
 import { useAuth } from '../../../hooks/useAuth';
 import { primerosPasosService } from '../services/primerosPasosService';
 import { FichaBienvenida } from '../types';
@@ -140,32 +140,44 @@ export const FichaBienvenidaModal: React.FC<FichaBienvenidaModalProps> = ({
             <X size={18} />
           </button>
 
-          <div className="text-center space-y-1 pr-6">
-            <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-white/20 backdrop-blur-md text-[10px] uppercase font-black tracking-widest text-emerald-100">
-              <Sparkles size={12} className="text-amber-300" />
-              <span>Primeros Pasos CMV</span>
+          <div className="text-center space-y-1.5 pr-6">
+            <div className="inline-flex items-center justify-center px-3 py-1 rounded-full bg-white/20 backdrop-blur-md text-white shadow-sm">
+              <HeartHandshake size={18} className="text-white" />
             </div>
             <h2 className="text-2xl sm:text-3xl font-black uppercase tracking-tight text-white drop-shadow-sm">
               FICHA DE BIENVENIDA
             </h2>
-            <p className="text-xs sm:text-sm text-emerald-100 font-medium">
+            <p className="text-sm sm:text-base text-emerald-100 font-medium">
               Cristo Manantial de Vida · Queremos conocerte y acompañarte
             </p>
           </div>
         </div>
 
+        {/* Barra superior de recepción */}
+        <div className="px-6 py-3.5 bg-slate-50 dark:bg-[#141414] border-b border-slate-200 dark:border-white/10 flex items-center justify-between">
+          <div className="text-xs sm:text-sm font-black tracking-wider uppercase text-slate-500 dark:text-gray-400 flex items-center gap-2">
+            <span>RECEPCION:</span>
+            <span className="text-base sm:text-lg text-slate-900 dark:text-white font-black">
+              {user.name ? user.name.toUpperCase() : 'DIEGO SOSA'}
+            </span>
+          </div>
+          <span className="text-xs sm:text-sm font-black uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+            Registro del día
+          </span>
+        </div>
+
         {/* Formulario que replica la ficha sin la fecha y con edad por fecha de nacimiento */}
         <form onSubmit={handleSubmit} className="p-5 sm:p-6 space-y-4">
           {errorMsg && (
-            <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-600 dark:text-rose-400 text-xs font-bold">
+            <div className="p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-600 dark:text-rose-400 text-sm font-bold">
               {errorMsg}
             </div>
           )}
 
           {/* Fila 1: Nombre y Apellido */}
-          <div className="space-y-1">
-            <label className="text-[11px] font-black uppercase tracking-wider text-slate-700 dark:text-gray-300 flex items-center gap-1.5">
-              <User size={13} className="text-emerald-600 dark:text-emerald-400" />
+          <div className="space-y-1.5">
+            <label className="text-xs sm:text-sm font-black uppercase tracking-wider text-slate-700 dark:text-gray-300 flex items-center gap-2">
+              <User size={15} className="text-emerald-600 dark:text-emerald-400" />
               Nombre y apellido *
             </label>
             <input
@@ -174,21 +186,21 @@ export const FichaBienvenidaModal: React.FC<FichaBienvenidaModalProps> = ({
               placeholder="Ej: Arce Ariel"
               value={nombreCompleto}
               onChange={(e) => setNombreCompleto(e.target.value)}
-              className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl px-3.5 py-2.5 text-sm text-slate-900 dark:text-white font-medium focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all"
+              className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-base text-slate-900 dark:text-white font-semibold focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all"
             />
           </div>
 
           {/* Fila 2: Fecha de Nacimiento con Cálculo Automático de Edad + Teléfono */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
             {/* Fecha de Nacimiento y Edad Calculada */}
-            <div className="space-y-1">
+            <div className="space-y-1.5">
               <div className="flex items-center justify-between">
-                <label className="text-[11px] font-black uppercase tracking-wider text-slate-700 dark:text-gray-300 flex items-center gap-1.5">
-                  <Cake size={13} className="text-emerald-600 dark:text-emerald-400" />
+                <label className="text-xs sm:text-sm font-black uppercase tracking-wider text-slate-700 dark:text-gray-300 flex items-center gap-2">
+                  <Cake size={15} className="text-emerald-600 dark:text-emerald-400" />
                   Fecha de nacimiento
                 </label>
                 {edadCalculada !== null && (
-                  <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30">
+                  <span className="text-xs sm:text-sm font-black uppercase tracking-wider px-2.5 py-0.5 rounded-md bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30">
                     Edad: {edadCalculada} años
                   </span>
                 )}
@@ -197,9 +209,9 @@ export const FichaBienvenidaModal: React.FC<FichaBienvenidaModalProps> = ({
                 type="date"
                 value={fechaNacimiento}
                 onChange={(e) => setFechaNacimiento(e.target.value)}
-                className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl px-3.5 py-2.5 text-sm text-slate-900 dark:text-white font-medium focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all"
+                className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-base text-slate-900 dark:text-white font-semibold focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all"
               />
-              <p className="text-[10px] text-slate-400 dark:text-gray-500 font-medium">
+              <p className="text-xs sm:text-sm text-slate-400 dark:text-gray-400 font-medium">
                 {edadCalculada !== null
                   ? `Edad calculada automáticamente: ${edadCalculada} años.`
                   : 'Ingresá la fecha y el sistema calculará la edad actual.'}
@@ -207,9 +219,9 @@ export const FichaBienvenidaModal: React.FC<FichaBienvenidaModalProps> = ({
             </div>
 
             {/* Teléfono */}
-            <div className="space-y-1">
-              <label className="text-[11px] font-black uppercase tracking-wider text-slate-700 dark:text-gray-300 flex items-center gap-1.5">
-                <Phone size={13} className="text-emerald-600 dark:text-emerald-400" />
+            <div className="space-y-1.5">
+              <label className="text-xs sm:text-sm font-black uppercase tracking-wider text-slate-700 dark:text-gray-300 flex items-center gap-2">
+                <Phone size={15} className="text-emerald-600 dark:text-emerald-400" />
                 Teléfono *
               </label>
               <input
@@ -218,43 +230,43 @@ export const FichaBienvenidaModal: React.FC<FichaBienvenidaModalProps> = ({
                 placeholder="Ej: 2665 042033"
                 value={telefono}
                 onChange={(e) => setTelefono(e.target.value)}
-                className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl px-3.5 py-2.5 text-sm text-slate-900 dark:text-white font-medium focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all"
+                className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-base text-slate-900 dark:text-white font-semibold focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all"
               />
-              <p className="text-[10px] text-slate-400 dark:text-gray-500 font-medium">
+              <p className="text-xs sm:text-sm text-slate-400 dark:text-gray-400 font-medium">
                 Se usará para WhatsApp y contacto pastoral.
               </p>
             </div>
           </div>
 
           {/* Fila 3: Célula que lo/la recibe (Detectada automáticamente por el usuario) */}
-          <div className="p-3.5 rounded-2xl bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-500/25 space-y-2">
+          <div className="p-4 rounded-2xl bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-500/25 space-y-2.5">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Users size={15} className="text-emerald-600 dark:text-emerald-400" />
-                <span className="text-[11px] font-black uppercase tracking-wider text-emerald-800 dark:text-emerald-300">
+                <Users size={16} className="text-emerald-600 dark:text-emerald-400" />
+                <span className="text-xs sm:text-sm font-black uppercase tracking-wider text-emerald-800 dark:text-emerald-300">
                   Célula que lo/la recibe
                 </span>
               </div>
-              <span className="text-[10px] uppercase font-bold text-slate-400 dark:text-gray-500">
+              <span className="text-xs uppercase font-bold text-slate-400 dark:text-gray-400">
                 Detectada por tu usuario
               </span>
             </div>
 
             {!allowChangeCell ? (
-              <div className="flex items-center justify-between bg-white dark:bg-black/40 p-2.5 px-3.5 rounded-xl border border-emerald-500/30">
-                <div className="flex items-center gap-2">
+              <div className="flex items-center justify-between bg-white dark:bg-black/40 p-3 px-4 rounded-xl border border-emerald-500/30">
+                <div className="flex items-center gap-2.5">
                   <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-                  <span className="text-sm font-black text-slate-900 dark:text-white">
+                  <span className="text-base sm:text-lg font-black text-slate-900 dark:text-white">
                     Célula {celulaRecibe}
                   </span>
-                  <span className="text-[11px] text-slate-400 dark:text-gray-500 font-medium">
+                  <span className="text-xs sm:text-sm text-slate-400 dark:text-gray-400 font-medium">
                     (Usuario: {user.name})
                   </span>
                 </div>
                 <button
                   type="button"
                   onClick={() => setAllowChangeCell(true)}
-                  className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 hover:underline cursor-pointer"
+                  className="text-xs sm:text-sm font-bold text-emerald-600 dark:text-emerald-400 hover:underline cursor-pointer"
                 >
                   Cambiar
                 </button>
@@ -264,7 +276,7 @@ export const FichaBienvenidaModal: React.FC<FichaBienvenidaModalProps> = ({
                 <select
                   value={celulaRecibe}
                   onChange={(e) => setCelulaRecibe(e.target.value)}
-                  className="flex-1 bg-white dark:bg-black/60 border border-emerald-500/50 rounded-xl px-3 py-2 text-sm text-slate-900 dark:text-white font-bold focus:outline-none"
+                  className="flex-1 bg-white dark:bg-black/60 border border-emerald-500/50 rounded-xl px-4 py-2.5 text-base text-slate-900 dark:text-white font-bold focus:outline-none"
                 >
                   {DEFAULT_CELLS.map((cell) => (
                     <option key={cell} value={cell}>
@@ -275,7 +287,7 @@ export const FichaBienvenidaModal: React.FC<FichaBienvenidaModalProps> = ({
                 <button
                   type="button"
                   onClick={() => setAllowChangeCell(false)}
-                  className="px-3 py-2 text-xs font-bold text-slate-500 hover:text-slate-900"
+                  className="px-3.5 py-2.5 text-xs sm:text-sm font-bold text-slate-500 hover:text-slate-900 cursor-pointer"
                 >
                   Fijar
                 </button>
@@ -284,9 +296,9 @@ export const FichaBienvenidaModal: React.FC<FichaBienvenidaModalProps> = ({
           </div>
 
           {/* Fila 4: ¿Cómo llegó a la iglesia? */}
-          <div className="space-y-1">
-            <label className="text-[11px] font-black uppercase tracking-wider text-slate-700 dark:text-gray-300 flex items-center gap-1.5">
-              <HelpCircle size={13} className="text-emerald-600 dark:text-emerald-400" />
+          <div className="space-y-1.5">
+            <label className="text-xs sm:text-sm font-black uppercase tracking-wider text-slate-700 dark:text-gray-300 flex items-center gap-2">
+              <HelpCircle size={15} className="text-emerald-600 dark:text-emerald-400" />
               ¿Cómo llegó a la iglesia?
             </label>
             <input
@@ -294,18 +306,18 @@ export const FichaBienvenidaModal: React.FC<FichaBienvenidaModalProps> = ({
               placeholder="Ej: Llegó por Jorge Zapata / Invitación de familiar / Redes"
               value={comoLlego}
               onChange={(e) => setComoLlego(e.target.value)}
-              className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl px-3.5 py-2.5 text-sm text-slate-900 dark:text-white font-medium focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all"
+              className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-base text-slate-900 dark:text-white font-semibold focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all"
             />
           </div>
 
           {/* Fila 5: ¿Desea que lo/la contactemos? (Sí / No) */}
-          <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <span className="text-xs font-black uppercase tracking-wider text-slate-800 dark:text-gray-200">
+          <div className="p-4 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <span className="text-sm sm:text-base font-black uppercase tracking-wider text-slate-800 dark:text-gray-200">
               ¿Desea que lo/la contactemos?
             </span>
             <div className="flex items-center gap-4">
               <label
-                className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl border text-xs font-black uppercase tracking-wider cursor-pointer transition-all ${
+                className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl border text-sm sm:text-base font-black uppercase tracking-wider cursor-pointer transition-all ${
                   deseaContacto
                     ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm'
                     : 'bg-white dark:bg-white/5 text-slate-700 dark:text-gray-300 border-slate-200 dark:border-white/10 hover:border-emerald-500'
@@ -325,7 +337,7 @@ export const FichaBienvenidaModal: React.FC<FichaBienvenidaModalProps> = ({
               </label>
 
               <label
-                className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl border text-xs font-black uppercase tracking-wider cursor-pointer transition-all ${
+                className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl border text-sm sm:text-base font-black uppercase tracking-wider cursor-pointer transition-all ${
                   !deseaContacto
                     ? 'bg-rose-600 text-white border-rose-600 shadow-sm'
                     : 'bg-white dark:bg-white/5 text-slate-700 dark:text-gray-300 border-slate-200 dark:border-white/10 hover:border-rose-500'
@@ -347,9 +359,9 @@ export const FichaBienvenidaModal: React.FC<FichaBienvenidaModalProps> = ({
           </div>
 
           {/* Fila 6: Motivo de oración (opcional) */}
-          <div className="space-y-1">
-            <label className="text-[11px] font-black uppercase tracking-wider text-slate-700 dark:text-gray-300 flex items-center gap-1.5">
-              <Heart size={13} className="text-rose-500" />
+          <div className="space-y-1.5">
+            <label className="text-xs sm:text-sm font-black uppercase tracking-wider text-slate-700 dark:text-gray-300 flex items-center gap-2">
+              <Heart size={15} className="text-rose-500" />
               Motivo de oración (opcional)
             </label>
             <textarea
@@ -357,14 +369,14 @@ export const FichaBienvenidaModal: React.FC<FichaBienvenidaModalProps> = ({
               placeholder="Ej: Oren por su familia y trabajo..."
               value={motivoOracion}
               onChange={(e) => setMotivoOracion(e.target.value)}
-              className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl px-3.5 py-2.5 text-sm text-slate-900 dark:text-white font-medium focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all resize-none"
+              className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-base text-slate-900 dark:text-white font-medium focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all resize-none"
             />
           </div>
 
           {/* Fila 7: Observaciones */}
-          <div className="space-y-1">
-            <label className="text-[11px] font-black uppercase tracking-wider text-slate-700 dark:text-gray-300 flex items-center gap-1.5">
-              <FileText size={13} className="text-emerald-600 dark:text-emerald-400" />
+          <div className="space-y-1.5">
+            <label className="text-xs sm:text-sm font-black uppercase tracking-wider text-slate-700 dark:text-gray-300 flex items-center gap-2">
+              <FileText size={15} className="text-emerald-600 dark:text-emerald-400" />
               Observaciones
             </label>
             <textarea
@@ -372,33 +384,33 @@ export const FichaBienvenidaModal: React.FC<FichaBienvenidaModalProps> = ({
               placeholder="Ej: MARANATHA."
               value={observaciones}
               onChange={(e) => setObservaciones(e.target.value)}
-              className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl px-3.5 py-2.5 text-sm text-slate-900 dark:text-white font-medium focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all resize-none"
+              className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-base text-slate-900 dark:text-white font-medium focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all resize-none"
             />
           </div>
 
           {/* Pie del formulario idéntico al pie impreso */}
           <div className="pt-2 text-center">
-            <p className="text-xs text-slate-500 dark:text-gray-400 font-semibold italic">
+            <p className="text-sm sm:text-base text-slate-500 dark:text-gray-400 font-semibold italic">
               Gracias por visitarnos. ¡Esperamos volver a verte!
             </p>
           </div>
 
           {/* Botones de acción */}
-          <div className="pt-3 border-t border-slate-200 dark:border-white/10 flex items-center justify-end gap-3">
+          <div className="pt-4 border-t border-slate-200 dark:border-white/10 flex items-center justify-end gap-3">
             <button
               type="button"
               onClick={onClose}
               disabled={isSubmitting}
-              className="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 text-xs font-bold uppercase tracking-wider hover:bg-slate-100 dark:hover:bg-white/5 transition-colors"
+              className="px-5 py-3 rounded-xl border border-slate-200 dark:border-white/10 text-sm font-bold uppercase tracking-wider hover:bg-slate-100 dark:hover:bg-white/5 transition-colors cursor-pointer"
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white text-xs font-black uppercase tracking-wider shadow-md transition-all flex items-center gap-2 disabled:opacity-50"
+              className="px-7 py-3 rounded-xl btn-3d-emerald active:scale-95 text-white text-sm sm:text-base font-black uppercase tracking-wider shadow-md transition-all flex items-center gap-2 disabled:opacity-50 cursor-pointer"
             >
-              <Check size={16} />
+              <Check size={18} />
               <span>{isSubmitting ? 'Guardando Ficha...' : 'Guardar Ficha de Bienvenida'}</span>
             </button>
           </div>

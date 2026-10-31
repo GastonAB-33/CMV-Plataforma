@@ -12,6 +12,18 @@ export interface PublicationInvolved {
   disciples: string[];
 }
 
+export interface EventMediaItem {
+  id: string;
+  url: string;
+  mediaType: 'image' | 'video';
+  caption?: string;
+  uploadedBy: string;
+  role?: string;
+  createdAt: string;
+  status: 'aprobado' | 'pendiente';
+  isHighlight?: boolean;
+}
+
 export interface PublicationItem {
   id: string;
   kind: PublicationKind;
@@ -29,6 +41,9 @@ export interface PublicationItem {
   createdAt: string;
   updatedAt: string;
   legacyType?: EventType;
+  isLoVivido?: boolean;
+  status?: 'proximo' | 'concluido';
+  mediaItems?: EventMediaItem[];
 }
 
 export interface PublicationDraft {
@@ -44,6 +59,9 @@ export interface PublicationDraft {
   mediaType?: 'image' | 'video';
   badge: string;
   involved?: Partial<PublicationInvolved>;
+  isLoVivido?: boolean;
+  status?: 'proximo' | 'concluido';
+  mediaItems?: EventMediaItem[];
 }
 
 export interface UpsertPublicationResult {
@@ -84,9 +102,9 @@ const DEFAULT_NEWS: PublicationItem[] = [
     id: 'news-1',
     kind: 'noticia',
     visibility: 'publico',
-    title: 'Ayuno congregacional',
+    title: 'Ayuno comunitario',
     date: '2026-04-18',
-    text: 'Esta semana tendremos ayuno congregacional de lunes a viernes con cierre de oracion.',
+    text: 'Esta semana tendremos ayuno comunitario de lunes a viernes con cierre de oracion.',
     badge: 'Comunicado',
     image: '',
     involved: normalizeInvolved(),
@@ -124,7 +142,119 @@ const DEFAULT_NEWS: PublicationItem[] = [
   },
 ];
 
+export const DEFAULT_WEEKLY_HIGHLIGHTS: PublicationItem[] = [
+  {
+    id: 'vivido-1',
+    kind: 'noticia',
+    visibility: 'publico',
+    title: 'Célula de Jóvenes: Clamor & Adoración',
+    text: 'Noche de rendición y presencia viva de Dios con más de 50 jóvenes reunidos en unidad.',
+    date: '2026-10-25',
+    badge: 'Jóvenes CMV',
+    video: '/cmv-event-short.mp4',
+    mediaType: 'video',
+    involved: normalizeInvolved({ cells: ['Vida', 'Zaeta'], pastors: ['Apostol CMV'] }),
+    author: 'Equipo Juvenil',
+    createdAt: '2026-10-25T20:00:00.000Z',
+    updatedAt: '2026-10-25T20:00:00.000Z',
+    isLoVivido: true,
+    status: 'concluido',
+    mediaItems: [],
+  },
+  {
+    id: 'vivido-2',
+    kind: 'noticia',
+    visibility: 'publico',
+    title: 'Bautismos & Nuevos Comienzos',
+    text: 'Celebramos con alegría 12 nuevos hermanos que dieron testimonio público de su fe en Cristo.',
+    date: '2026-10-24',
+    badge: 'Vida Comunitaria',
+    image: '/banner-hermanos.jpg',
+    mediaType: 'image',
+    involved: normalizeInvolved({ cells: ['Sion', 'Nissi'] }),
+    author: 'Secretaría Pastoral',
+    createdAt: '2026-10-24T18:00:00.000Z',
+    updatedAt: '2026-10-24T18:00:00.000Z',
+    isLoVivido: true,
+    status: 'concluido',
+    mediaItems: [],
+  },
+  {
+    id: 'vivido-3',
+    kind: 'noticia',
+    visibility: 'publico',
+    title: 'Novedades celula Zaeta',
+    text: 'Esta semana la celula Zaeta tendra encuentro de bienvenida para nuevos hermanos.',
+    date: '2026-10-23',
+    badge: 'Zaeta',
+    image: '/cmv-fellowship.jpg',
+    mediaType: 'image',
+    involved: normalizeInvolved({ cells: ['Zaeta'] }),
+    author: 'Liderazgo Zaeta',
+    createdAt: '2026-10-23T19:00:00.000Z',
+    updatedAt: '2026-10-23T19:00:00.000Z',
+    isLoVivido: true,
+    status: 'concluido',
+    mediaItems: [],
+  },
+  {
+    id: 'vivido-4',
+    kind: 'noticia',
+    visibility: 'publico',
+    title: 'Misericordia en Acción: Alimentos & Amor',
+    text: 'Llegamos a familias con viandas, ropa y la palabra transformadora de esperanza en los barrios.',
+    date: '2026-10-22',
+    badge: 'Misericordia CMV',
+    image: '/cmv-fellowship.jpg',
+    mediaType: 'image',
+    involved: normalizeInvolved({ cells: ['Maranata'] }),
+    author: 'Ministerio de Misericordia',
+    createdAt: '2026-10-22T10:00:00.000Z',
+    updatedAt: '2026-10-22T10:00:00.000Z',
+    isLoVivido: true,
+    status: 'concluido',
+    mediaItems: [],
+  },
+  {
+    id: 'vivido-5',
+    kind: 'noticia',
+    visibility: 'publico',
+    title: 'Altar Familiar & Comunión en Hogares',
+    text: 'Grupos de bendición compartiendo mesas, fe y oración mutua en toda la ciudad.',
+    date: '2026-10-21',
+    badge: 'Hogares CMV',
+    image: '/cmv-comunidad-c.jpg',
+    mediaType: 'image',
+    involved: normalizeInvolved({ cells: ['Vida'] }),
+    author: 'Red de Células',
+    createdAt: '2026-10-21T20:30:00.000Z',
+    updatedAt: '2026-10-21T20:30:00.000Z',
+    isLoVivido: true,
+    status: 'concluido',
+    mediaItems: [],
+  },
+  {
+    id: 'vivido-6',
+    kind: 'noticia',
+    visibility: 'publico',
+    title: 'Escuela de Líderes & Discipulado',
+    text: 'Entrenamiento dinámico para nuevos obreros y consolidadores del Reino.',
+    date: '2026-10-20',
+    badge: 'EDDI',
+    image: '/banner-hermanos.jpg',
+    mediaType: 'image',
+    involved: normalizeInvolved({ cells: ['Vida', 'Sion'] }),
+    author: 'Escuelas CMV',
+    createdAt: '2026-10-20T19:00:00.000Z',
+    updatedAt: '2026-10-20T19:00:00.000Z',
+    isLoVivido: true,
+    status: 'concluido',
+    mediaItems: [],
+  },
+];
+
 const DEFAULT_PUBLICATIONS: PublicationItem[] = [
+  ...DEFAULT_WEEKLY_HIGHLIGHTS,
   {
     id: 'ev-1',
     kind: 'evento',
@@ -132,7 +262,7 @@ const DEFAULT_PUBLICATIONS: PublicationItem[] = [
     title: 'Noche de Avivamiento & Adoración',
     date: '2026-11-15',
     time: '19:30',
-    text: 'Tiempo especial de alabanza congregacional, palabra viva y manifestación del Espíritu Santo.',
+    text: 'Tiempo especial de alabanza comunitaria, palabra viva y manifestación del Espíritu Santo.',
     image: '/cmv-fellowship.jpg',
     video: '/cmv-event-short.mp4',
     mediaType: 'video',
@@ -142,6 +272,9 @@ const DEFAULT_PUBLICATIONS: PublicationItem[] = [
     createdAt: '2026-11-15T19:30:00.000Z',
     updatedAt: '2026-11-15T19:30:00.000Z',
     legacyType: EventType.RED,
+    status: 'proximo',
+    isLoVivido: false,
+    mediaItems: [],
   },
   {
     id: 'ev-2',
@@ -159,6 +292,9 @@ const DEFAULT_PUBLICATIONS: PublicationItem[] = [
     createdAt: '2026-11-22T18:00:00.000Z',
     updatedAt: '2026-11-22T18:00:00.000Z',
     legacyType: EventType.JOVENES,
+    status: 'proximo',
+    isLoVivido: false,
+    mediaItems: [],
   },
   {
     id: 'ev-3',
@@ -176,6 +312,9 @@ const DEFAULT_PUBLICATIONS: PublicationItem[] = [
     createdAt: '2026-11-28T20:00:00.000Z',
     updatedAt: '2026-11-28T20:00:00.000Z',
     legacyType: EventType.CELULA,
+    status: 'proximo',
+    isLoVivido: false,
+    mediaItems: [],
   },
   {
     id: 'ev-4',
@@ -193,6 +332,9 @@ const DEFAULT_PUBLICATIONS: PublicationItem[] = [
     createdAt: '2026-12-06T09:00:00.000Z',
     updatedAt: '2026-12-06T09:00:00.000Z',
     legacyType: EventType.RED,
+    status: 'proximo',
+    isLoVivido: false,
+    mediaItems: [],
   },
   ...DEFAULT_NEWS,
 ];
@@ -242,8 +384,16 @@ const readPublications = (): PublicationItem[] => {
     if (!Array.isArray(parsed) || parsed.length === 0) {
       return [...DEFAULT_PUBLICATIONS];
     }
-    return parsed.map((item) => ({
+
+    // Aseguramos que existan elementos de "Lo vivido" editables si el storage guardaba versiones anteriores
+    const hasVivido = parsed.some((p) => p.isLoVivido || p.id.startsWith('vivido-'));
+    const combined = hasVivido ? parsed : [...DEFAULT_WEEKLY_HIGHLIGHTS, ...parsed];
+
+    return combined.map((item) => ({
       ...item,
+      isLoVivido: item.isLoVivido ?? (item.id.startsWith('vivido-') ? true : false),
+      status: item.status ?? (item.kind === 'evento' ? 'proximo' : 'concluido'),
+      mediaItems: Array.isArray(item.mediaItems) ? item.mediaItems : [],
       involved: normalizeInvolved(item.involved),
       mediaType: item.mediaType || (item.video ? 'video' : 'image'),
     }));
@@ -434,7 +584,7 @@ export const eventsService = {
 
   listUpcomingEvents(user?: User): PublicationItem[] {
     const all = user ? this.listPublicationsVisibleForUser(user) : readPublications();
-    const eventItems = all.filter((item) => item.kind === 'evento');
+    const eventItems = all.filter((item) => item.kind === 'evento' && item.status !== 'concluido');
 
     const fallbackMedia = [
       { image: '/cmv-fellowship.jpg', video: '/cmv-event-short.mp4', mediaType: 'video' as const },
@@ -456,93 +606,223 @@ export const eventsService = {
     });
   },
 
+  listCompletedEvents(user?: User): PublicationItem[] {
+    const all = user ? this.listPublicationsVisibleForUser(user) : readPublications();
+    return all.filter((item) => item.kind === 'evento' && item.status === 'concluido');
+  },
+
   listLoVividoEstaSemana(user?: User): PublicationItem[] {
     const all = user ? this.listPublicationsVisibleForUser(user) : readPublications();
-    const newsItems = all.filter((item) => item.kind === 'noticia');
+    
+    // 1. Elementos explícitamente marcados como 'isLoVivido'
+    const featured = all.filter((item) => Boolean(item.isLoVivido));
 
-    const defaultWeeklyHighlights: PublicationItem[] = [
-      {
-        id: 'vivido-1',
-        kind: 'noticia',
-        visibility: 'publico',
-        title: 'Célula de Jóvenes: Clamor & Adoración',
-        text: 'Noche de rendición y presencia viva de Dios con más de 50 jóvenes reunidos en unidad.',
-        date: '2026-10-25',
-        badge: 'Jóvenes CMV',
-        video: '/cmv-event-short.mp4',
-        mediaType: 'video',
-        involved: { cells: ['Vida', 'Zaeta'], pastors: ['Apostol CMV'], disciples: [] },
-        author: 'Equipo Juvenil',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      },
-      {
-        id: 'vivido-2',
-        kind: 'noticia',
-        visibility: 'publico',
-        title: 'Bautismos & Nuevos Comienzos',
-        text: 'Celebramos con alegría 12 nuevos hermanos que dieron testimonio público de su fe en Cristo.',
-        date: '2026-10-24',
-        badge: 'Vida Congregacional',
-        image: '/banner-hermanos.jpg',
-        mediaType: 'image',
-        involved: { cells: ['Sion', 'Nissi'], pastors: [], disciples: [] },
-        author: 'Secretaría Pastoral',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      },
-      {
-        id: 'vivido-3',
-        kind: 'noticia',
-        visibility: 'publico',
-        title: 'Misericordia en Acción: Alimentos & Amor',
-        text: 'Llegamos a familias con viandas, ropa y la palabra transformadora de esperanza en los barrios.',
-        date: '2026-10-22',
-        badge: 'Misericordia CMV',
-        image: '/cmv-fellowship.jpg',
-        mediaType: 'image',
-        involved: { cells: ['Maranata'], pastors: [], disciples: [] },
-        author: 'Ministerio de Misericordia',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      },
-      {
-        id: 'vivido-4',
-        kind: 'noticia',
-        visibility: 'publico',
-        title: 'Altar Familiar & Comunión en Hogares',
-        text: 'Grupos de bendición compartiendo mesas, fe y oración mutua en toda la ciudad.',
-        date: '2026-10-21',
-        badge: 'Hogares CMV',
-        image: '/cmv-comunidad-c.jpg',
-        mediaType: 'image',
-        involved: { cells: ['Vida'], pastors: [], disciples: [] },
-        author: 'Red de Células',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      },
-    ];
+    // 2. Aportes comunitarios aprobados y marcados como highlight
+    const mediaHighlights: PublicationItem[] = [];
+    all.forEach((item) => {
+      (item.mediaItems || []).forEach((media) => {
+        if (media.status === 'aprobado' && media.isHighlight) {
+          mediaHighlights.push({
+            id: `media-hl-${media.id}`,
+            kind: 'noticia',
+            visibility: item.visibility,
+            title: media.caption ? `${item.title}: ${media.caption}` : item.title,
+            text: media.caption ? `Aporte de ${media.uploadedBy} en ${item.title}` : item.text,
+            date: media.createdAt.slice(0, 10),
+            badge: item.badge || 'Lo Vivido',
+            image: media.mediaType === 'image' ? media.url : undefined,
+            video: media.mediaType === 'video' ? media.url : undefined,
+            mediaType: media.mediaType,
+            involved: item.involved,
+            author: media.uploadedBy,
+            createdAt: media.createdAt,
+            updatedAt: media.createdAt,
+            isLoVivido: true,
+            status: 'concluido',
+          });
+        }
+      });
+    });
 
-    if (newsItems.length === 0) {
-      return defaultWeeklyHighlights;
+    const combined = [...featured, ...mediaHighlights];
+
+    if (combined.length === 0) {
+      return DEFAULT_WEEKLY_HIGHLIGHTS;
     }
-
-    const combined = [
-      ...newsItems.map((item, idx) => ({
-        ...item,
-        mediaType: item.mediaType || (item.video ? 'video' : 'image'),
-        image: item.image || (item.video ? undefined : defaultWeeklyHighlights[idx % defaultWeeklyHighlights.length].image),
-        video: item.video || (item.mediaType === 'video' ? '/cmv-event-short.mp4' : undefined),
-      })),
-      ...defaultWeeklyHighlights,
-    ];
 
     const seen = new Set<string>();
     return combined.filter((item) => {
-      if (seen.has(item.title)) return false;
+      if (seen.has(item.id) || seen.has(item.title)) return false;
+      seen.add(item.id);
       seen.add(item.title);
       return true;
-    }).slice(0, 6);
+    }).slice(0, 8);
+  },
+
+  toggleLoVivido(id: string, user: User): boolean {
+    const current = readPublications();
+    const index = current.findIndex((item) => item.id === id);
+    if (index === -1) return false;
+
+    const target = current[index];
+    const newStatus = !target.isLoVivido;
+    const updated = {
+      ...target,
+      isLoVivido: newStatus,
+      updatedAt: new Date().toISOString(),
+    };
+
+    const next = [...current];
+    next[index] = updated;
+    writePublications(next);
+
+    eventsChangeLogService.add({
+      change: newStatus ? 'Destacado en Lo Vivido' : 'Quitado de Lo Vivido',
+      responsible: user.name || 'Sistema',
+      details: `Publicación: "${target.title}"`,
+    });
+
+    return true;
+  },
+
+  toggleEventStatus(id: string, user: User): boolean {
+    const current = readPublications();
+    const index = current.findIndex((item) => item.id === id);
+    if (index === -1) return false;
+
+    const target = current[index];
+    const nextStatus: 'proximo' | 'concluido' = target.status === 'concluido' ? 'proximo' : 'concluido';
+    const updated = {
+      ...target,
+      status: nextStatus,
+      updatedAt: new Date().toISOString(),
+    };
+
+    const next = [...current];
+    next[index] = updated;
+    writePublications(next);
+
+    eventsChangeLogService.add({
+      change: `Estado de evento: ${nextStatus.toUpperCase()}`,
+      responsible: user.name || 'Sistema',
+      details: `Evento: "${target.title}"`,
+    });
+
+    return true;
+  },
+
+  addMediaToEvent(
+    eventId: string,
+    media: { url: string; mediaType: 'image' | 'video'; caption?: string; isHighlight?: boolean },
+    user: User,
+  ): EventMediaItem | null {
+    const current = readPublications();
+    const index = current.findIndex((item) => item.id === eventId);
+    if (index === -1) return null;
+
+    const target = current[index];
+    const isAutoApproved =
+      canManageEventsForUser(user) ||
+      user.role === Role.SUPERADMIN ||
+      user.role === Role.APOSTOL ||
+      user.role === Role.PASTOR;
+
+    const newMedia: EventMediaItem = {
+      id: `media-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+      url: media.url,
+      mediaType: media.mediaType,
+      caption: media.caption,
+      uploadedBy: user.name || 'Hermano de la comunidad',
+      role: user.role,
+      createdAt: new Date().toISOString(),
+      status: isAutoApproved ? 'aprobado' : 'pendiente',
+      isHighlight: isAutoApproved ? Boolean(media.isHighlight) : false,
+    };
+
+    const updatedMediaItems = [...(target.mediaItems || []), newMedia];
+    const updated: PublicationItem = {
+      ...target,
+      mediaItems: updatedMediaItems,
+      updatedAt: new Date().toISOString(),
+    };
+
+    const next = [...current];
+    next[index] = updated;
+    writePublications(next);
+
+    eventsChangeLogService.add({
+      change: 'Aporte multimedia subido',
+      responsible: user.name || 'Comunidad',
+      details: `Evento: "${target.title}" - Aporte de ${user.name}`,
+    });
+
+    return newMedia;
+  },
+
+  updateMediaItem(
+    eventId: string,
+    mediaId: string,
+    updates: Partial<EventMediaItem>,
+    user: User,
+  ): boolean {
+    const current = readPublications();
+    const index = current.findIndex((item) => item.id === eventId);
+    if (index === -1) return false;
+
+    const target = current[index];
+    const mediaItems = target.mediaItems || [];
+    const mediaIndex = mediaItems.findIndex((m) => m.id === mediaId);
+    if (mediaIndex === -1) return false;
+
+    const updatedMedia = { ...mediaItems[mediaIndex], ...updates };
+    const nextMediaItems = [...mediaItems];
+    nextMediaItems[mediaIndex] = updatedMedia;
+
+    const updated: PublicationItem = {
+      ...target,
+      mediaItems: nextMediaItems,
+      updatedAt: new Date().toISOString(),
+    };
+
+    const next = [...current];
+    next[index] = updated;
+    writePublications(next);
+
+    eventsChangeLogService.add({
+      change: 'Aporte multimedia actualizado',
+      responsible: user.name || 'Sistema',
+      details: `Evento: "${target.title}" - Item ID: ${mediaId}`,
+    });
+
+    return true;
+  },
+
+  deleteMediaItem(eventId: string, mediaId: string, user: User): boolean {
+    const current = readPublications();
+    const index = current.findIndex((item) => item.id === eventId);
+    if (index === -1) return false;
+
+    const target = current[index];
+    const mediaItems = target.mediaItems || [];
+    const nextMediaItems = mediaItems.filter((m) => m.id !== mediaId);
+
+    const updated: PublicationItem = {
+      ...target,
+      mediaItems: nextMediaItems,
+      updatedAt: new Date().toISOString(),
+    };
+
+    const next = [...current];
+    next[index] = updated;
+    writePublications(next);
+
+    eventsChangeLogService.add({
+      change: 'Aporte multimedia eliminado',
+      responsible: user.name || 'Sistema',
+      details: `Evento: "${target.title}"`,
+    });
+
+    return true;
   },
 
   upsertPublication(draft: PublicationDraft, user: User): UpsertPublicationResult {
@@ -562,6 +842,8 @@ export const eventsService = {
     const mediaType = draft.mediaType || (video ? 'video' : 'image');
     const date = draft.date?.trim() || '';
     const time = draft.time?.trim() || '';
+    const isLoVivido = draft.isLoVivido !== undefined ? draft.isLoVivido : false;
+    const status = draft.status || (draft.kind === 'evento' ? 'proximo' : 'concluido');
 
     if (draft.id) {
       const index = current.findIndex((item) => item.id === draft.id);
@@ -583,6 +865,9 @@ export const eventsService = {
         mediaType,
         badge,
         involved,
+        isLoVivido: draft.isLoVivido !== undefined ? draft.isLoVivido : base.isLoVivido,
+        status: draft.status || base.status,
+        mediaItems: draft.mediaItems || base.mediaItems || [],
         updatedAt: now,
       };
 
@@ -616,6 +901,9 @@ export const eventsService = {
       createdAt: now,
       updatedAt: now,
       legacyType: draft.kind === 'evento' ? EventType.RED : undefined,
+      isLoVivido,
+      status,
+      mediaItems: [],
     };
 
     writePublications([...current, created]);

@@ -375,7 +375,7 @@ export const StudentGradeModal: React.FC<StudentGradeModalProps> = ({
                 <button
                   type="button"
                   onClick={handleLoadPresetSubjects}
-                  className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs transition-colors inline-flex items-center gap-1.5 shadow-sm"
+                  className="px-3.5 py-1.5 rounded-xl btn-3d-emerald text-white font-extrabold text-xs inline-flex items-center gap-1.5 shadow-sm"
                 >
                   <Plus size={13} />
                   <span>Cargar Materias Estándar de {schoolDef.shortTitle}</span>

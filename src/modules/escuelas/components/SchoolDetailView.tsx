@@ -291,7 +291,7 @@ export const SchoolDetailView: React.FC<SchoolDetailViewProps> = ({
         <button
           type="button"
           onClick={() => setIsEnrollModalOpen(true)}
-          className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs uppercase tracking-wider shadow-sm transition-all hover:scale-[1.02] active:scale-[0.98] shrink-0"
+          className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl btn-3d-emerald text-white font-extrabold text-xs uppercase tracking-wider shadow-sm transition-all hover:scale-[1.02] active:scale-[0.98] shrink-0"
         >
           <UserPlus size={14} />
           <span>INSCRIBIR HERMANO</span>
@@ -461,7 +461,7 @@ export const SchoolDetailView: React.FC<SchoolDetailViewProps> = ({
             <button
               type="button"
               onClick={() => setIsEnrollModalOpen(true)}
-              className="px-4 py-2 rounded-xl bg-emerald-600 text-white font-extrabold text-xs uppercase tracking-wider inline-flex items-center gap-1.5 shadow-sm"
+              className="px-4 py-2 rounded-xl btn-3d-emerald text-white font-extrabold text-xs uppercase tracking-wider inline-flex items-center gap-1.5 shadow-sm"
             >
               <UserPlus size={13} />
               <span>Inscribir Alumno Ahora</span>

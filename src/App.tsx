@@ -28,6 +28,8 @@ import { CelulasDirectoryPage } from './modules/celulas/CelulasDirectoryPage';
 import { CulturaCongregacionalPage } from './modules/nCMV-Plataforma/CulturaCongregacionalPage';
 import { ComunidadSocialPage } from './modules/comunidad/ComunidadSocialPage';
 
+import { ScrollToTop } from './components/routing/ScrollToTop';
+
 const ProtectedAppRoutes = ({ user }: { user: User }) => (
   <MainLayout user={user}>
     <Routes>
@@ -62,6 +64,7 @@ const App = () => {
 
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <Routes>
         <Route
           path="/login"

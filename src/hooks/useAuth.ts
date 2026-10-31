@@ -168,8 +168,10 @@ const ensureInitialized = () => {
       window.localStorage.setItem('cmv_dev_auth', 'true');
     }
     if (window.localStorage.getItem('cmv_dev_auth') === 'true') {
+      const devRole = window.localStorage.getItem('cmv_dev_role');
+      const userToSet = devRole ? { ...FALLBACK_USER, role: mapRole(devRole) } : FALLBACK_USER;
       setAuthState({
-        user: FALLBACK_USER,
+        user: userToSet,
         isAuthenticated: true,
         isLoading: false,
       });

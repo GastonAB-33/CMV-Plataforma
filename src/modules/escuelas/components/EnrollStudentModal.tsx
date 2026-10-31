@@ -185,7 +185,7 @@ export const EnrollStudentModal: React.FC<EnrollStudentModalProps> = ({
             <button
               type="submit"
               disabled={!selectedBrotherId || isSubmitting}
-              className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs uppercase tracking-wider transition-all disabled:opacity-50"
+              className="px-5 py-2 rounded-xl btn-3d-emerald text-white font-black text-xs uppercase tracking-wider transition-all disabled:opacity-50"
             >
               {isSubmitting ? 'Inscribiendo...' : 'Confirmar Inscripción'}
             </button>

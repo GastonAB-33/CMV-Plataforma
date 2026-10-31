@@ -9,9 +9,13 @@ export const MALE_AVATARS = ['/avatars/male-1.png', '/avatars/male-2.png'] as co
 export const FEMALE_AVATARS = ['/avatars/female-1.png', '/avatars/female-2.png', '/avatars/female-3.png'] as const;
 
 export const isFemaleName = (name: string): boolean => {
-  const normalized = name.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  let normalized = name.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
   if (normalized.startsWith('pastora ') || normalized.startsWith('hermana ')) return true;
-  if (normalized.startsWith('pastor ') || normalized.startsWith('hermano ') || normalized.startsWith('apostol ')) return false;
+  if (normalized.startsWith('pastor ') || normalized.startsWith('hermano ')) return false;
+
+  if (normalized.startsWith('apostol ')) {
+    normalized = normalized.slice(8).trim();
+  }
 
   const firstName = normalized.split(/\s+/)[0] || '';
   if (FEMALE_FIRST_NAMES.has(firstName)) return true;

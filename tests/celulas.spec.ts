@@ -8,9 +8,60 @@ test('verifica células como paneles desplegables, lista de grupos de vida y mod
   await page.goto('/celulas');
 
   // 1. Título principal
-  await expect(page.getByRole('heading', { name: /Células y Grupos Vida/i })).toBeVisible();
+  await expect(page.getByRole('heading', { name: /Células y Grupos de Vida/i })).toBeVisible();
 
-  // 2. Tarjetas de Célula visibles en estado colapsado (como en la Imagen 2)
+  // 1.1 Verificar Célula Red Apostólica con Apóstol José Hernández, Apóstol Gabriela Castro y 15 líderes
+  await expect(page.getByText(/Célula principal/i)).toBeVisible();
+  await expect(page.getByText('Apóstol José Hernández')).toBeVisible();
+  await expect(page.getByText('Apóstol Gabriela Castro')).toBeVisible();
+  await expect(page.getByText('15 líderes', { exact: true })).toBeVisible();
+  await expect(page.getByText('Hermanos en Cobertura')).not.toBeVisible();
+  await expect(page.getByText('Ver Lista General')).not.toBeVisible();
+
+  // Verificar que por defecto los 15 líderes están ocultos dentro de 15 líderes
+  const redApostolica = page.locator('#red-apostolica-section');
+  await expect(redApostolica.getByText('Emanuel Calivar Chanampa')).not.toBeVisible();
+
+  // Capturar estado inicial colapsado con el botón 15 líderes [VER ▾]
+  await page.screenshot({
+    path: 'C:/Users/ale97/.gemini/antigravity/brain/05e51130-44b8-4414-a91c-af6eb0ebff96/scratch/celula_red_apostolica_colapsada.png',
+  });
+
+  // Al hacer clic en el botón interno [VER ▾], se despliegan los 15 líderes
+  const verLideresButton = page.getByRole('button', { name: /15 líderes/i });
+  await verLideresButton.click();
+  await expect(redApostolica.getByText('Emanuel Calivar Chanampa')).toBeVisible();
+
+  // Capturar estado desplegado con los 15 líderes visibles
+  await page.screenshot({
+    path: 'C:/Users/ale97/.gemini/antigravity/brain/05e51130-44b8-4414-a91c-af6eb0ebff96/scratch/celula_red_apostolica_lideres_desplegados.png',
+  });
+
+  // Verificar modal al hacer clic en Apóstol José Hernández
+  await page.getByText('Apóstol José Hernández').first().click();
+  const leaderModal = page.getByRole('dialog');
+  await expect(leaderModal).toBeVisible();
+  await expect(leaderModal.getByRole('heading', { name: /Apóstol José Hernández/i })).toBeVisible();
+  await expect(leaderModal.getByText(/Apóstol Principal • Cobertura de Líderes/i)).toBeVisible();
+  await leaderModal.getByRole('button', { name: 'Cerrar', exact: true }).click();
+  await expect(leaderModal).not.toBeVisible();
+
+  // Verificar modal al hacer clic en Apóstol Gabriela Castro
+  await page.getByText('Apóstol Gabriela Castro').first().click();
+  await expect(leaderModal).toBeVisible();
+  await expect(leaderModal.getByRole('heading', { name: /Apóstol Gabriela Castro/i })).toBeVisible();
+  await leaderModal.getByRole('button', { name: 'Cerrar', exact: true }).click();
+  await expect(leaderModal).not.toBeVisible();
+
+  // 2. Sección Células bajo cobertura (6)
+  const celulasBajoCoberturaHeading = page.getByRole('heading', { name: /Células bajo cobertura/i });
+  await expect(celulasBajoCoberturaHeading).toBeVisible();
+  await celulasBajoCoberturaHeading.scrollIntoViewIfNeeded();
+  await page.screenshot({
+    path: 'C:/Users/ale97/.gemini/antigravity/brain/05e51130-44b8-4414-a91c-af6eb0ebff96/scratch/celulas_bajo_cobertura_heading.png',
+  });
+
+  // Tarjetas de Célula visibles en estado colapsado (como en la Imagen 2)
   const saetasCard = page.locator('#cell-card-saetas');
   await expect(saetasCard).toBeVisible();
   await expect(saetasCard.getByRole('heading', { name: /^Saetas$/i })).toBeVisible();
@@ -78,5 +129,14 @@ test('verifica el panel Bento principal con la paleta esmeralda/turquesa/cian y 
   });
   await page.goto('/');
 
-  await expect(page.getByRole('heading', { name: /CÉLULAS/i })).toBeVisible();
+  const celulasHeading = page.getByRole('heading', { name: /^CÉLULAS$/i });
+  await expect(celulasHeading).toBeVisible();
+  await expect(page.getByText('CÉLULA DE DISCIPULADO')).toBeVisible();
+  await expect(page.getByTitle('Células de la Red CMV')).toBeVisible();
+  await celulasHeading.scrollIntoViewIfNeeded();
+
+  // Capturar vista del panel Bento con CÉLULAS en tamaño grande y desplazado a la derecha
+  await page.screenshot({
+    path: 'C:/Users/ale97/.gemini/antigravity/brain/05e51130-44b8-4414-a91c-af6eb0ebff96/scratch/bento_card_celulas_actualizada.png',
+  });
 });

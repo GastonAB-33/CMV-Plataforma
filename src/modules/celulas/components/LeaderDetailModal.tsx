@@ -289,27 +289,96 @@ export const resolveLeaderDetailData = (
     };
   }
 
-  // CASO: Apóstol Andrés Castro
-  if (cleanName.includes('castro') || cleanName.includes('andres')) {
+  // CASO ESPECÍFICO: Apóstol José Hernández
+  if (
+    cleanName.includes('hernandez') ||
+    cleanName.includes('josé hernández') ||
+    cleanName.includes('jose hernandez') ||
+    cleanName.includes('jose')
+  ) {
+    return {
+      id: leader.id || 'apostol-jose-hernandez',
+      name: 'Apóstol José Hernández',
+      fotoUrl: leader.fotoUrl || brother?.fotoUrl,
+      role: 'Apóstol Principal • Cobertura de Líderes',
+      celulaName: 'Red Apostólica',
+      totalIntegrantes: 15,
+      gruposDeVida:
+        'Líder apostólico a cargo de la Célula Red Apostólica, brindando cobertura, mentoría y formación continua a los 15 líderes que pastorean las células y grupos de vida.',
+      ministerios: [
+        {
+          title: 'Célula Red Apostólica',
+          role: 'Líder Apostólico a Cargo',
+          desc: 'Formación discipular de los líderes de células, visión apostólica y cuidado pastoral continuo.',
+        },
+        {
+          title: 'Paternidad y Gobierno Espiritual CMV',
+          role: 'Apóstol Principal',
+          desc: 'Dirección apostólica, unción ministerial y gobierno de la congregación Cristo Manantial de Vida.',
+        },
+        {
+          title: 'Red de Células y Grupos de Vida',
+          role: 'Supervisión Apostólica',
+          desc: 'Envío de obreros, sustento de líderes y expansión del reino de Dios.',
+        },
+      ],
+      telefono: brother?.telefono || '+54 266 400-0001',
+    };
+  }
+
+  // CASO ESPECÍFICO: Apóstol Gabriela Castro (Apóstol a Cargo)
+  if (cleanName.includes('gabriela')) {
+    return {
+      id: leader.id || 'apostol-gabriela-castro',
+      name: 'Apóstol Gabriela Castro',
+      fotoUrl: leader.fotoUrl || brother?.fotoUrl,
+      role: 'Apóstol • Cobertura Pastoral',
+      celulaName: 'Red Apostólica',
+      totalIntegrantes: 15,
+      gruposDeVida:
+        'Apóstol a cargo de la Célula Red Apostólica junto al Apóstol José Hernández, pastoreando y capacitando a los líderes de todas las células.',
+      ministerios: [
+        {
+          title: 'Célula Red Apostólica',
+          role: 'Apóstol a Cargo',
+          desc: 'Acompañamiento apostólico de líderes, edificación en la palabra y cobertura pastoral.',
+        },
+        {
+          title: 'Pastoreo Integral de Familias',
+          role: 'Pastora Principal',
+          desc: 'Dirección de la contención familiar, matrimonios y restauración en la congregación.',
+        },
+        {
+          title: 'Supervisión de Grupos de Vida',
+          role: 'Cobertura Ministerial',
+          desc: 'Cuidado pastoral y fortalecimiento de las familias anfitrionas de los grupos de vida.',
+        },
+      ],
+      telefono: brother?.telefono || '+54 266 400-0002',
+    };
+  }
+
+  // CASO: Andrés Castro
+  if (cleanName.includes('andres') || (cleanName.includes('castro') && !cleanName.includes('gabriela'))) {
     return {
       id: leader.id,
       name: leader.name,
       fotoUrl: leader.fotoUrl || brother?.fotoUrl,
-      role: 'Apóstol',
+      role: 'Pastor / Líder en Formación',
       celulaName: 'Red Apostólica',
-      totalIntegrantes: totalIntegrantes || 7,
+      totalIntegrantes: 15,
       gruposDeVida:
-        'Cobertura Apostólica General sobre la red de células, pastores y líderes de grupos de vida.',
+        'Líder en formación dentro de la Célula Red Apostólica, con cobertura y servicio ministerial en la congregación.',
       ministerios: [
         {
-          title: 'Cobertura Apostólica Principal',
-          role: 'Apóstol Principal',
-          desc: 'Gobierno espiritual, visión ministerial y pastoreo de los líderes de la congregación.',
+          title: 'Célula Red Apostólica',
+          role: 'Líder en Formación',
+          desc: 'Participación activa en el discipulado apostólico de líderes de células.',
         },
         {
-          title: 'Red de Células y Grupos Vida',
-          role: 'Supervisión Apostólica',
-          desc: 'Envío de líderes y sustento doctrinal de las células de vida.',
+          title: 'Pastoreo y Altar Familiar',
+          role: 'Pastor',
+          desc: 'Consolidación de nuevos creyentes y cuidado pastoral.',
         },
       ],
       telefono: brother?.telefono,
